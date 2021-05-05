@@ -30,3 +30,16 @@
 *.exe
 *.out
 *.app
+
+# Game Files
+.vscode
+Kero Blaster
+Pink Hour
+Pink Heaven
+bin
+_deps
+CMakeFiles
+include/libimgui.a
+include/CMakeFiles
+CMakeCache.txt
+*.cmake
