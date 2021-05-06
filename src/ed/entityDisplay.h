@@ -36,6 +36,7 @@ struct EntityDisplay
     EntityTile* tiles;
     bool allowRollYourOwnSprite = true;
     static map<string, EntityTile> rollYourOwnSprite;
+    static float transparency;
 
     void Draw(u8 id, Str strParam, u8 flags, string spritesheetName, string tilesetNames[3], map<string, Tileset>& tilesets, Vector2 origin, s32 xOff, s32 yOff, f32 mapScale, bool debug = false);
 };

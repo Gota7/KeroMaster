@@ -14,6 +14,7 @@ struct Tileset
     u8 flags;
     u16 width;
     u16 height;
+    static Texture2D attrTex;
 
     void Load(string rsc_k, string tilesetName);
     void Unload();

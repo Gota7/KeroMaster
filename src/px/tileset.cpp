@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+Texture2D Tileset::attrTex;
+
 void Tileset::Load(string rsc_k, string tilesetName)
 {
     if (GFile::FileExists((rsc_k + "/img/" + tilesetName + ".png").c_str()))
@@ -77,7 +79,8 @@ void Tileset::Draw(u8 index, Vector2 origin, s32 xOff, s32 yOff, f32 mapScale, b
         u8 attr = GetTilesetAttr(index);
         if (attr != 0)
         {
-            DrawText(to_string(attr).c_str(), (int)(off.x + 1 * mapScale), (int)(off.y + 1 * mapScale), (int)(5 * mapScale), YELLOW);
+            //DrawText(to_string(attr).c_str(), (int)(off.x + 1 * mapScale), (int)(off.y + 1 * mapScale), (int)(5 * mapScale), YELLOW);
+            DrawTextureTiled(attrTex, { (float)(attr % 16 * 16), (float)(attr / 16 * 16), 16, 16 }, { off.x, off.y, 8 * mapScale, 8 * mapScale }, { 0, 0 }, 0, mapScale / 2, WHITE);
         }
     }
 }
@@ -92,7 +95,8 @@ void Tileset::Draw(u16 x, u16 y, Vector2 origin, s32 xOff, s32 yOff, f32 mapScal
         u8 attr = GetTilesetAttr(x, y);
         if (attr != 0)
         {
-            DrawText(to_string(attr).c_str(), (int)(off.x + 1 * mapScale), (int)(off.y + 1 * mapScale), (int)(5 * mapScale), YELLOW);
+            //DrawText(to_string(attr).c_str(), (int)(off.x + 1 * mapScale), (int)(off.y + 1 * mapScale), (int)(5 * mapScale), YELLOW);
+            DrawTextureTiled(attrTex, { (float)(attr % 16 * 16), (float)(attr / 16 * 16), 16, 16 }, { off.x, off.y, 8 * mapScale, 8 * mapScale }, { 0, 0 }, 0, mapScale / 2, WHITE);
         }
     }
 }

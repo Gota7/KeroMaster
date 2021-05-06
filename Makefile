@@ -269,6 +269,33 @@ glad-generate-files/fast:
 	$(MAKE) -f _deps/glad-build/CMakeFiles/glad-generate-files.dir/build.make _deps/glad-build/CMakeFiles/glad-generate-files.dir/build
 .PHONY : glad-generate-files/fast
 
+src/ed/editor.o: src/ed/editor.cpp.o
+
+.PHONY : src/ed/editor.o
+
+# target to build an object file
+src/ed/editor.cpp.o:
+	$(MAKE) -f CMakeFiles/KeroMaster.dir/build.make CMakeFiles/KeroMaster.dir/src/ed/editor.cpp.o
+.PHONY : src/ed/editor.cpp.o
+
+src/ed/editor.i: src/ed/editor.cpp.i
+
+.PHONY : src/ed/editor.i
+
+# target to preprocess a source file
+src/ed/editor.cpp.i:
+	$(MAKE) -f CMakeFiles/KeroMaster.dir/build.make CMakeFiles/KeroMaster.dir/src/ed/editor.cpp.i
+.PHONY : src/ed/editor.cpp.i
+
+src/ed/editor.s: src/ed/editor.cpp.s
+
+.PHONY : src/ed/editor.s
+
+# target to generate assembly for a file
+src/ed/editor.cpp.s:
+	$(MAKE) -f CMakeFiles/KeroMaster.dir/build.make CMakeFiles/KeroMaster.dir/src/ed/editor.cpp.s
+.PHONY : src/ed/editor.cpp.s
+
 src/ed/entityDisplay.o: src/ed/entityDisplay.cpp.o
 
 .PHONY : src/ed/entityDisplay.o
@@ -587,6 +614,9 @@ help:
 	@echo "... glfw_objlib"
 	@echo "... glad"
 	@echo "... glad-generate-files"
+	@echo "... src/ed/editor.o"
+	@echo "... src/ed/editor.i"
+	@echo "... src/ed/editor.s"
 	@echo "... src/ed/entityDisplay.o"
 	@echo "... src/ed/entityDisplay.i"
 	@echo "... src/ed/entityDisplay.s"

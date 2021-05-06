@@ -1,6 +1,7 @@
 #include "entityDisplay.h"
 
 map<string, EntityTile> EntityDisplay::rollYourOwnSprite;
+float EntityDisplay::transparency = .3f;
 
 void EntityDisplay::Draw(u8 id, Str strParam, u8 flags, string spritesheetName, string tilesetNames[3], map<string, Tileset>& tilesets, Vector2 origin, s32 xOff, s32 yOff, f32 mapScale, bool debug)
 {
@@ -53,6 +54,14 @@ void EntityDisplay::Draw(u8 id, Str strParam, u8 flags, string spritesheetName, 
         if (spriteExistsInRollList)
         {
             EntityTile* t = &rollYourOwnSprite[strParam.dat];
+            if (t->flagBit != 0)
+            {
+                u8 val = flags & (1 << (t->flagBit - 1));
+                if ((val > 0) == t->flagMode)
+                {
+                    goto skip;
+                }
+            }
             string tsName = strcmp(t->tileset.c_str(), "") == 0 ? spritesheetName : t->tileset;
             if (strcmp(t->tileset.c_str(), "/0") == 0)
             {
@@ -82,10 +91,11 @@ void EntityDisplay::Draw(u8 id, Str strParam, u8 flags, string spritesheetName, 
             doneSomething = true;
         }
     }
+    skip:
     if (debug || !doneSomething)
     {
-        DrawRectangleV(off, size, ColorAlpha(BLUE, .5f));
-        DrawText(to_string(id).c_str(), (int)(off.x + 1 * mapScale), (int)(off.y + 1 * mapScale), (int)(5 * mapScale), YELLOW);
+        DrawRectangleV(off, size, ColorAlpha(BLUE, transparency));
+        DrawText(to_string(id).c_str(), (int)(off.x + 1 * mapScale), (int)(off.y + 1 * mapScale), (int)(5 * mapScale), ColorAlpha(YELLOW, .8f));
     }
 }
 

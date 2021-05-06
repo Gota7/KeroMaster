@@ -23,6 +23,9 @@
         <entity id="22" name="Drop" description="Falling water droplet for decoration." >
             <tile tileset="fuFixPtcle" x="13" y="10" yOffPixels="-3" numXTiles="1" numYTiles="1" />
         </entity>
+        <entity id="25" name="Kani Mini" description="Small crab." >
+            <tile tileset="" x="9" y="27" yOffPixels="-3" numXTiles="2" numYTiles="2" />
+        </entity>
         <entity id="27" name="Previous Level" description="Go to the previous level.">
             <tile tileset="fuFixChar" x="50" y="61" numXTiles="1" numYTiles="1" />
         </entity>
@@ -31,6 +34,9 @@
         </entity>
         <entity id="36" name="Tire" description="Tire that can fall and roll from events.">
             <tile tileset="fuFixNPC" x="32" y="48" xOff="-2" yOff="-2" numXTiles="5" numYTiles="5" />
+        </entity>
+        <entity id="43" name="Chibi Uzo" description="Harmless decorative black thing.">
+            <tile tileset="fuFixNPC" x="4" y="47" xOffPixels="-4" yOffPixels="-1" numXTiles="2" numYTiles="2"/>
         </entity>
         <entity id="53" name="Phone" description="The magic device.">
             <tile tileset="fuFixNPC" x="36" y="37" xOff="-1" yOffPixels="-2" numXTiles="2" numYTiles="1"/>
@@ -44,6 +50,14 @@
         <entity id="72" name="Barricade" description="Can be destroyed to pass.">
             <tile tileset="fuFixNPC" x="6" y="54" xOffPixels="-4" yOffPixels="-6" numXTiles="2" numYTiles="2" />
         </entity>
+        <entity id="75" name="Kani=" description="Crab. TODO!!!" >
+            <tile tileset="" x="4" y="18" yOffPixels="-3" numXTiles="2" numYTiles="2" />
+        </entity>
+        <entity id="77" name="Anemone" description="Sea creature that shoots dead fish at you.">
+            <tile tileset="" x="8" y="8" xOff="-1" numXTiles="3" numYTiles="2" flagBit="5" flagMode="false" />
+            <tile tileset="" x="5" y="8" xOff="-1" yOff="-1" numXTiles="3" numYTiles="2" flagBit="5" flagMode="true" />
+        </entity>
+        <entity id="79" name="Position Half Up" description="I have no idea what this does." />
         <entity id="81" name="Line Censor" description="A line that activates a path when crossed.">
             <tile tileset="fuFixChar" x="50" y="61" numXTiles="1" numYTiles="1" />
         </entity>
@@ -52,6 +66,9 @@
         </entity>
         <entity id="88" name="Icicle" description="Icicle that will fall if you get too close to it.">
             <tile tileset="" x="12" y="24" yOff="-1" xOffPixels="-4" numXTiles="2" numYTiles="2" />
+        </entity>
+        <entity id="106" name="Digesty" description="Orange goop that will drip down and hurt you.">
+            <tile tileset="/1" x="14" y="6" yOff="-1" xOffPixels="-3" yOffPixels="3" numXTiles="2" numYTiles="2" />
         </entity>
         <entity id="115" name="Frog Plant" description="Will attack you if you shoot it.">
             <tile tileset="" yOff="-1" xOffPixels="-4" numXTiles="2" numYTiles="2" />
@@ -91,7 +108,7 @@
         <entity id="162" name="Sister" description="Pink co-worker that is cheery." />
         <entity id="163" name="Sasuke" description="Cat co-worker that wears a lab coat." />
         <entity id="171" name="Animal Bone" description="Decorative skull.">
-            <tile tileset="fuFixChar" x="2" y="32" xOffPixels="-3" yOff="-1" yOffPixels="2" numXTiles="2" numYTiles="2" />
+            <tile tileset="fuFixNPC" x="8" y="51" xOffPixels="-4" numXTiles="2" numYTiles="1" />
         </entity>
     </entities>
     <rollYourOwnSprites>
