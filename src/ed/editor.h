@@ -32,12 +32,14 @@ struct Editor
     bool viewEntityBoxes = true;
     bool viewEntities = true;
     bool viewTileAttributes = false;
+    bool imguiFocused = false;
 
     void SetPath(string rsc);
     void LoadEnemies(string xml);
     void LoadTileset(string tilesetName);
     void LoadFixedTilesets();
     void LoadLevel(string name);
+    void UnloadLevel();
     void Draw();
     void DrawUI();
     void Update();

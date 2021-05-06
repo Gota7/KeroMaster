@@ -21,10 +21,10 @@ int main(int argc, char *argv[])
     SetupRLImGui(true);
 
     Editor e;
-    e.SetPath("Kero Blaster/rsc_k");
+    e.SetPath(argv[1]);
     e.LoadEnemies("all");
     e.LoadFixedTilesets();
-    e.LoadLevel("01field2");
+    e.LoadLevel(argv[2]);
 
     while (!WindowShouldClose())
     {

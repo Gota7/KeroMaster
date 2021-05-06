@@ -2,9 +2,12 @@
 #include <fstream>
 #include <imgui.h>
 #include "editor.h"
+#include "../rlImGui/fileBrowser.h"
 
 std::map<string, Tileset> Editor::tilesets;
 std::map<u8, EntityDisplay> Editor::entities;
+
+using namespace imgui_addons;
 
 void Editor::SetPath(string rsc)
 {
@@ -50,6 +53,11 @@ void Editor::LoadLevel(string name)
     origin = { 0, 0 };
     map.Load(rsc, name, tilesets);
     enabled = true;
+}
+
+void Editor::UnloadLevel()
+{
+    map.Unload(tilesets);
 }
 
 void Editor::Draw()
@@ -109,16 +117,27 @@ void Editor::Draw()
 void Editor::DrawUI()
 {
 
+    // Vars.
+    static int numFiles;
+    static char** files;
+    bool openPopup = false;
+
     // File menu.
     if (ImGui::BeginMainMenuBar())
     {
         if (ImGui::BeginMenu("File"))
         {
+            imguiFocused = true;
             if (ImGui::MenuItem("New", "Ctrl+N"))
             {
             }
             if (ImGui::MenuItem("Open", "Ctrl+O"))
             {
+                numFiles = 0;
+                files = GetDirectoryFiles((rsc + "/field").c_str(), &numFiles);
+                ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+                ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+                openPopup = true;
             }
             if (ImGui::MenuItem("Save", "Ctrl+S"))
             {
@@ -136,10 +155,12 @@ void Editor::DrawUI()
         }
         if (ImGui::BeginMenu("Edit"))
         {
+            imguiFocused = true;
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("View"))
         {
+            imguiFocused = true;
             ImGui::Checkbox("Play Area", &showPlayArea);
             ImGui::Checkbox("Grid", &showGrid);
             ImGui::Separator();
@@ -155,13 +176,38 @@ void Editor::DrawUI()
         }
         if (ImGui::BeginMenu("Help"))
         {
+            imguiFocused = true;
             ImGui::EndMenu();
         }
         if (ImGui::MenuItem("About"))
         {   
-
+            imguiFocused = true;
         }
         ImGui::EndMainMenuBar();
+    }
+
+    // Level select.
+    if (openPopup)
+    {
+        ImGui::OpenPopup("Select Level");
+        openPopup = false;
+    }
+    if (ImGui::BeginPopupModal("Select Level"))
+    {
+        imguiFocused = true;
+        ImGui::BeginListBox("Levels", ImVec2(300, 700));
+        for (int i = 2; i < numFiles; i++)
+        {
+            bool dummy = false;
+            const char* name = GetFileNameWithoutExt(files[i]);
+            if (ImGui::Selectable(name, &dummy))
+            {
+                //UnloadLevel();
+                LoadLevel(name);
+            }
+        }
+        ImGui::EndListBox();
+        ImGui::EndPopup();
     }
 
     // Safety.
@@ -172,6 +218,10 @@ void Editor::DrawUI()
 
     // Editor.
     ImGui::Begin(("Level Editor - " + mapName).c_str());
+    if (ImGui::IsWindowFocused())
+    {
+        imguiFocused = true;
+    }
     ImGui::End();
 
 }
@@ -182,12 +232,29 @@ void Editor::Update()
     // Safety.
     if (!enabled)
     {
+        imguiFocused = false;
         return;
     }
 
     // Get mouse.
     mouseX = GetMouseX();
     mouseY = GetMouseY();
+
+    // Middle mouse scroll.
+    if (IsMouseButtonDown(MOUSE_MIDDLE_BUTTON))
+    {
+        cam.offset.x += (mouseX - oldMouseX);
+        cam.offset.y += (mouseY - oldMouseY);
+    }
+
+    // Focused.
+    if (imguiFocused)
+    {
+        //imguiFocused = false;
+        //oldMouseX = mouseX;
+        //oldMouseY = mouseY;
+        //return;
+    }
     
     // Scrolling.
     if (IsKeyDown(KEY_W) || IsKeyDown(KEY_UP))
@@ -232,13 +299,6 @@ void Editor::Update()
         {
             cam.zoom = 5;
         }
-    }
-
-    // Middle mouse scroll.
-    if (IsMouseButtonDown(MOUSE_MIDDLE_BUTTON))
-    {
-        cam.offset.x += (mouseX - oldMouseX);
-        cam.offset.y += (mouseY - oldMouseY);
     }
 
     // Set mouse position.
