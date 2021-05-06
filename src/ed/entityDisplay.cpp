@@ -9,7 +9,6 @@ void EntityDisplay::Draw(u8 id, Str strParam, u8 flags, string spritesheetName, 
     Vector2 size = { 8 * mapScale, 8 * mapScale };
     bool noTiles = numTiles == 0;
     bool blankSpriteParam = strcmp(strParam.dat.c_str(), "") == 0;
-    bool isPixelLogo = strcmp(strParam.dat.c_str(), "PixelLogo") == 0;
     bool spriteExistsInRollList = rollYourOwnSprite.find(strParam.dat) != rollYourOwnSprite.end();
     bool doneSomething = false;
     if(!noTiles)
@@ -83,11 +82,6 @@ void EntityDisplay::Draw(u8 id, Str strParam, u8 flags, string spritesheetName, 
                     ts->Draw(t->x + x, t->y + y, origin, xOff + x + t->xOff, yOff + y + t->yOff, mapScale, false, true, t->xOffPixels, t->yOffPixels);
                 }
             }
-            doneSomething = true;
-        }
-        else if (isPixelLogo)
-        {
-            DrawText("Studio Pixel", (int)(off.x + 1 * mapScale - 32 * mapScale), (int)(off.y + 1 * mapScale - 4 * mapScale), (int)(12 * mapScale), WHITE);
             doneSomething = true;
         }
     }

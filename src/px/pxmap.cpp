@@ -95,24 +95,24 @@ void Map::Load(string rsc_k, string mapName, map<string, Tileset>& tilesets)
         {
             maps[i].Read(&f);
         }
-        numEntities = f.ReadU16();
-        entities = new Entity[numEntities];
+        u16 numEntities = f.ReadU16();
         for (u16 i = 0; i < numEntities; i++)
         {
-            Entity* e = &entities[i];
-            e->flags = f.ReadU8();
-            e->id = f.ReadU8();
-            e->unk = f.ReadU8();
-            e->xPos = f.ReadU16();
-            e->yPos = f.ReadU16();
+            Entity e;
+            e.flags = f.ReadU8();
+            e.id = f.ReadU8();
+            e.unk = f.ReadU8();
+            e.xPos = f.ReadU16();
+            e.yPos = f.ReadU16();
             for (int i = 0; i < NUM_BYTE_PARAMETERS; i++)
             {
-                e->parametersByte[i] = f.ReadU8();
+                e.parametersByte[i] = f.ReadU8();
             }
             for (int i = 0; i < NUM_PARAMETERS - NUM_BYTE_PARAMETERS; i++)
             {
-                e->parametersStr[i].Read(&f);
+                e.parametersStr[i].Read(&f);
             }
+            entities.push_back(e);
         }
     }
     f.Close();
@@ -131,10 +131,7 @@ void Map::Unload(map<string, Tileset>& tilesets)
             tilesets[this->tilesets[i].dat].Unload();
         }
     }
-    if (entities != NULL)
-    {
-        delete[] entities;
-    }
+    entities.clear();
 }
 
 void Map::Clear()
@@ -165,7 +162,7 @@ void Map::DrawEntities(map<u8, EntityDisplay>& entities, map<string, Tileset>& t
     tilesetNames[0] = this->tilesets[0].dat;
     tilesetNames[1] = this->tilesets[1].dat;
     tilesetNames[2] = this->tilesets[2].dat;
-    for (u16 i = 0; i < numEntities; i++)
+    for (u16 i = 0; i < this->entities.size(); i++)
     {
         if (entities.find(this->entities[i].id) != entities.end())
         {

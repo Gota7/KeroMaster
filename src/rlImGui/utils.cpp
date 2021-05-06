@@ -31,3 +31,16 @@ void ImGuiStringEdit(const char* label, string* toEdit)
     ImGui::InputText(label, buf, 128);
     *toEdit = string(buf);
 }
+
+void ImGuiColorEdit(const char* label, u8* toEdit)
+{
+    float tmp[3];
+    tmp[0] = toEdit[0] / (float)255;
+    tmp[1] = toEdit[1] / (float)255;
+    tmp[2] = toEdit[2] / (float)255;
+    if (ImGui::ColorEdit3(label, tmp)) {
+        toEdit[0] = (u8)(tmp[0] * 255);
+        toEdit[1] = (u8)(tmp[1] * 255);
+        toEdit[2] = (u8)(tmp[2] * 255);
+    }
+}

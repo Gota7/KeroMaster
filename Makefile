@@ -323,6 +323,33 @@ src/ed/entityDisplay.cpp.s:
 	$(MAKE) -f CMakeFiles/KeroMaster.dir/build.make CMakeFiles/KeroMaster.dir/src/ed/entityDisplay.cpp.s
 .PHONY : src/ed/entityDisplay.cpp.s
 
+src/ed/tilesetEditor.o: src/ed/tilesetEditor.cpp.o
+
+.PHONY : src/ed/tilesetEditor.o
+
+# target to build an object file
+src/ed/tilesetEditor.cpp.o:
+	$(MAKE) -f CMakeFiles/KeroMaster.dir/build.make CMakeFiles/KeroMaster.dir/src/ed/tilesetEditor.cpp.o
+.PHONY : src/ed/tilesetEditor.cpp.o
+
+src/ed/tilesetEditor.i: src/ed/tilesetEditor.cpp.i
+
+.PHONY : src/ed/tilesetEditor.i
+
+# target to preprocess a source file
+src/ed/tilesetEditor.cpp.i:
+	$(MAKE) -f CMakeFiles/KeroMaster.dir/build.make CMakeFiles/KeroMaster.dir/src/ed/tilesetEditor.cpp.i
+.PHONY : src/ed/tilesetEditor.cpp.i
+
+src/ed/tilesetEditor.s: src/ed/tilesetEditor.cpp.s
+
+.PHONY : src/ed/tilesetEditor.s
+
+# target to generate assembly for a file
+src/ed/tilesetEditor.cpp.s:
+	$(MAKE) -f CMakeFiles/KeroMaster.dir/build.make CMakeFiles/KeroMaster.dir/src/ed/tilesetEditor.cpp.s
+.PHONY : src/ed/tilesetEditor.cpp.s
+
 src/gbin/gfile.o: src/gbin/gfile.cpp.o
 
 .PHONY : src/gbin/gfile.o
@@ -512,6 +539,33 @@ src/rlImGui/fileBrowser.cpp.s:
 	$(MAKE) -f CMakeFiles/KeroMaster.dir/build.make CMakeFiles/KeroMaster.dir/src/rlImGui/fileBrowser.cpp.s
 .PHONY : src/rlImGui/fileBrowser.cpp.s
 
+src/rlImGui/focusData.o: src/rlImGui/focusData.cpp.o
+
+.PHONY : src/rlImGui/focusData.o
+
+# target to build an object file
+src/rlImGui/focusData.cpp.o:
+	$(MAKE) -f CMakeFiles/KeroMaster.dir/build.make CMakeFiles/KeroMaster.dir/src/rlImGui/focusData.cpp.o
+.PHONY : src/rlImGui/focusData.cpp.o
+
+src/rlImGui/focusData.i: src/rlImGui/focusData.cpp.i
+
+.PHONY : src/rlImGui/focusData.i
+
+# target to preprocess a source file
+src/rlImGui/focusData.cpp.i:
+	$(MAKE) -f CMakeFiles/KeroMaster.dir/build.make CMakeFiles/KeroMaster.dir/src/rlImGui/focusData.cpp.i
+.PHONY : src/rlImGui/focusData.cpp.i
+
+src/rlImGui/focusData.s: src/rlImGui/focusData.cpp.s
+
+.PHONY : src/rlImGui/focusData.s
+
+# target to generate assembly for a file
+src/rlImGui/focusData.cpp.s:
+	$(MAKE) -f CMakeFiles/KeroMaster.dir/build.make CMakeFiles/KeroMaster.dir/src/rlImGui/focusData.cpp.s
+.PHONY : src/rlImGui/focusData.cpp.s
+
 src/rlImGui/rlImGui.o: src/rlImGui/rlImGui.cpp.o
 
 .PHONY : src/rlImGui/rlImGui.o
@@ -620,6 +674,9 @@ help:
 	@echo "... src/ed/entityDisplay.o"
 	@echo "... src/ed/entityDisplay.i"
 	@echo "... src/ed/entityDisplay.s"
+	@echo "... src/ed/tilesetEditor.o"
+	@echo "... src/ed/tilesetEditor.i"
+	@echo "... src/ed/tilesetEditor.s"
 	@echo "... src/gbin/gfile.o"
 	@echo "... src/gbin/gfile.i"
 	@echo "... src/gbin/gfile.s"
@@ -641,6 +698,9 @@ help:
 	@echo "... src/rlImGui/fileBrowser.o"
 	@echo "... src/rlImGui/fileBrowser.i"
 	@echo "... src/rlImGui/fileBrowser.s"
+	@echo "... src/rlImGui/focusData.o"
+	@echo "... src/rlImGui/focusData.i"
+	@echo "... src/rlImGui/focusData.s"
 	@echo "... src/rlImGui/rlImGui.o"
 	@echo "... src/rlImGui/rlImGui.i"
 	@echo "... src/rlImGui/rlImGui.s"

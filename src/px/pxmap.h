@@ -60,8 +60,7 @@ struct Map
     u8 tilesetSettings1[NUM_TILESETS];
     u8 tilesetSettings2[NUM_TILESETS];
     PxMap maps[NUM_TILESETS];
-    u16 numEntities;
-    Entity* entities;
+    vector<Entity> entities;
 
     void Load(string rsc_k, string mapName, map<string, Tileset>& tilesets);
     void Unload(map<string, Tileset>& tilesets);

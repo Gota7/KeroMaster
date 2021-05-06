@@ -3,11 +3,19 @@
 #include <imgui.h>
 #include "editor.h"
 #include "../rlImGui/fileBrowser.h"
+#include "../rlImGui/utils.h"
 
 std::map<string, Tileset> Editor::tilesets;
 std::map<u8, EntityDisplay> Editor::entities;
 
 using namespace imgui_addons;
+
+int cmpstr(const void* a, const void* b)
+{
+    const char* aa = *(const char**)a;
+    const char* bb = *(const char**)b;
+    return strcmp(aa, bb);
+}
 
 void Editor::SetPath(string rsc)
 {
@@ -53,6 +61,14 @@ void Editor::LoadLevel(string name)
     origin = { 0, 0 };
     map.Load(rsc, name, tilesets);
     enabled = true;
+    //editingEntity = &map.entities[0];
+    for (int i = 0; i < NUM_TILESETS; i++)
+    {
+        if (strcmp(map.tilesets[i].dat.c_str(), "") != 0)
+        {
+            if (openTilesetsOnLoad) { tilesetEditors.push_back(TilesetEditor(this, map.tilesets[i].dat)); }
+        }
+    }
 }
 
 void Editor::UnloadLevel()
@@ -60,8 +76,38 @@ void Editor::UnloadLevel()
     map.Unload(tilesets);
 }
 
+void Editor::MoveCamX(float amount, bool relative)
+{
+    if (relative)
+    {
+        cam.offset.x += amount;
+    }
+    else
+    {
+        cam.offset.x = amount;
+    }
+}
+
+void Editor::MoveCamY(float amount, bool relative)
+{
+    if (relative)
+    {
+        cam.offset.y += amount;
+    }
+    else
+    {
+        cam.offset.y = amount;
+    }
+}
+
 void Editor::Draw()
 {
+
+    // Secondaries.
+    for (int i = 0; i < tilesetEditors.size(); i++)
+    {
+        tilesetEditors[i].Draw();
+    }
 
     // Safety.
     if (!enabled)
@@ -117,6 +163,32 @@ void Editor::Draw()
 void Editor::DrawUI()
 {
 
+    // Main menu.
+    DrawMainMenu();
+
+    // Secondaries.
+    for (int i = 0; i < tilesetEditors.size(); i++)
+    {
+        tilesetEditors[i].DrawUI();
+    }
+
+    // Safety.
+    if (!enabled)
+    {
+        return;
+    }
+
+    // Level editor.
+    DrawLevelEditor();
+
+    // Entity editor.
+    DrawEntityEditor();
+
+}
+
+void Editor::DrawMainMenu()
+{
+
     // Vars.
     static int numFiles;
     static char** files;
@@ -127,7 +199,6 @@ void Editor::DrawUI()
     {
         if (ImGui::BeginMenu("File"))
         {
-            imguiFocused = true;
             if (ImGui::MenuItem("New", "Ctrl+N"))
             {
             }
@@ -135,6 +206,7 @@ void Editor::DrawUI()
             {
                 numFiles = 0;
                 files = GetDirectoryFiles((rsc + "/field").c_str(), &numFiles);
+                qsort(files, numFiles, sizeof(char*), cmpstr);
                 ImVec2 center = ImGui::GetMainViewport()->GetCenter();
                 ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
                 openPopup = true;
@@ -155,12 +227,10 @@ void Editor::DrawUI()
         }
         if (ImGui::BeginMenu("Edit"))
         {
-            imguiFocused = true;
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("View"))
         {
-            imguiFocused = true;
             ImGui::Checkbox("Play Area", &showPlayArea);
             ImGui::Checkbox("Grid", &showGrid);
             ImGui::Separator();
@@ -176,12 +246,10 @@ void Editor::DrawUI()
         }
         if (ImGui::BeginMenu("Help"))
         {
-            imguiFocused = true;
             ImGui::EndMenu();
         }
         if (ImGui::MenuItem("About"))
         {   
-            imguiFocused = true;
         }
         ImGui::EndMainMenuBar();
     }
@@ -192,10 +260,10 @@ void Editor::DrawUI()
         ImGui::OpenPopup("Select Level");
         openPopup = false;
     }
-    if (ImGui::BeginPopupModal("Select Level"))
+    if (ImGui::BeginPopupModal("Select Level", NULL, ImGuiWindowFlags_AlwaysAutoResize))
     {
-        imguiFocused = true;
-        ImGui::BeginListBox("Levels", ImVec2(300, 700));
+        focus.ObserveFocus();
+        ImGui::BeginListBox("Levels", ImVec2(300, 500));
         for (int i = 2; i < numFiles; i++)
         {
             bool dummy = false;
@@ -210,20 +278,133 @@ void Editor::DrawUI()
         ImGui::EndPopup();
     }
 
-    // Safety.
-    if (!enabled)
-    {
-        return;
-    }
+}
+
+void Editor::DrawLevelEditor()
+{
 
     // Editor.
     ImGui::Begin(("Level Editor - " + mapName).c_str());
-    if (ImGui::IsWindowFocused())
+    focus.ObserveFocus();
+    const int itemWidth = 150;
+    ImGui::PushItemWidth(itemWidth);
+    ImGuiStringEdit("Comment", &map.comment.dat);
+    ImGui::PushItemWidth(itemWidth);
+    ImGuiStringEdit("Level Script", &map.references[0].dat);
+    ImGui::PushItemWidth(itemWidth);
+    ImGuiStringEdit("Next Level", &map.references[1].dat);
+    ImGui::PushItemWidth(itemWidth);
+    ImGuiStringEdit("Previous Level", &map.references[2].dat);
+    ImGui::PushItemWidth(itemWidth);
+    ImGuiStringEdit("Link Level", &map.references[3].dat);
+    ImGui::PushItemWidth(itemWidth);
+    ImGuiStringEdit("NPC Palette", &map.references[4].dat);
+    ImGui::PushItemWidth(itemWidth);
+    ImGui::InputScalar("Unknown 0", ImGuiDataType_U16, &map.levelSettings[0]);
+    ImGui::PushItemWidth(itemWidth);
+    ImGui::InputScalar("Unknown 1", ImGuiDataType_U16, &map.levelSettings[2]);
+    ImGui::PushItemWidth(itemWidth);
+    ImGui::InputScalar("Unknown 2", ImGuiDataType_U8, &map.levelSettings[4]);
+    ImGui::PushItemWidth(itemWidth);
+    ImGuiColorEdit("Background Color", &map.levelSettings[5]);
+    for (int i = 0 ; i < NUM_TILESETS; i++)
     {
-        imguiFocused = true;
+        ImGui::PushItemWidth(itemWidth);
+        ImGui::InputScalar(("Tileset " + to_string(i) + " Settings 1").c_str(), ImGuiDataType_U8, &map.tilesetSettings1[i]);
+        ImGui::InputScalar(("Tileset " + to_string(i) + " Settings 2").c_str(), ImGuiDataType_U8, &map.tilesetSettings2[i]);
+        ImGui::PushItemWidth(itemWidth);
+        ImGuiStringEdit(("Tileset " + to_string(i)).c_str(), &map.tilesets[i].dat);
+        if (strcmp(map.tilesets[i].dat.c_str(), "") != 0)
+        {
+            ImGui::SameLine();
+            if (ImGui::SmallButton("Open"))
+            {
+                tilesetEditors.push_back(TilesetEditor(this, map.tilesets[i].dat));
+            }
+        }
+    }
+    int numButtons = 0;
+    if (strcmp(map.references[0].dat.c_str(), "") != 0)
+    {
+        if (ImGui::Button("Edit Script"))
+        {
+
+        }
+        numButtons++;
+        if (numButtons < 2)
+        {
+            ImGui::SameLine();
+        } else {
+            numButtons = 0;
+        }
+    }
+    if (strcmp(map.references[1].dat.c_str(), "") != 0)
+    {
+        if (ImGui::Button("Edit Next Level"))
+        {
+
+        }
+        numButtons++;
+        if (numButtons < 2)
+        {
+            ImGui::SameLine();
+        } else {
+            numButtons = 0;
+        }
+    }
+    if (strcmp(map.references[2].dat.c_str(), "") != 0)
+    {
+        if (ImGui::Button("Edit Previous Level"))
+        {
+
+        }
+        numButtons++;
+        if (numButtons < 2)
+        {
+            ImGui::SameLine();
+        } else {
+            numButtons = 0;
+        }
+    }
+    if (strcmp(map.references[3].dat.c_str(), "") != 0)
+    {
+        if (ImGui::Button("Edit Link Level"))
+        {
+
+        }
+        numButtons++;
+        if (numButtons < 2)
+        {
+            ImGui::SameLine();
+        } else {
+            numButtons = 0;
+        }
+    }
+    if (ImGui::Button("Reload Tilesets"))
+    {
+
     }
     ImGui::End();
 
+}
+
+void Editor::DrawEntityEditor()
+{
+    if (editingEntity != NULL)
+    {
+        ImGui::Begin("Entity Editor");
+        focus.ObserveFocus();
+        ImGui::InputScalar("Unknown", ImGuiDataType_U8, &editingEntity->unk);
+        for (int i = 0; i < NUM_BYTE_PARAMETERS; i++)
+        {
+            ImGui::InputScalar(("Parameter " + to_string(i)).c_str(), ImGuiDataType_U8, &editingEntity->parametersByte[i]);
+        }
+        for (int i = 0; i < NUM_PARAMETERS - NUM_BYTE_PARAMETERS; i++)
+        {
+            ImGuiStringEdit(("Parameter " + to_string(i + NUM_BYTE_PARAMETERS)).c_str(), &editingEntity->parametersStr[i].dat);
+        }
+        ImGui::End();
+    }
 }
 
 void Editor::Update()
@@ -232,31 +413,70 @@ void Editor::Update()
     // Safety.
     if (!enabled)
     {
-        imguiFocused = false;
         return;
+    }
+
+    // Secondaries.
+    for (int i = tilesetEditors.size() - 1; i >= 0; i--)
+    {
+        if (!tilesetEditors[i].open)
+        {
+            tilesetEditors.erase(tilesetEditors.begin() + i);
+        }
+        else
+        {
+            tilesetEditors[i].Update();
+        }
     }
 
     // Get mouse.
     mouseX = GetMouseX();
     mouseY = GetMouseY();
 
-    // Middle mouse scroll.
-    if (IsMouseButtonDown(MOUSE_MIDDLE_BUTTON))
-    {
-        cam.offset.x += (mouseX - oldMouseX);
-        cam.offset.y += (mouseY - oldMouseY);
-    }
-
-    // Focused.
-    if (imguiFocused)
-    {
-        //imguiFocused = false;
-        //oldMouseX = mouseX;
-        //oldMouseY = mouseY;
-        //return;
-    }
+    // Panning.
+    CheckPan();
     
     // Scrolling.
+    CheckScroll();
+
+    // Zooming.
+    CheckZoom();
+
+    // Set mouse position.
+    oldMouseX = mouseX;
+    oldMouseY = mouseY;
+
+    // Update focus.
+    focus.Update();
+
+}
+
+void Editor::CheckPan()
+{
+    if (inPan)
+    {
+        if (IsMouseButtonUp(MOUSE_MIDDLE_BUTTON))
+        {
+            inPan = false;
+        }
+        else
+        {
+            MoveCamX(mouseX - oldMouseX);
+            MoveCamY(mouseY - oldMouseY);
+        }
+    }
+    else if (!focus.mouseInWindow && IsMouseButtonPressed(MOUSE_MIDDLE_BUTTON))
+    {
+        inPan = true;
+    }
+}
+
+void Editor::CheckScroll()
+{
+    if (focus.windowFocused)
+    {
+        return;
+    }
     if (IsKeyDown(KEY_W) || IsKeyDown(KEY_UP))
     {
         cam.offset.y += scrollSpeed;
@@ -276,6 +496,16 @@ void Editor::Update()
     {
         cam.offset.x -= scrollSpeed;
         //cam.target.x += scrollSpeed;
+    }
+}
+
+void Editor::CheckZoom()
+{
+
+    // Focus check.
+    if (focus.mouseInWindow)
+    {
+        return;
     }
 
     // Targetting (Make zooming be where mouse is).
@@ -300,9 +530,5 @@ void Editor::Update()
             cam.zoom = 5;
         }
     }
-
-    // Set mouse position.
-    oldMouseX = mouseX;
-    oldMouseY = mouseY;
 
 }

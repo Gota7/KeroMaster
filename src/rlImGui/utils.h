@@ -12,3 +12,6 @@ void ImGuiTooltip(string tip);
 
 // Edit a string.
 void ImGuiStringEdit(const char* label, string* toEdit);
+
+// Edit a color.
+void ImGuiColorEdit(const char* label, u8* toEdit);

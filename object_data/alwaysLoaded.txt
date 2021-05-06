@@ -1,3 +1,4 @@
 fuFixChar
 fuFixNPC
 fuFixPtcle
+localize
