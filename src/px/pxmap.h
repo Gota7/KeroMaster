@@ -8,8 +8,7 @@
 #include "gbin/gtypes.h"
 #include "tileset.h"
 #include "../ed/entityDisplay.h"
-
-using namespace std;
+#include "../conv/conv.h"
 
 const int NUM_REFERENCES = 5;
 const int NUM_SETTINGS = 8;
@@ -61,11 +60,11 @@ struct Map
     u8 tilesetSettings1[NUM_TILESETS];
     u8 tilesetSettings2[NUM_TILESETS];
     PxMap maps[NUM_TILESETS];
-    vector<Entity> entities;
+    std::vector<Entity> entities;
 
-    void Load(string rsc_k, string mapName, map<string, Tileset>& tilesets);
-    void Unload(map<string, Tileset>& tilesets);
+    void Load(std::string rsc_k, std::string mapName, std::map<std::string, Tileset>& tilesets);
+    void Unload(std::map<std::string, Tileset>& tilesets);
     void Clear();
-    void DrawLayer(u8 layerNum, map<string, Tileset>& tilesets, Vector2 origin, f32 mapScale, bool showAttr);
-    void DrawEntities(map<u8, EntityDisplay>& entities, map<string, Tileset>& tilesets, Vector2 origin, f32 mapScale, bool debug = false);
+    void DrawLayer(u8 layerNum, std::map<string, Tileset>& tilesets, Vector2 origin, f32 mapScale, bool showAttr);
+    void DrawEntities(std::map<u8, EntityDisplay>& entities, std::map<std::string, Tileset>& tilesets, Vector2 origin, f32 mapScale, bool debug = false);
 };

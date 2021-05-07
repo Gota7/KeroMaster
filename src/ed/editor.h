@@ -6,8 +6,6 @@
 #include "tilesetEditor.h"
 #include "rlImGui/focusData.h"
 
-using namespace std;
-
 const float MAP_SIZE = 2.0f;
 
 struct TilesetEditor;
@@ -47,14 +45,14 @@ struct Editor
     EditorTool currentTool = EditorTool::Hand;
     FocusData focus;
     Entity* editingEntity = NULL;
-    vector<TilesetEditor> tilesetEditors = vector<TilesetEditor>();
+    std::vector<TilesetEditor> tilesetEditors = std::vector<TilesetEditor>();
     char* entityListing;
 
-    void SetPath(string rsc);
-    void LoadEnemies(string xml);
-    void LoadTileset(string tilesetName);
+    void SetPath(std::string rsc);
+    void LoadEnemies(std::string xml);
+    void LoadTileset(std::string tilesetName);
     void LoadFixedTilesets();
-    void LoadLevel(string name);
+    void LoadLevel(std::string name);
     void UnloadLevel();
     void MoveCamX(float amount, bool relative = true);
     void MoveCamY(float amount, bool relative = true);
