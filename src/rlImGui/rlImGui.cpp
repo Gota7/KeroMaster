@@ -32,6 +32,7 @@
 #include "imgui.h"
 #include "raylib.h"
 #include "rlgl.h"
+#include "jfDotFont.h"
 
 #include <vector>
 
@@ -333,6 +334,15 @@ void SetupRLImGui(bool dark)
     io.ClipboardUserData = nullptr;
 
     unsigned char* pixels = nullptr;
+
+    io.Fonts->AddFontDefault();
+
+    const ImWchar* jpRange = &io.Fonts->GetGlyphRangesJapanese()[2];
+    
+    ImFontConfig config;
+    config.MergeMode = true;
+    io.Fonts->AddFontFromMemoryCompressedTTF(shinonomeMinchoData, shinonomeMinchoSize, 14, &config, jpRange);
+    io.Fonts->Build();
 
     int width = GetScreenWidth();
     int height = GetScreenHeight();
