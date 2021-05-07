@@ -40,6 +40,7 @@ struct Editor
     FocusData focus;
     Entity* editingEntity = NULL;
     vector<TilesetEditor> tilesetEditors = vector<TilesetEditor>();
+    char* entityListing;
 
     void SetPath(string rsc);
     void LoadEnemies(string xml);

@@ -24,4 +24,5 @@ void FocusData::Update()
     prevWindowFocused = windowFocused;
     windowFocused = false;
     mouseInWindow = false;
+    isModal = false;
 }

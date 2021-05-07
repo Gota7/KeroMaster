@@ -51,7 +51,7 @@
             <tile tileset="fuFixNPC" x="6" y="54" xOffPixels="-4" yOffPixels="-6" numXTiles="2" numYTiles="2" />
         </entity>
         <entity id="75" name="Kani=" description="Crab. TODO!!!" >
-            <tile tileset="" x="4" y="18" yOffPixels="-3" numXTiles="2" numYTiles="2" />
+            <tile tileset="" x="4" y="18" yOff="-1" numXTiles="2" numYTiles="2" />
         </entity>
         <entity id="77" name="Anemone" description="Sea creature that shoots dead fish at you.">
             <tile tileset="" x="8" y="8" xOff="-1" numXTiles="3" numYTiles="2" flagBit="5" flagMode="false" />

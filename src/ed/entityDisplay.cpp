@@ -3,7 +3,7 @@
 map<string, EntityTile> EntityDisplay::rollYourOwnSprite;
 float EntityDisplay::transparency = .3f;
 
-void EntityDisplay::Draw(u8 id, Str strParam, u8 flags, string spritesheetName, string tilesetNames[3], map<string, Tileset>& tilesets, Vector2 origin, s32 xOff, s32 yOff, f32 mapScale, bool debug)
+void EntityDisplay::Draw(u8 id, Str strParam, u8 flags, bool beingEdited, string spritesheetName, string tilesetNames[3], map<string, Tileset>& tilesets, Vector2 origin, s32 xOff, s32 yOff, f32 mapScale, bool debug)
 {
     Vector2 off = { origin.x + xOff * 8 * mapScale, origin.y + yOff * 8 * mapScale };
     Vector2 size = { 8 * mapScale, 8 * mapScale };
@@ -88,7 +88,14 @@ void EntityDisplay::Draw(u8 id, Str strParam, u8 flags, string spritesheetName, 
     skip:
     if (debug || !doneSomething)
     {
-        DrawRectangleV(off, size, ColorAlpha(BLUE, transparency));
+        if (!beingEdited)
+        {
+            DrawRectangleV(off, size, ColorAlpha(BLUE, transparency));
+        }
+        else
+        {
+            DrawRectangleV(off, size, ColorAlpha(RED, transparency + .2f));
+        }
         DrawText(to_string(id).c_str(), (int)(off.x + 1 * mapScale), (int)(off.y + 1 * mapScale), (int)(5 * mapScale), ColorAlpha(YELLOW, .8f));
     }
 }

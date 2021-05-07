@@ -15,6 +15,8 @@ struct Tileset
     u16 width;
     u16 height;
     static Texture2D attrTex;
+    u16 oldWidth; // Editor param.
+    u16 oldHeight; // Editor param.
 
     void Load(string rsc_k, string tilesetName);
     void Unload();

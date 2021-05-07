@@ -9,6 +9,7 @@ struct FocusData
     bool windowFocused;
     bool mouseInWindow;
     bool isFirstUnfocus;
+    bool isModal;
 
     void ObserveFocus();
     void Update();

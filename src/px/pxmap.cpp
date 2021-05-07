@@ -166,11 +166,11 @@ void Map::DrawEntities(map<u8, EntityDisplay>& entities, map<string, Tileset>& t
     {
         if (entities.find(this->entities[i].id) != entities.end())
         {
-            entities[this->entities[i].id].Draw(this->entities[i].id, this->entities[i].parametersStr[0], this->entities[i].flags, this->references[RT_NPC_PALETTE].dat, tilesetNames, tilesets, origin, this->entities[i].xPos, this->entities[i].yPos, mapScale, debug);
+            entities[this->entities[i].id].Draw(this->entities[i].id, this->entities[i].parametersStr[0], this->entities[i].flags, this->entities[i].beingEdited, this->references[RT_NPC_PALETTE].dat, tilesetNames, tilesets, origin, this->entities[i].xPos, this->entities[i].yPos, mapScale, debug);
         }
         else
         {
-            entities[0].Draw(this->entities[i].id, this->entities[i].parametersStr[0], this->entities[i].flags, this->references[RT_NPC_PALETTE].dat, tilesetNames, tilesets, origin, this->entities[i].xPos, this->entities[i].yPos, mapScale, debug);
+            entities[0].Draw(this->entities[i].id, this->entities[i].parametersStr[0], this->entities[i].flags, this->entities[i].beingEdited, this->references[RT_NPC_PALETTE].dat, tilesetNames, tilesets, origin, this->entities[i].xPos, this->entities[i].yPos, mapScale, debug);
         }
     }
 }

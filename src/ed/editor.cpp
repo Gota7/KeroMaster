@@ -25,6 +25,14 @@ void Editor::SetPath(string rsc)
 void Editor::LoadEnemies(string xmlName)
 {
     entities = LoadXML(xmlName);
+    entityListing = new char[5000];
+    int pos = 0;
+    for (u16 i = 0; i <= 255; i++)
+    {
+        string toCopy = entities.find(i) != entities.end() ? (to_string(i) + " - " + entities[i].name) : (to_string(i) + " - Unknown");
+        strcpy(entityListing + pos, toCopy.c_str());
+        pos += strlen(toCopy.c_str()) + 1;
+    }
 }
 
 void Editor::LoadTileset(string tilesetName)
@@ -61,7 +69,6 @@ void Editor::LoadLevel(string name)
     origin = { 0, 0 };
     map.Load(rsc, name, tilesets);
     enabled = true;
-    //editingEntity = &map.entities[0];
     for (int i = 0; i < NUM_TILESETS; i++)
     {
         if (strcmp(map.tilesets[i].dat.c_str(), "") != 0)
@@ -263,6 +270,7 @@ void Editor::DrawMainMenu()
     if (ImGui::BeginPopupModal("Select Level", NULL, ImGuiWindowFlags_AlwaysAutoResize))
     {
         focus.ObserveFocus();
+        focus.isModal |= true;
         ImGui::BeginListBox("Levels", ImVec2(300, 500));
         for (int i = 2; i < numFiles; i++)
         {
@@ -304,14 +312,14 @@ void Editor::DrawLevelEditor()
     ImGui::PushItemWidth(itemWidth);
     ImGui::InputScalar("Unknown 1", ImGuiDataType_U16, &map.levelSettings[2]);
     ImGui::PushItemWidth(itemWidth);
-    ImGui::InputScalar("Unknown 2", ImGuiDataType_U8, &map.levelSettings[4]);
+    ImGui::InputScalar("Scroll Mode", ImGuiDataType_U8, &map.levelSettings[4]);
     ImGui::PushItemWidth(itemWidth);
     ImGuiColorEdit("Background Color", &map.levelSettings[5]);
     for (int i = 0 ; i < NUM_TILESETS; i++)
     {
         ImGui::PushItemWidth(itemWidth);
-        ImGui::InputScalar(("Tileset " + to_string(i) + " Settings 1").c_str(), ImGuiDataType_U8, &map.tilesetSettings1[i]);
-        ImGui::InputScalar(("Tileset " + to_string(i) + " Settings 2").c_str(), ImGuiDataType_U8, &map.tilesetSettings2[i]);
+        ImGui::InputScalar(("Tileset " + to_string(i) + " Settings 0").c_str(), ImGuiDataType_U8, &map.tilesetSettings1[i]);
+        ImGui::InputScalar(("Tileset " + to_string(i) + " Settings 1").c_str(), ImGuiDataType_U8, &map.tilesetSettings2[i]);
         ImGui::PushItemWidth(itemWidth);
         ImGuiStringEdit(("Tileset " + to_string(i)).c_str(), &map.tilesets[i].dat);
         if (strcmp(map.tilesets[i].dat.c_str(), "") != 0)
@@ -342,7 +350,7 @@ void Editor::DrawLevelEditor()
     {
         if (ImGui::Button("Edit Next Level"))
         {
-
+            LoadLevel(map.references[1].dat);
         }
         numButtons++;
         if (numButtons < 2)
@@ -356,7 +364,7 @@ void Editor::DrawLevelEditor()
     {
         if (ImGui::Button("Edit Previous Level"))
         {
-
+            LoadLevel(map.references[2].dat);
         }
         numButtons++;
         if (numButtons < 2)
@@ -370,7 +378,7 @@ void Editor::DrawLevelEditor()
     {
         if (ImGui::Button("Edit Link Level"))
         {
-
+            LoadLevel(map.references[3].dat);
         }
         numButtons++;
         if (numButtons < 2)
@@ -392,15 +400,27 @@ void Editor::DrawEntityEditor()
 {
     if (editingEntity != NULL)
     {
-        ImGui::Begin("Entity Editor");
+        ImGui::Begin("Entity Editor", NULL, ImGuiWindowFlags_AlwaysAutoResize);
         focus.ObserveFocus();
+        int currId = editingEntity->id;
+        const int itemWidth = 150;
+        ImGui::PushItemWidth(itemWidth);
+        if (ImGui::Combo("Entity Id", &currId, entityListing))
+        {
+            editingEntity->id = currId;
+        }
+        ImGui::PushItemWidth(itemWidth);
+        ImGui::InputScalar("Flags", ImGuiDataType_U8, &editingEntity->flags);
+        ImGui::PushItemWidth(itemWidth);
         ImGui::InputScalar("Unknown", ImGuiDataType_U8, &editingEntity->unk);
         for (int i = 0; i < NUM_BYTE_PARAMETERS; i++)
         {
+            ImGui::PushItemWidth(itemWidth);
             ImGui::InputScalar(("Parameter " + to_string(i)).c_str(), ImGuiDataType_U8, &editingEntity->parametersByte[i]);
         }
         for (int i = 0; i < NUM_PARAMETERS - NUM_BYTE_PARAMETERS; i++)
         {
+            ImGui::PushItemWidth(itemWidth);
             ImGuiStringEdit(("Parameter " + to_string(i + NUM_BYTE_PARAMETERS)).c_str(), &editingEntity->parametersStr[i].dat);
         }
         ImGui::End();
@@ -421,6 +441,7 @@ void Editor::Update()
     {
         if (!tilesetEditors[i].open)
         {
+            tilesetEditors[i].Close();
             tilesetEditors.erase(tilesetEditors.begin() + i);
         }
         else
@@ -465,7 +486,7 @@ void Editor::CheckPan()
             MoveCamY(mouseY - oldMouseY);
         }
     }
-    else if (!focus.mouseInWindow && IsMouseButtonPressed(MOUSE_MIDDLE_BUTTON))
+    else if (!focus.mouseInWindow && IsMouseButtonPressed(MOUSE_MIDDLE_BUTTON) && !focus.isModal)
     {
         inPan = true;
     }
@@ -473,7 +494,7 @@ void Editor::CheckPan()
 
 void Editor::CheckScroll()
 {
-    if (focus.windowFocused)
+    if (focus.windowFocused || focus.isModal)
     {
         return;
     }
@@ -503,7 +524,7 @@ void Editor::CheckZoom()
 {
 
     // Focus check.
-    if (focus.mouseInWindow)
+    if (focus.mouseInWindow || focus.isModal)
     {
         return;
     }

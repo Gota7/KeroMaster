@@ -1,5 +1,6 @@
 #pragma once
 
+#include "raylib.h"
 #include <imgui.h>
 #include <string>
 #include <string.h>
@@ -15,6 +16,13 @@ struct TilesetEditor
     Editor* ed;
     bool open = false;
     string name;
+    RenderTexture2D target;
+    int currTile = -1;
+    int selectionWidth;
+    int selectionHeight;
+    ImVec2 imgPos;
+    float imgSize;
+    bool viewAttr = false;
 
     TilesetEditor(Editor* ed, string name);
     void Draw();

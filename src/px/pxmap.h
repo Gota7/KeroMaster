@@ -49,6 +49,7 @@ struct Entity
     u16 yPos;
     u8 parametersByte[NUM_BYTE_PARAMETERS];
     Str parametersStr[NUM_PARAMETERS - NUM_BYTE_PARAMETERS];
+    bool beingEdited = false; // Editor param.
 };
 
 struct Map

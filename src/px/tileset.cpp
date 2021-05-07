@@ -14,8 +14,8 @@ void Tileset::Load(string rsc_k, string tilesetName)
     {
         tex = LoadTexture((rsc_k + "/localize/en.lproj/" + tilesetName + ".png").c_str());
     }
-    width = 16;
-    height = 16;
+    width = oldWidth = 16;
+    height = oldHeight = 16;
     if (GFile::FileExists((rsc_k + "/img/" + tilesetName + ".pxattr").c_str()))
     {
         GFile f = GFile((rsc_k + "/img/" + tilesetName + ".pxattr").c_str());
@@ -26,8 +26,8 @@ void Tileset::Load(string rsc_k, string tilesetName)
         }
         else
         {
-            width = f.ReadU16();
-            height = f.ReadU16();
+            width = oldWidth = f.ReadU16();
+            height = oldHeight = f.ReadU16();
             if (width * height > 0) {
                 flags = f.ReadU8();
                 tiles = new u8[width * height];

@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
     e.SetPath("Kero Blaster/rsc_k");
     e.LoadEnemies("all");
     e.LoadFixedTilesets();
-    e.LoadLevel("00title");
+    e.LoadLevel("01field1");
 
     while (!WindowShouldClose())
     {
