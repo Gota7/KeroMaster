@@ -11,6 +11,7 @@ void EntityDisplay::Draw(u8 id, Str strParam, u8 flags, bool beingEdited, string
     bool blankSpriteParam = strcmp(strParam.dat.c_str(), "") == 0;
     bool spriteExistsInRollList = rollYourOwnSprite.find(strParam.dat) != rollYourOwnSprite.end();
     bool doneSomething = false;
+
     if(!noTiles)
     {
         for (int i = 0; i < numTiles; i++)
@@ -24,6 +25,7 @@ void EntityDisplay::Draw(u8 id, Str strParam, u8 flags, bool beingEdited, string
                     continue;
                 }
             }
+
             string tsName = strcmp(t->tileset.c_str(), "") == 0 ? spritesheetName : t->tileset;
             if (strcmp(t->tileset.c_str(), "/0") == 0)
             {
@@ -104,27 +106,36 @@ map<u8, EntityDisplay> LoadXML(string game)
 {
     map<u8, EntityDisplay> ret;
     XMLDocument doc;
-    doc.LoadFile(("object_data/" + game + ".xml").c_str());
+    XMLError result;
+
+    if ((result = doc.LoadFile(("object_data/" + game + ".xml").c_str())) != XML_SUCCESS) {
+        throw string("Failed to load object data definition file: ") + doc.ErrorIDToName(result);
+    }
+
     XMLElement* root = doc.RootElement();
     XMLElement* entities = root->FirstChildElement("entities");
     XMLElement* e = entities->FirstChildElement();
-    while (e != NULL)
+
+    while (e != nullptr)
     {
         EntityDisplay d;
         d.name = e->Attribute("name");
         d.description = e->Attribute("description");
         XMLElement* t = e->FirstChildElement();
-        while (t != NULL)
+
+        while (t != nullptr)
         {
             d.numTiles++;
             t = t->NextSiblingElement();
         }
+        
         d.tiles = new EntityTile[d.numTiles];
         t = e->FirstChildElement();
         int num = 0;
-        while (t != NULL)
+        while (t != nullptr)
         {
             EntityTile dt;
+
             dt.tileset = t->Attribute("tileset");
             dt.x = (u16)t->IntAttribute("x");
             dt.y = (u16)t->IntAttribute("y");
@@ -140,9 +151,11 @@ map<u8, EntityDisplay> LoadXML(string game)
             num++;
             t = t->NextSiblingElement();
         }
+
         ret[e->IntAttribute("id")] = d;
         e = e->NextSiblingElement();
     }
+
     XMLElement* rollSprites = root->FirstChildElement("rollYourOwnSprites");
     XMLElement* r = rollSprites->FirstChildElement();
     while (r != NULL)
@@ -160,5 +173,6 @@ map<u8, EntityDisplay> LoadXML(string game)
         EntityDisplay::rollYourOwnSprite[r->Attribute("name")] = d;
         r = r->NextSiblingElement();
     }
+    
     return ret;
 }

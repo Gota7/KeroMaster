@@ -6,14 +6,27 @@ Texture2D Tileset::attrTex;
 
 void Tileset::Load(string rsc_k, string tilesetName)
 {
-    if (GFile::FileExists((rsc_k + "/img/" + tilesetName + ".png").c_str()))
-    {
-        tex = LoadTexture((rsc_k + "/img/" + tilesetName + ".png").c_str());
+    static std::vector<string> lookupPaths = {
+        "/img/",
+        "/localize/en.lproj/",
+        "/localize/ja.lproj/",
+    };
+
+    for (auto& path : lookupPaths) {
+        string imagePath = rsc_k + path + tilesetName + ".png";
+
+        if (GFile::FileExists(imagePath.c_str()))
+        {
+            Image image = LoadImage(imagePath.c_str());
+
+            if (image.data != nullptr) {
+                tex = LoadTextureFromImage(image);
+                UnloadImage(image);
+                break;
+            }
+        }
     }
-    else
-    {
-        tex = LoadTexture((rsc_k + "/localize/en.lproj/" + tilesetName + ".png").c_str());
-    }
+
     width = oldWidth = 16;
     height = oldHeight = 16;
     if (GFile::FileExists((rsc_k + "/img/" + tilesetName + ".pxattr").c_str()))

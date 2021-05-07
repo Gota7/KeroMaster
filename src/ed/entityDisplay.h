@@ -1,8 +1,9 @@
 #pragma once
 
 #include <string>
-#include <string.h>
+#include <cstring>
 #include <map>
+#include <stdexcept>
 #include "../tinyxml2/tinyxml2.h"
 #include "../px/tileset.h"
 #include "../px/str.h"
