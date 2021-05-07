@@ -74,7 +74,7 @@ void Map::Load(string rsc_k, string mapName, map<string, Tileset>& tilesets)
     {
         comment.Read(&f);
         comment.dat = fromShiftJIS(comment.dat);
-
+        
         for (int i = 0; i < NUM_REFERENCES; i++)
         {
             references[i].Read(&f);
