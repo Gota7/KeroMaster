@@ -87,5 +87,5 @@ public:
     void Write(f32 val);
     void Write(f64 val);
     void Write(string val);
-
+    void WriteNullTerminated(string val);
 };

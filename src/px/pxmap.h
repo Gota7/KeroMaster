@@ -64,6 +64,7 @@ struct Map
 
     void Load(std::string rsc_k, std::string mapName, std::map<std::string, Tileset>& tilesets);
     void Unload(std::map<std::string, Tileset>& tilesets);
+    void Write(string rsc_k, string mapName);
     void Clear();
     void DrawLayer(u8 layerNum, std::map<string, Tileset>& tilesets, Vector2 origin, f32 mapScale, bool showAttr);
     void DrawEntities(std::map<u8, EntityDisplay>& entities, std::map<std::string, Tileset>& tilesets, Vector2 origin, f32 mapScale, bool debug = false);

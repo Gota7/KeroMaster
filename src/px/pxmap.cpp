@@ -27,7 +27,7 @@ void PxMap::Read(GFile* f)
 
 void PxMap::Write(GFile* f)
 {
-    f->Write("pxMAP01");
+    f->WriteNullTerminated("pxMAP01");
     f->Write(width);
     f->Write(height);
 
@@ -151,6 +151,53 @@ void Map::Unload(map<string, Tileset>& tilesets)
     }
     
     entities.clear();
+}
+
+void Map::Write(string rsc_k, string mapName)
+{
+    string mapPath = rsc_k + "/field/" + mapName + ".pxpack";
+    GFile f = GFile(mapPath.c_str());
+    f.Clear();
+    f.WriteNullTerminated("PXPACK121127a**");
+    comment.Write(&f);
+    for (int i = 0; i < NUM_REFERENCES; i++)
+    {
+        references[i].Write(&f);
+    }
+    for (int i = 0; i < NUM_SETTINGS; i++)
+    {
+        f.Write(levelSettings[i]);
+    }
+    for (int i = 0; i < NUM_TILESETS; i++)
+    {
+        tilesets[i].Write(&f);
+        f.Write(tilesetSettings1[i]);
+        f.Write(tilesetSettings2[i]);
+    }
+
+    for (int i = 0; i < NUM_TILESETS; i++)
+    {
+        maps[i].Write(&f);
+    }
+    
+    f.Write((u16)entities.size());
+    for (u16 i = 0; i < entities.size(); i++)
+    {
+        Entity* e = &entities[i];
+        f.Write(e->flags);
+        f.Write(e->id);
+        f.Write(e->unk);
+        f.Write(e->xPos);
+        f.Write(e->yPos);
+        for (int i = 0; i < NUM_BYTE_PARAMETERS; i++)
+        {
+            f.Write(e->parametersByte[i]);
+        }
+        for (int i = 0; i < NUM_PARAMETERS - NUM_BYTE_PARAMETERS; i++)
+        {
+            e->parametersStr[i].Write(&f);
+        }
+    }
 }
 
 void Map::Clear()
