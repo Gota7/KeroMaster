@@ -23,10 +23,14 @@ struct TilesetEditor
     ImVec2 imgPos;
     float imgSize;
     bool viewAttr = false;
+    bool selectingTiles = false;
+    int startMouseX;
+    int startMouseY;
 
     TilesetEditor(Editor* ed, string name);
     void Draw();
     void DrawUI();
     void Update();
+    void CalcTiles();
     void Close();
 };

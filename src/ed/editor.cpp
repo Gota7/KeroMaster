@@ -79,7 +79,7 @@ void Editor::LoadLevel(string name)
     origin = { 0, 0 };
     map.Load(rsc, name, tilesets);
     enabled = true;
-    editingEntity = &map.entities[0];
+    //editingEntity = &map.entities[0];
     for (int i = 0; i < NUM_TILESETS; i++)
     {
         if (strcmp(map.tilesets[i].dat.c_str(), "") != 0)
@@ -367,7 +367,7 @@ void Editor::DrawLevelEditor()
         if (strcmp(map.tilesets[i].dat.c_str(), "") != 0)
         {
             ImGui::SameLine();
-            if (ImGui::SmallButton("Open"))
+            if (ImGui::SmallButton(("Open##Tileset" + to_string(i)).c_str()))
             {
                 tilesetEditors.push_back(TilesetEditor(this, map.tilesets[i].dat));
             }
