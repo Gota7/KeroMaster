@@ -6,8 +6,6 @@
 #include "px/pxmap.h"
 #include "ed/editor.h"
 
-constexpr float SCROLL_SPEED = 5.0;
-constexpr float SCROLL_SPEED_DIV = 1.0;
 constexpr int SCREEN_WIDTH = 1240;
 constexpr int SCREEN_HEIGHT = 720;
 
@@ -19,6 +17,9 @@ static int EditorLoop() {
         e.LoadEnemies("all");
         e.LoadFixedTilesets();
         e.LoadLevel("01field1");
+        Tileset t;
+        t.Load(e.rsc, "mpt01");
+        t.Write(e.rsc, "DUMMY");
     } catch (string &e) {
         TraceLog(LOG_ERROR, "Failed to load game data: %s\n", e.c_str());
         return 1;

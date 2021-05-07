@@ -22,6 +22,7 @@ struct Tileset
 
     void Load(string rsc_k, string tilesetName);
     void Unload();
+    void Write(string rsc_k, string tilesetName);
     u8 GetTilesetAttr(u8 index);
     u8 GetTilesetAttr(u8 x, u8 y);
     void Draw(u8 index, Vector2 origin, s32 xOff, s32 yOff, f32 mapScale, bool showAttr, bool allowDrawIndex0 = false, bool overrideWidth = false, s8 xOffPixels = 0, s8 yOffPixels = 0);

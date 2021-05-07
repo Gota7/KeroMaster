@@ -63,6 +63,22 @@ void Tileset::Unload()
     }
 }
 
+void Tileset::Write(string rsc_k, string tilesetName)
+{
+    GFile f = GFile((rsc_k + "/img/" + tilesetName + ".pxattr").c_str());
+    f.WriteNullTerminated("pxMAP01");
+    f.Write(tiles != NULL ? width : (u16)0);
+    f.Write(tiles != NULL ? height : (u16)0);
+    if (width * height > 0 && tiles != NULL)
+    {
+        f.Write(flags);
+        for (int i = 0; i < width * height; i++)
+        {
+            f.Write(tiles[i]);
+        }
+    }
+}
+
 u8 Tileset::GetTilesetAttr(u8 index)
 {
     if (tiles == NULL)

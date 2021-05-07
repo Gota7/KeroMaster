@@ -15,6 +15,8 @@
 #define __bswap_64(x) _byteswap_uint64(x)
 #endif
 
+using namespace std;
+
 u32 GFile::systemEndian = 0;
 enum e_endian
 {

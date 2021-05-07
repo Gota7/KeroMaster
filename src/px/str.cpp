@@ -11,7 +11,7 @@ void Str::Write(GFile* f)
     if (dat.length() > 255)
     {
         printf("String length can't be more than 255!");
-        throw new exception();
+        throw new std::exception();
         return;
     }
     else

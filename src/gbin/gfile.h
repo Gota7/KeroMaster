@@ -13,8 +13,6 @@
 #include <endian.h>
 #endif
 
-using namespace std;
-
 struct BlockContext
 {
 
@@ -26,9 +24,9 @@ struct GFile
 private:
     static u32 systemEndian;
     FILE* handle;
-    string fileName;
+    std::string fileName;
     bool isMem;
-    vector<u8> buff;
+    std::vector<u8> buff;
     bool swapEndian;
     void Init(); // TODO!!!
     size_t fileSize;
@@ -69,8 +67,8 @@ public:
     u64 ReadU64();
     f32 ReadF32();
     f64 ReadF64();
-    string ReadStr();
-    string ReadStrFixed(u32 len);
+    std::string ReadStr();
+    std::string ReadStrFixed(u32 len);
 
     // Writing functions.
     void Write(void* src, size_t size); // TODO!!!
@@ -86,6 +84,6 @@ public:
     void Write(u64 val);
     void Write(f32 val);
     void Write(f64 val);
-    void Write(string val);
-    void WriteNullTerminated(string val);
+    void Write(std::string val);
+    void WriteNullTerminated(std::string val);
 };
