@@ -34,13 +34,15 @@
 # Game Files
 .vscode
 assist
-Kero Blaster
-Pink Hour
-Pink Heaven
-bin
-_deps
+build
+/Kero Blaster
+/Pink Hour
+/Pink Heaven
+/bin
+/_deps
+Makefile
 CMakeFiles
-include/libimgui.a
 include/CMakeFiles
 CMakeCache.txt
 *.cmake
+imgui.ini

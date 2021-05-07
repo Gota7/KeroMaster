@@ -19,10 +19,10 @@ const int NUM_BYTE_PARAMETERS = 2;
 
 struct PxMap : GReadable, GWriteable
 {
-    u16 width;
-    u16 height;
-    u8 flags;
-    u8* tiles;
+    u16 width = 0;
+    u16 height = 0;
+    u8 flags = 0;
+    u8* tiles = nullptr;
     
     void Read(GFile* f);
     void Write(GFile* f);

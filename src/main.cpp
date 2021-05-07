@@ -6,25 +6,23 @@
 #include "px/pxmap.h"
 #include "ed/editor.h"
 
-const float SCROLL_SPEED = 5.0;
-const float SCROLL_SPEED_DIV = 1.0;
-const int SCREEN_WIDTH = 1240;
-const int SCREEN_HEIGHT = 720;
+constexpr float SCROLL_SPEED = 5.0;
+constexpr float SCROLL_SPEED_DIV = 1.0;
+constexpr int SCREEN_WIDTH = 1240;
+constexpr int SCREEN_HEIGHT = 720;
 
-int main(int argc, char *argv[])
-{
-
-    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Kero Master");
-
-    SetTargetFPS(60);
-    SetupRLImGui(true);
-
+static int EditorLoop() {
     Editor e;
-    e.SetPath("Kero Blaster/rsc_k");
-    e.LoadEnemies("all");
-    e.LoadFixedTilesets();
-    e.LoadLevel("01field1");
+
+    try {
+        e.SetPath("Kero Blaster/rsc_k");
+        e.LoadEnemies("all");
+        e.LoadFixedTilesets();
+        e.LoadLevel("01field1");
+    } catch (string &e) {
+        TraceLog(LOG_ERROR, "Failed to load game data: %s\n", e.c_str());
+        return 1;
+    }
 
     while (!WindowShouldClose())
     {
@@ -32,13 +30,27 @@ int main(int argc, char *argv[])
         e.Draw();
         BeginRLImGui();
         e.DrawUI();
-        ImGui::ShowDemoWindow();
+        //ImGui::ShowDemoWindow();
         EndRLImGui();
         EndDrawing();
         e.Update();
     }
+
+    return 0;
+}
+
+int main(int argc, char *argv[])
+{
+    int exit = 0;
+
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Kero Master");
+
+    SetTargetFPS(60);
+    SetupRLImGui(true);
+    exit = EditorLoop();
     ShutdownRLImGui();
     CloseWindow();
 
-    return 0;
+    return exit;
 }

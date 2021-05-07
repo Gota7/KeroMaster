@@ -2,19 +2,21 @@
 
 void PxMap::Read(GFile* f)
 {
-    if (tiles != NULL) {
+    if (tiles != nullptr) {
         Unload();
     }
+
     if (strcmp(f->ReadStr().c_str(), "pxMAP01"))
     {
-        printf("Invalid map attribute magic!\n");
-        throw new exception();
+        throw string("Invalid map attribute magic.");
     }
     else
     {
         width = f->ReadU16();
         height = f->ReadU16();
-        if (width * height > 0) { flags = f->ReadU8(); }
+
+        if (width * height > 0) flags = f->ReadU8();
+
         tiles = new u8[width * height];
         for (int i = 0; i < width * height; i++)
         {
@@ -28,7 +30,9 @@ void PxMap::Write(GFile* f)
     f->Write("pxMAP01");
     f->Write(width);
     f->Write(height);
-    if (width * height > 0) { f->Write(flags); }
+
+    if (width * height > 0) f->Write(flags);
+    
     for (int i = 0; i < width * height; i++)
     {
         f->Write(tiles[i]);
@@ -55,29 +59,38 @@ void PxMap::Unload()
 
 void Map::Load(string rsc_k, string mapName, map<string, Tileset>& tilesets)
 {
-    GFile f = GFile((rsc_k + "/field/" + mapName + ".pxpack").c_str());
+    string mapPath = rsc_k + "/field/" + mapName + ".pxpack";
+
+    if (!GFile::FileExists(mapPath.c_str())) {
+        throw string("File not found: ") + mapPath;
+    }
+
+    GFile f = GFile(mapPath.c_str());
     if (strcmp(f.ReadStr().c_str(), "PXPACK121127a**"))
     {
-        printf("Invalid pack attribute magic!\n");
-        throw new exception();
+        throw string("Invalid pack attribute magic.");
     }
     else
     {
         comment.Read(&f);
+
         for (int i = 0; i < NUM_REFERENCES; i++)
         {
             references[i].Read(&f);
         }
+        
         if (strcmp(this->references[RT_NPC_PALETTE].dat.c_str(), "") != 0)
         {
             Tileset t;
             t.Load(rsc_k, this->references[RT_NPC_PALETTE].dat);
             tilesets[this->references[RT_NPC_PALETTE].dat] = t;
         }
+        
         for (int i = 0; i < NUM_SETTINGS; i++)
         {
             levelSettings[i] = f.ReadU8();
         }
+        
         for (int i = 0; i < NUM_TILESETS; i++)
         {
             this->tilesets[i].Read(&f);
@@ -91,10 +104,12 @@ void Map::Load(string rsc_k, string mapName, map<string, Tileset>& tilesets)
             tilesetSettings1[i] = f.ReadU8();
             tilesetSettings2[i] = f.ReadU8();
         }
+
         for (int i = 0; i < NUM_TILESETS; i++)
         {
             maps[i].Read(&f);
         }
+        
         u16 numEntities = f.ReadU16();
         for (u16 i = 0; i < numEntities; i++)
         {
@@ -115,6 +130,7 @@ void Map::Load(string rsc_k, string mapName, map<string, Tileset>& tilesets)
             entities.push_back(e);
         }
     }
+
     f.Close();
 }
 
@@ -124,6 +140,7 @@ void Map::Unload(map<string, Tileset>& tilesets)
     {
         tilesets[this->references[RT_NPC_PALETTE].dat].Unload();
     }
+
     for (int i = 0; i < NUM_TILESETS; i++)
     {
         if (strcmp(this->tilesets[i].dat.c_str(), "") != 0)
@@ -131,6 +148,7 @@ void Map::Unload(map<string, Tileset>& tilesets)
             tilesets[this->tilesets[i].dat].Unload();
         }
     }
+    
     entities.clear();
 }
 
