@@ -90,7 +90,7 @@ void EntityDisplay::Draw(u8 id, Str strParam, u8 flags, bool beingEdited, string
     skip:
     if (!doneSomething)
     {
-        DrawTextureTiled(Tileset::unitType, { (float)(id % 16 * 16), (float)(id / 16 * 16), 16, 16 }, { off.x, off.y, 8 * mapScale, 8 * mapScale }, { 0, 0 }, 0, mapScale / 2, WHITE);
+        DrawTextureTiled(Tileset::unitType, { (float)(id % 16 * 16), (float)(id / 16 * 16), 16, 16 }, { off.x - 8, off.y - 8, 16 * mapScale, 16 * mapScale }, { 0, 0 }, 0, mapScale, WHITE);
         doneSomething = true;
     }
     if (debug || !doneSomething)

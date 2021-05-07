@@ -317,7 +317,7 @@ static const std::vector<const char*> scrollTypes = {
 void Editor::DrawLevelEditor()
 {
     // Editor.
-    ImGui::Begin(("Level Editor - " + mapName).c_str());
+    ImGui::Begin(("Level Editor - " + mapName + "###EditorDialog").c_str());
     focus.ObserveFocus();
     const int itemWidth = 150;
     ImGui::PushItemWidth(itemWidth);
