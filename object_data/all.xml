@@ -26,12 +26,11 @@
         <entity id="25" name="Kani Mini" description="Small crab." >
             <tile tileset="" x="9" y="27" yOffPixels="-3" numXTiles="2" numYTiles="2" />
         </entity>
-        <entity id="27" name="Previous Level" description="Go to the previous level.">
-            <tile tileset="fuFixChar" x="50" y="61" numXTiles="1" numYTiles="1" />
-        </entity>
-        <entity id="29" name="Next Level" description="Go to the next level.">
-            <tile tileset="fuFixChar" x="51" y="61" numXTiles="1" numYTiles="1" />
-        </entity>
+        <entity id="27" name="Relay" description="Probably player spawn or save point."/>
+        <entity id="28" name="Left portal" description="Go to the level on left side."/>
+        <entity id="29" name="Up portal" description="Go to the level on upper side."/>
+        <entity id="30" name="Right portal" description="Go to the level on right side."/>
+        <entity id="31" name="Bottom portal" description="Go to the level on bottom side."/>
         <entity id="36" name="Tire" description="Tire that can fall and roll from events.">
             <tile tileset="fuFixNPC" x="32" y="48" xOff="-2" yOff="-2" numXTiles="5" numYTiles="5" />
         </entity>
