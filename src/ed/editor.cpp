@@ -233,6 +233,7 @@ void Editor::DrawMainMenu()
             }
             if (ImGui::MenuItem("Save", "Ctrl+S"))
             {
+                map.Write(rsc, mapName);
             }
             if (ImGui::MenuItem("Save As", "Ctrl+Shift+S"))
             {
@@ -293,6 +294,7 @@ void Editor::DrawMainMenu()
             {
                 //UnloadLevel();
                 LoadLevel(name);
+                ImGui::CloseCurrentPopup();
             }
         }
         ImGui::EndListBox();

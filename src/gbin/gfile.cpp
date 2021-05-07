@@ -466,3 +466,9 @@ void GFile::Write(string val)
         Write(&val[i], 1);
     }
 }
+
+void GFile::WriteNullTerminated(string val)
+{
+    Write(val);
+    Write((u8)0);
+}
