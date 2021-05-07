@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 Texture2D Tileset::attrTex;
+Texture2D Tileset::unitType;
 
 void Tileset::Load(string rsc_k, string tilesetName)
 {

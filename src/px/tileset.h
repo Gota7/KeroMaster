@@ -16,6 +16,7 @@ struct Tileset
     u16 width;
     u16 height;
     static Texture2D attrTex;
+    static Texture2D unitType;
     u16 oldWidth; // Editor param.
     u16 oldHeight; // Editor param.
 

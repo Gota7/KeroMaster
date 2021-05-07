@@ -27,9 +27,18 @@ void Editor::LoadEnemies(string xmlName)
     entities = LoadXML(xmlName);
     entityListing = new char[5000];
     int pos = 0;
+    vector<string> defaultListing = vector<string>();
+    fstream f;
+    f.open("object_data/unittype.txt", ios::in);
+    string s;
+    while (getline(f, s))
+    {
+        defaultListing.push_back(s);
+    }
+    f.close();
     for (u16 i = 0; i <= 255; i++)
     {
-        string toCopy = entities.find(i) != entities.end() ? (to_string(i) + " - " + entities[i].name) : (to_string(i) + " - Unknown");
+        string toCopy = entities.find(i) != entities.end() ? (to_string(i) + " - " + entities[i].name) : (to_string(i) + " - " + defaultListing[i]);
         strcpy(entityListing + pos, toCopy.c_str());
         pos += strlen(toCopy.c_str()) + 1;
     }
@@ -53,6 +62,7 @@ void Editor::LoadFixedTilesets()
     }
     f.close();
     Tileset::attrTex = LoadTexture("object_data/attribute.png");
+    Tileset::unitType = LoadTexture("object_data/unittype.png");
 }
 
 void Editor::LoadLevel(string name)
@@ -69,6 +79,7 @@ void Editor::LoadLevel(string name)
     origin = { 0, 0 };
     map.Load(rsc, name, tilesets);
     enabled = true;
+    editingEntity = &map.entities[0];
     for (int i = 0; i < NUM_TILESETS; i++)
     {
         if (strcmp(map.tilesets[i].dat.c_str(), "") != 0)
@@ -241,11 +252,11 @@ void Editor::DrawMainMenu()
         if (ImGui::BeginMenu("View"))
         {
             ImGui::Checkbox("Play Area", &showPlayArea);
-            ImGui::Checkbox("Show grid", &showGrid);
+            ImGui::Checkbox("Show Grid", &showGrid);
             ImGui::Separator();
-            ImGui::Checkbox("Show foreground layer", &viewLayers[2]);
-            ImGui::Checkbox("Show middleground layer", &viewLayers[1]);
-            ImGui::Checkbox("Show background layer", &viewLayers[0]);
+            ImGui::Checkbox("Show Foreground layer", &viewLayers[2]);
+            ImGui::Checkbox("Show Middleground layer", &viewLayers[1]);
+            ImGui::Checkbox("Show Background layer", &viewLayers[0]);
             ImGui::Separator();
             ImGui::Checkbox("Entity Boxes", &viewEntityBoxes);
             ImGui::Checkbox("Entities", &viewEntities);
@@ -310,7 +321,7 @@ void Editor::DrawLevelEditor()
     focus.ObserveFocus();
     const int itemWidth = 150;
     ImGui::PushItemWidth(itemWidth);
-    ImGuiStringEdit("Comment", &map.comment.dat);
+    ImGuiStringEdit("Level Title", &map.comment.dat);
     ImGui::PushItemWidth(itemWidth);
     ImGuiStringEdit("Level Script", &map.references[0].dat);
     ImGui::PushItemWidth(itemWidth);
@@ -322,14 +333,11 @@ void Editor::DrawLevelEditor()
     ImGui::PushItemWidth(itemWidth);
     ImGuiStringEdit("NPC Palette", &map.references[4].dat);
     ImGui::PushItemWidth(itemWidth);
-    
-    ImGui::InputScalar("Area", ImGuiDataType_U16, &map.levelSettings[0]);
+    ImGui::InputScalar("Area X", ImGuiDataType_U16, &map.levelSettings[0]);
     ImGui::PushItemWidth(itemWidth);
-    
-    ImGui::InputScalar("Area X", ImGuiDataType_U16, &map.levelSettings[2]);
+    ImGui::InputScalar("Area Y", ImGuiDataType_U16, &map.levelSettings[2]);
     ImGui::PushItemWidth(itemWidth);
-    
-    ImGui::InputScalar("Area Y", ImGuiDataType_U16, &map.levelSettings[4]);
+    ImGui::InputScalar("Area Number", ImGuiDataType_U8, &map.levelSettings[4]);
     ImGui::PushItemWidth(itemWidth);
 
     ImGui::PushItemWidth(itemWidth);
@@ -339,12 +347,15 @@ void Editor::DrawLevelEditor()
     for (int i = 0 ; i < NUM_TILESETS; i++)
     {
         ImGui::PushItemWidth(itemWidth);
-        ImGui::InputScalar(("Tileset " + to_string(i) + " Scale").c_str(), ImGuiDataType_U8, &map.tilesetSettings1[i]);
+        int index = map.tilesetSettings1[i];
+        if (ImGui::Combo(("Tileset " + to_string(i) + " Tile Size").c_str(), &index, "Nothing\00016x16\0008x8\0004x4\0002x2\0001x1\0"))
+        {
+            map.tilesetSettings1[i] = (u8)index;
+        }
         tmpScrollType[i] = map.tilesetSettings2[i];
         ImGui::Combo(("Tileset " + to_string(i) + " Scroll Mode").c_str(), &tmpScrollType[i], scrollTypes.data(), scrollTypes.size());
-        map.tilesetSettings2[i] = (u8) tmpScrollType[i];
-        //ImGui::InputScalar(("Tileset " + to_string(i) + " Settings 1").c_str(), ImGuiDataType_U8, &map.tilesetSettings2[i]);
-
+        ImGui::PushItemWidth(itemWidth);
+        map.tilesetSettings2[i] = (u8)tmpScrollType[i];
         ImGui::PushItemWidth(itemWidth);
         ImGuiStringEdit(("Tileset " + to_string(i)).c_str(), &map.tilesets[i].dat);
         if (strcmp(map.tilesets[i].dat.c_str(), "") != 0)
