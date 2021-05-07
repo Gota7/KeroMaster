@@ -159,7 +159,11 @@ void Map::Write(string rsc_k, string mapName)
     GFile f = GFile(mapPath.c_str());
     f.Clear();
     f.WriteNullTerminated("PXPACK121127a**");
-    comment.Write(&f);
+
+    Str sjisComment;
+    sjisComment.dat = toShiftJIS(comment.dat);
+    sjisComment.Write(&f);
+
     for (int i = 0; i < NUM_REFERENCES; i++)
     {
         references[i].Write(&f);
