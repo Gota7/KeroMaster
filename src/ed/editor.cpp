@@ -301,12 +301,6 @@ static const std::vector<const char*> scrollTypes = {
     "H Half",
     "H Quater",
     "V0 Half",
-    "Unknown (10)",
-    "Unknown (11)",
-    "Unknown (12)",
-    "Unknown (13)",
-    "Unknown (14)",
-    "Unknown (15)",
 };
 
 void Editor::DrawLevelEditor()
