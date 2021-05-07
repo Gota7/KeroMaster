@@ -191,6 +191,8 @@ void Editor::DrawUI()
     // Entity editor.
     DrawEntityEditor();
 
+    // Toolbar.
+    DrawToolbar();
 }
 
 void Editor::DrawMainMenu()
@@ -239,11 +241,11 @@ void Editor::DrawMainMenu()
         if (ImGui::BeginMenu("View"))
         {
             ImGui::Checkbox("Play Area", &showPlayArea);
-            ImGui::Checkbox("Grid", &showGrid);
+            ImGui::Checkbox("Show grid", &showGrid);
             ImGui::Separator();
-            ImGui::Checkbox("Layer 2", &viewLayers[2]);
-            ImGui::Checkbox("Layer 1", &viewLayers[1]);
-            ImGui::Checkbox("Layer 0", &viewLayers[0]);
+            ImGui::Checkbox("Show foreground layer", &viewLayers[2]);
+            ImGui::Checkbox("Show middleground layer", &viewLayers[1]);
+            ImGui::Checkbox("Show background layer", &viewLayers[0]);
             ImGui::Separator();
             ImGui::Checkbox("Entity Boxes", &viewEntityBoxes);
             ImGui::Checkbox("Entities", &viewEntities);
@@ -288,9 +290,21 @@ void Editor::DrawMainMenu()
 
 }
 
+static const std::vector<const char*> scrollTypes = {
+    "Normal",
+    "3/4",
+    "Half",
+    "Quarter",
+    "Eighth",
+    "Zero",
+    "H 3/4",
+    "H Half",
+    "H Quater",
+    "V0 Half",
+};
+
 void Editor::DrawLevelEditor()
 {
-
     // Editor.
     ImGui::Begin(("Level Editor - " + mapName).c_str());
     focus.ObserveFocus();
@@ -308,18 +322,29 @@ void Editor::DrawLevelEditor()
     ImGui::PushItemWidth(itemWidth);
     ImGuiStringEdit("NPC Palette", &map.references[4].dat);
     ImGui::PushItemWidth(itemWidth);
-    ImGui::InputScalar("Unknown 0", ImGuiDataType_U16, &map.levelSettings[0]);
+    
+    ImGui::InputScalar("Area", ImGuiDataType_U16, &map.levelSettings[0]);
     ImGui::PushItemWidth(itemWidth);
-    ImGui::InputScalar("Unknown 1", ImGuiDataType_U16, &map.levelSettings[2]);
+    
+    ImGui::InputScalar("Area X", ImGuiDataType_U16, &map.levelSettings[2]);
     ImGui::PushItemWidth(itemWidth);
-    ImGui::InputScalar("Scroll Mode", ImGuiDataType_U8, &map.levelSettings[4]);
+    
+    ImGui::InputScalar("Area Y", ImGuiDataType_U16, &map.levelSettings[4]);
+    ImGui::PushItemWidth(itemWidth);
+
     ImGui::PushItemWidth(itemWidth);
     ImGuiColorEdit("Background Color", &map.levelSettings[5]);
+
+    int tmpScrollType[NUM_TILESETS];
     for (int i = 0 ; i < NUM_TILESETS; i++)
     {
         ImGui::PushItemWidth(itemWidth);
-        ImGui::InputScalar(("Tileset " + to_string(i) + " Settings 0").c_str(), ImGuiDataType_U8, &map.tilesetSettings1[i]);
-        ImGui::InputScalar(("Tileset " + to_string(i) + " Settings 1").c_str(), ImGuiDataType_U8, &map.tilesetSettings2[i]);
+        ImGui::InputScalar(("Tileset " + to_string(i) + " Scale").c_str(), ImGuiDataType_U8, &map.tilesetSettings1[i]);
+        tmpScrollType[i] = map.tilesetSettings2[i];
+        ImGui::Combo(("Tileset " + to_string(i) + " Scroll Mode").c_str(), &tmpScrollType[i], scrollTypes.data(), scrollTypes.size());
+        map.tilesetSettings2[i] = (u8) tmpScrollType[i];
+        //ImGui::InputScalar(("Tileset " + to_string(i) + " Settings 1").c_str(), ImGuiDataType_U8, &map.tilesetSettings2[i]);
+
         ImGui::PushItemWidth(itemWidth);
         ImGuiStringEdit(("Tileset " + to_string(i)).c_str(), &map.tilesets[i].dat);
         if (strcmp(map.tilesets[i].dat.c_str(), "") != 0)
@@ -331,6 +356,7 @@ void Editor::DrawLevelEditor()
             }
         }
     }
+
     int numButtons = 0;
     if (strcmp(map.references[0].dat.c_str(), "") != 0)
     {
@@ -346,6 +372,7 @@ void Editor::DrawLevelEditor()
             numButtons = 0;
         }
     }
+
     if (strcmp(map.references[1].dat.c_str(), "") != 0)
     {
         if (ImGui::Button("Edit Next Level"))
@@ -360,6 +387,7 @@ void Editor::DrawLevelEditor()
             numButtons = 0;
         }
     }
+
     if (strcmp(map.references[2].dat.c_str(), "") != 0)
     {
         if (ImGui::Button("Edit Previous Level"))
@@ -374,6 +402,7 @@ void Editor::DrawLevelEditor()
             numButtons = 0;
         }
     }
+
     if (strcmp(map.references[3].dat.c_str(), "") != 0)
     {
         if (ImGui::Button("Edit Link Level"))
@@ -388,10 +417,12 @@ void Editor::DrawLevelEditor()
             numButtons = 0;
         }
     }
+    
     if (ImGui::Button("Reload Tilesets"))
     {
 
     }
+
     ImGui::End();
 
 }
@@ -425,6 +456,55 @@ void Editor::DrawEntityEditor()
         }
         ImGui::End();
     }
+}
+
+void Editor::DrawToolbar() 
+{
+    ImGui::Begin("Toolbar", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoDecoration);
+    focus.ObserveFocus();
+        
+    int index = 0;
+    auto ToolButton = [&](const char* label, EditorTool tool) {
+        bool active = currentTool == tool;
+
+        if (active) ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive));
+        
+        if (index++ > 0) ImGui::SameLine();
+        if (ImGui::Button(label)) {
+            currentTool = tool;
+        }
+        
+        if (active) ImGui::PopStyleColor();
+    };
+
+    auto ToggleButton = [&](const char* label, bool* value) {
+        bool active = *value;
+
+        if (active) ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive));
+        
+        if (index++ > 0) ImGui::SameLine();
+        if (ImGui::Button(label)) {
+            *value = !*value;
+        }
+        
+        if (active) ImGui::PopStyleColor();
+    };
+
+    ToolButton("Hand", EditorTool::Hand);
+    ToolButton("Brush", EditorTool::Brush);
+    ToolButton("Eraser", EditorTool::Eraser);
+
+    ImGui::SameLine();
+    ImGui::SliderFloat("", &cam.zoom, 0.25f, 5.0f, "Scale: %.2fx", ImGuiSliderFlags_NoRoundToFormat);
+
+    ImGui::SameLine();
+    ImGui::Checkbox("Grid", &showGrid);
+
+    ToggleButton("FG", &viewLayers[0]);
+    ToggleButton("MG", &viewLayers[1]);
+    ToggleButton("BG", &viewLayers[2]);
+
+    ImGui::End();
 }
 
 void Editor::Update()
@@ -476,7 +556,7 @@ void Editor::CheckPan()
 {
     if (inPan)
     {
-        if (IsMouseButtonUp(MOUSE_MIDDLE_BUTTON))
+        if (IsMouseButtonUp(MOUSE_RIGHT_BUTTON) && (currentTool == EditorTool::Hand && IsMouseButtonUp(MOUSE_LEFT_BUTTON)))
         {
             inPan = false;
         }
@@ -486,7 +566,10 @@ void Editor::CheckPan()
             MoveCamY(mouseY - oldMouseY);
         }
     }
-    else if (!focus.mouseInWindow && IsMouseButtonPressed(MOUSE_MIDDLE_BUTTON) && !focus.isModal)
+    else if (!focus.mouseInWindow && (
+            IsMouseButtonPressed(MOUSE_RIGHT_BUTTON) 
+            || (currentTool == EditorTool::Hand && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+        ) && !focus.isModal)
     {
         inPan = true;
     }
@@ -541,14 +624,24 @@ void Editor::CheckZoom()
     float zoom = GetMouseWheelMove();
     if (zoom != 0)
     {
-        cam.zoom += zoom * zoomSpeed;
-        if (cam.zoom <= .5f)
-        {
-            cam.zoom = .5f;
+        if (cam.zoom < 1.0f) {
+            zoomSpeed = 0.125f;
+        } else if (cam.zoom < 3.0f) {
+            zoomSpeed = 0.25f;
+        } else {
+            zoomSpeed = 0.5f;
         }
-        else if (cam.zoom > 5)
+
+        cam.zoom += zoom * zoomSpeed;
+        //cam.zoom = ((int) (cam.zoom / zoomSpeed)) * zoomSpeed;
+
+        if (cam.zoom <= .25f)
         {
-            cam.zoom = 5;
+            cam.zoom = .25f;
+        }
+        else if (cam.zoom > 8.0f)
+        {
+            cam.zoom = 8.0f;
         }
     }
 

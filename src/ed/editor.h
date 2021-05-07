@@ -8,21 +8,28 @@
 
 using namespace std;
 
-const float MAP_SIZE = 5;
+const float MAP_SIZE = 2.0f;
 
 struct TilesetEditor;
+
+enum class EditorTool {
+    Hand,
+    Brush,
+    Eraser
+};
+
 struct Editor
 {
     Map map;
     string mapName = "";
-    Camera2D cam;
+    Camera2D cam = {0};
     static std::map<string, Tileset> tilesets;
     static std::map<u8, EntityDisplay> entities;
     string rsc = "";
     bool enabled = false;
     Vector2 origin;
     float scrollSpeed = 7.5;
-    float zoomSpeed = .1f;
+    float zoomSpeed = .05f;
     float oldMouseX;
     float oldMouseY;
     float mouseX;
@@ -37,6 +44,7 @@ struct Editor
     bool viewTileAttributes = false;
     bool inPan = false;
     bool openTilesetsOnLoad = false;
+    EditorTool currentTool = EditorTool::Hand;
     FocusData focus;
     Entity* editingEntity = NULL;
     vector<TilesetEditor> tilesetEditors = vector<TilesetEditor>();
@@ -55,6 +63,7 @@ struct Editor
     void DrawMainMenu();
     void DrawLevelEditor();
     void DrawEntityEditor();
+    void DrawToolbar();
     void Update();
     void CheckPan();
     void CheckScroll();

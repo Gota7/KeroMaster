@@ -84,9 +84,16 @@ void Tileset::Draw(u8 index, Vector2 origin, s32 xOff, s32 yOff, f32 mapScale, b
     {
         return;
     }
+
+    const float tileWidth = (float) (16 / textureScale);
+
     Vector2 off = { origin.x + xOff * 8 * mapScale + xOffPixels, origin.y + yOff * 8 * mapScale + yOffPixels };
     u16 w = overrideWidth ? (tex.width / 8) : width;
-    DrawTextureTiled(tex, { (float)(index % w * 8), (float)(index / w * 8), 8, 8 }, { off.x, off.y, 8 * mapScale, 8 * mapScale }, { 0, 0 }, 0, mapScale, WHITE);
+    
+    const Rectangle src = { (float)(index % w * tileWidth), (float)(index / w * tileWidth), tileWidth, tileWidth };
+    const Rectangle dst = { off.x, off.y, 8 * mapScale, 8 * mapScale };
+
+    DrawTextureTiled(tex, src, dst, { 0, 0 }, 0, mapScale / (tileWidth / 8.0f), WHITE);
     if (showAttr && tiles != NULL)
     {
         u8 attr = GetTilesetAttr(index);
@@ -103,6 +110,7 @@ void Tileset::Draw(u16 x, u16 y, Vector2 origin, s32 xOff, s32 yOff, f32 mapScal
     Vector2 off = { origin.x + xOff * 8 * mapScale + xOffPixels * mapScale, origin.y + yOff * 8 * mapScale + yOffPixels * mapScale };
     u16 w = overrideWidth ? (tex.width / 8) : width;
     DrawTextureTiled(tex, { (float)x * 8, (float)y * 8, 8, 8 }, { off.x, off.y, 8 * mapScale, 8 * mapScale }, { 0, 0 }, 0, mapScale, WHITE);
+
     if (showAttr && tiles != NULL)
     {
         u8 attr = GetTilesetAttr(x, y);

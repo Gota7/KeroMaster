@@ -81,6 +81,7 @@ void TilesetEditor::DrawUI()
     {
 
     }
+    
     float w = ImGui::GetWindowWidth() - ImGui::GetCursorPosX();
     float h = ImGui::GetWindowHeight() - ImGui::GetCursorPosY();
     float texW = target.texture.width;

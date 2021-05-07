@@ -165,6 +165,11 @@ void Map::DrawLayer(u8 layerNum, map<string, Tileset>& tilesets, Vector2 origin,
     }
     PxMap* m = &maps[layerNum];
     Tileset* t = &tilesets[this->tilesets[layerNum].dat];
+    t->textureScale = tilesetSettings1[layerNum];
+    if (t->textureScale == 0) {
+        t->textureScale = 2;
+    }
+
     for (u16 y = 0; y < m->height; y++)
     {
         for (u16 x = 0; x < m->width; x++)
