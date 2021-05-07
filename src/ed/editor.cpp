@@ -241,11 +241,11 @@ void Editor::DrawMainMenu()
         if (ImGui::BeginMenu("View"))
         {
             ImGui::Checkbox("Play Area", &showPlayArea);
-            ImGui::Checkbox("Grid", &showGrid);
+            ImGui::Checkbox("Show grid", &showGrid);
             ImGui::Separator();
-            ImGui::Checkbox("Layer 2", &viewLayers[2]);
-            ImGui::Checkbox("Layer 1", &viewLayers[1]);
-            ImGui::Checkbox("Layer 0", &viewLayers[0]);
+            ImGui::Checkbox("Show foreground layer", &viewLayers[2]);
+            ImGui::Checkbox("Show middleground layer", &viewLayers[1]);
+            ImGui::Checkbox("Show background layer", &viewLayers[0]);
             ImGui::Separator();
             ImGui::Checkbox("Entity Boxes", &viewEntityBoxes);
             ImGui::Checkbox("Entities", &viewEntities);
@@ -483,12 +483,32 @@ void Editor::DrawToolbar()
         if (active) ImGui::PopStyleColor();
     };
 
+    auto ToggleButton = [&](const char* label, bool* value) {
+        bool active = *value;
+
+        if (active) ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive));
+        
+        if (index++ > 0) ImGui::SameLine();
+        if (ImGui::Button(label)) {
+            *value = !*value;
+        }
+        
+        if (active) ImGui::PopStyleColor();
+    };
+
     ToolButton("Hand", EditorTool::Hand);
     ToolButton("Brush", EditorTool::Brush);
     ToolButton("Eraser", EditorTool::Eraser);
 
     ImGui::SameLine();
     ImGui::SliderFloat("", &cam.zoom, 0.25f, 5.0f, "Scale: %.2fx", ImGuiSliderFlags_NoRoundToFormat);
+
+    ImGui::SameLine();
+    ImGui::Checkbox("Grid", &showGrid);
+
+    ToggleButton("FG", &viewLayers[0]);
+    ToggleButton("MG", &viewLayers[1]);
+    ToggleButton("BG", &viewLayers[2]);
 
     ImGui::End();
 }
