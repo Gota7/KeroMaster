@@ -302,7 +302,7 @@ void SetupRLImGui(bool dark)
 
     ImGuiIO& io = ImGui::GetIO();
     io.BackendPlatformName = "imgui_impl_raylib";
-
+    
     io.KeyMap[ImGuiKey_Tab] = KEY_TAB;
     io.KeyMap[ImGuiKey_LeftArrow] = KEY_LEFT;
     io.KeyMap[ImGuiKey_RightArrow] = KEY_RIGHT;

@@ -32,28 +32,35 @@ void codepoint::encode(unsigned short codepoint) {
 static unsigned short decodeCodePoint(const char** in_text, const char* in_text_end) {
     if (*in_text >= in_text_end) return 0;
 
-    unsigned int remaining = (unsigned int) (in_text_end - *in_text);
-    unsigned char b = (unsigned char) **(in_text++);
+    const char* p = *in_text;
+
+    unsigned int remaining = (unsigned int) (in_text_end - p);
+    unsigned char b = (unsigned char) *p++;
 
     if (b <= 0x7f) {
+        *in_text = p;
         return (unsigned short) b;
     } else if (b <= 0xdf && remaining >= 2) {
-        unsigned char b2 = (unsigned char) **(in_text++);
-    
+        unsigned char b2 = (unsigned char) *p++;
+
+        *in_text = p;
         return ((unsigned short)b & 0x1f) << 6 | ((unsigned short)b2 & 0x3f);
     } else if (b <= 0xef && remaining >= 3) {
-        unsigned char b2 = (unsigned char) **(in_text++);
-        unsigned char b3 = (unsigned char) **(in_text++);
+        unsigned char b2 = (unsigned char) *p++;
+        unsigned char b3 = (unsigned char) *p++;
 
         unsigned int cp = ((unsigned int)b & 0x0f) << 12 | ((unsigned int)b2 & 0x3f) << 6 | ((unsigned int)b3 & 0x3f);
+
+        *in_text = p;
         return (cp >= 0xffff) ? 0xfffd : (unsigned short)cp;
     } else {
         if (remaining >= 4) {
-            *in_text += 4;
+            p += 4;
         } else {
-            *in_text += remaining;
+            p += remaining;
         }
 
+        *in_text = p;
         return 0xfffd;
     }
 }
@@ -69,7 +76,6 @@ std::string fromShiftJIS(const char* data, unsigned int length) {
 
     auto encodeU8 = [&](unsigned short c) {
         cp.encode(c);
-        printf("%d %s\n", cp.len, cp.points);
         for (int i = 0; i < cp.len; i++) {
             chrs.push_back(cp.points[i]);
         }
@@ -94,6 +100,32 @@ std::string fromShiftJIS(const char* data, unsigned int length) {
         } else {
             auto b = (unsigned char) data[i];
             encodeU8(b);
+        }
+    }
+
+    return std::string(chrs.begin(), chrs.end());
+}
+
+std::string toShiftJIS(std::string& in_str) {
+    return toShiftJIS(in_str.data(), in_str.size());
+}
+
+std::string toShiftJIS(const char* data, unsigned int length) {
+    std::vector<char> chrs;
+    chrs.reserve(length);
+
+    const char* ptr = data;
+    const char* end = data + length;
+
+    while (ptr < end) {
+        auto unicode = decodeCodePoint(&ptr, end);
+        auto sjiscode = unicode2SjisConvData[unicode];
+
+        if (sjiscode <= 0xff) {
+            chrs.push_back((char) sjiscode);
+        } else {
+            chrs.push_back((char) (sjiscode >> 8));
+            chrs.push_back((char) (sjiscode & 0xff));
         }
     }
 

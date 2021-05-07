@@ -319,7 +319,11 @@ static const std::vector<const char*> scrollTypes = {
 void Editor::DrawLevelEditor()
 {
     // Editor.
+    auto& io = ImGui::GetIO();
+
     ImGui::Begin(("Level Editor - " + mapName + "###EditorDialog").c_str());
+    ImGui::SetWindowPos(ImVec2(io.DisplaySize.x - 330.0f, 30.0f), ImGuiCond_FirstUseEver);
+
     focus.ObserveFocus();
     const int itemWidth = 150;
     ImGui::PushItemWidth(itemWidth);
@@ -445,6 +449,8 @@ void Editor::DrawEntityEditor()
     if (editingEntity != NULL)
     {
         ImGui::Begin("Entity Editor", NULL, ImGuiWindowFlags_AlwaysAutoResize);
+        ImGui::SetWindowPos(ImVec2(10.0f, 80.0f), ImGuiCond_FirstUseEver);
+    
         focus.ObserveFocus();
         int currId = editingEntity->id;
         const int itemWidth = 150;
@@ -474,6 +480,8 @@ void Editor::DrawEntityEditor()
 void Editor::DrawToolbar() 
 {
     ImGui::Begin("Toolbar", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoDecoration);
+    ImGui::SetWindowPos(ImVec2(10.0f, 30.0f), ImGuiCond_FirstUseEver);
+
     focus.ObserveFocus();
         
     int index = 0;
