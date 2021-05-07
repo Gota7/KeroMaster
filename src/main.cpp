@@ -17,9 +17,6 @@ static int EditorLoop() {
         e.LoadEnemies("all");
         e.LoadFixedTilesets();
         e.LoadLevel("01field1");
-        Tileset t;
-        t.Load(e.rsc, "mpt01");
-        t.Write(e.rsc, "DUMMY");
     } catch (string &e) {
         TraceLog(LOG_ERROR, "Failed to load game data: %s\n", e.c_str());
         return 1;
