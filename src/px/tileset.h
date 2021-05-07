@@ -12,6 +12,7 @@ struct Tileset
     Texture2D tex;
     u8* tiles = NULL;
     u8 flags;
+    u8 textureScale = 2;
     u16 width;
     u16 height;
     static Texture2D attrTex;
