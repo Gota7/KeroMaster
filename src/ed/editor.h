@@ -4,10 +4,12 @@
 #include "raylib.h"
 #include "../px/pxmap.h"
 #include "tilesetEditor.h"
+#include "attributeEditor.h"
 #include "rlImGui/focusData.h"
 
 const float MAP_SIZE = 2.0f;
 
+struct AttributeEditor;
 struct TilesetEditor;
 
 enum class EditorTool {
@@ -46,6 +48,7 @@ struct Editor
     FocusData focus;
     Entity* editingEntity = NULL;
     std::vector<TilesetEditor> tilesetEditors = std::vector<TilesetEditor>();
+    std::vector<AttributeEditor> attrEditors = std::vector<AttributeEditor>();
     char* entityListing;
 
     void SetPath(std::string rsc);
@@ -62,6 +65,8 @@ struct Editor
     void DrawLevelEditor();
     void DrawEntityEditor();
     void DrawToolbar();
+    void OpenTileset(std::string name);
+    void OpenAttrEditor(std::string name);
     void Update();
     void CheckPan();
     void CheckScroll();

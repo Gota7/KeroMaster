@@ -126,6 +126,10 @@ void Editor::Draw()
     {
         tilesetEditors[i].Draw();
     }
+    for (int i = 0; i < attrEditors.size(); i++)
+    {
+        attrEditors[i].Draw();
+    }
 
     // Safety.
     if (!enabled)
@@ -188,6 +192,10 @@ void Editor::DrawUI()
     for (int i = 0; i < tilesetEditors.size(); i++)
     {
         tilesetEditors[i].DrawUI();
+    }
+    for (int i = 0; i < attrEditors.size(); i++)
+    {
+        attrEditors[i].DrawUI();
     }
 
     // Safety.
@@ -369,7 +377,7 @@ void Editor::DrawLevelEditor()
             ImGui::SameLine();
             if (ImGui::SmallButton(("Open##Tileset" + to_string(i)).c_str()))
             {
-                tilesetEditors.push_back(TilesetEditor(this, map.tilesets[i].dat));
+                OpenTileset(map.tilesets[i].dat);
             }
         }
     }
@@ -528,6 +536,30 @@ void Editor::DrawToolbar()
     ImGui::End();
 }
 
+void Editor::OpenTileset(std::string name)
+{
+    for (int i = 0; i < tilesetEditors.size(); i++)
+    {
+        if (strcmp(tilesetEditors[i].name.c_str(), name.c_str()) == 0)
+        {
+            return;
+        }
+    }
+    tilesetEditors.push_back(TilesetEditor(this, name));
+}
+
+void Editor::OpenAttrEditor(std::string name)
+{
+    for (int i = 0; i < attrEditors.size(); i++)
+    {
+        if (strcmp(attrEditors[i].name.c_str(), name.c_str()) == 0)
+        {
+            return;
+        }
+    }
+    attrEditors.push_back(AttributeEditor(this, name));
+}
+
 void Editor::Update()
 {
 
@@ -548,6 +580,18 @@ void Editor::Update()
         else
         {
             tilesetEditors[i].Update();
+        }
+    }
+    for (int i = attrEditors.size() - 1; i >= 0; i--)
+    {
+        if (!attrEditors[i].open)
+        {
+            attrEditors[i].Close();
+            attrEditors.erase(attrEditors.begin() + i);
+        }
+        else
+        {
+            attrEditors[i].Update();
         }
     }
 
