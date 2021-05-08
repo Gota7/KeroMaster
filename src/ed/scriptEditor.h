@@ -29,8 +29,7 @@ struct ScriptEditor
 {
     Editor* ed;
     std::string name;
-    char buf[1024];
-    int bufSize = 1024;
+    ImVector<char> buf;
     static bool loadedGuide;
     bool open = false;
     ScriptHelpData* commands;
@@ -44,3 +43,5 @@ struct ScriptEditor
     void DrawUI();
     void Close();
 };
+
+static int ResizeCallback(ImGuiInputTextCallbackData* data);

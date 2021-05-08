@@ -9,14 +9,13 @@ ScriptEditor::ScriptEditor(Editor* ed, string scriptName)
 {
     this->ed = ed;
     name = scriptName;
-    open = true;
-    memset(buf, 0, bufSize);
     if (!loadedGuide)
     {
         LoadXML();
         loadedGuide = true;
     }
     LoadScript();
+    open = true;
 }
 
 void ScriptEditor::LoadXML()
@@ -68,12 +67,27 @@ void ScriptEditor::LoadXML()
 
 void ScriptEditor::LoadScript()
 {
-
+    GFile f;
+    if (GFile::FileExists((ed->rsc + "/text/" + name + ".pxeve").c_str()))
+    {
+        f = GFile((ed->rsc + "/text/" + name + ".pxeve").c_str());
+    }
+    else
+    {
+        f = GFile("object_data/default.pxeve");
+    }
+    buf.resize(f.Size() + 1);
+    f.Read(buf.begin(), buf.size() - 1);
+    buf[buf.size() - 1] = 0;
+    f.Close();
 }
 
 void ScriptEditor::SaveScript()
 {
-    
+    GFile f = GFile((ed->rsc + "/text/" + name + ".pxeve").c_str());
+    f.Clear();
+    f.Write(buf.begin(), strlen(buf.begin()));
+    f.Close();
 }
 
 void ScriptEditor::DrawUI()
@@ -87,6 +101,7 @@ void ScriptEditor::DrawUI()
 
     // Layout.
     ImGui::Begin(("Script - " + name).c_str(), &open);
+    ImGui::SetWindowSize(ImVec2(1000, 500), ImGuiCond_FirstUseEver);
     ed->focus.ObserveFocus();
     if (ImGui::Button("Save"))
     {
@@ -94,7 +109,7 @@ void ScriptEditor::DrawUI()
     }
     ImGui::Columns(2);
     // TODO: RESIZABLE INPUT!!!
-    ImGui::InputTextMultiline("##Script", buf, bufSize, ImVec2(-FLT_MIN, ImGui::GetWindowSize().y - ImGui::GetCursorPosY() - ImGui::GetStyle().FramePadding.y * 4), ImGuiInputTextFlags_Multiline, NULL);
+    ImGui::InputTextMultiline("##Script", buf.begin(), buf.size(), ImVec2(-FLT_MIN, ImGui::GetWindowSize().y - ImGui::GetCursorPosY() - ImGui::GetStyle().FramePadding.y * 4), ImGuiInputTextFlags_Multiline | ImGuiInputTextFlags_CallbackResize, ResizeCallback, &buf);
     ImGui::NextColumn();
     ImGui::InputText("Search", search, 5);
     for (int i = 0; i < numCommands; i++)
@@ -136,5 +151,18 @@ void ScriptEditor::DrawUI()
 
 void ScriptEditor::Close()
 {
+    buf.clear();
     open = false;
+}
+
+int ResizeCallback(ImGuiInputTextCallbackData* data)
+{
+    if (data->EventFlag == ImGuiInputTextFlags_CallbackResize)
+    {
+        ImVector<char>* my_str = (ImVector<char>*)data->UserData;
+        IM_ASSERT(my_str->begin() == data->Buf);
+        my_str->resize(data->BufSize); // NB: On resizing calls, generally data->BufSize == data->BufTextLen + 1
+        data->Buf = my_str->begin();
+    }
+    return 0;
 }
