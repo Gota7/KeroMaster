@@ -5,12 +5,14 @@
 #include "../px/pxmap.h"
 #include "tilesetEditor.h"
 #include "attributeEditor.h"
+#include "scriptEditor.h"
 #include "rlImGui/focusData.h"
 
 const float MAP_SIZE = 2.0f;
 
 struct AttributeEditor;
 struct TilesetEditor;
+struct ScriptEditor;
 
 enum class EditorTool {
     Hand,
@@ -49,6 +51,7 @@ struct Editor
     Entity* editingEntity = NULL;
     std::vector<TilesetEditor> tilesetEditors = std::vector<TilesetEditor>();
     std::vector<AttributeEditor> attrEditors = std::vector<AttributeEditor>();
+    std::vector<ScriptEditor> scriptEditors = std::vector<ScriptEditor>();
     char* entityListing;
 
     void SetPath(std::string rsc);
@@ -67,6 +70,7 @@ struct Editor
     void DrawToolbar();
     void OpenTileset(std::string name);
     void OpenAttrEditor(std::string name);
+    void OpenScript(std::string name);
     void Update();
     void CheckPan();
     void CheckScroll();

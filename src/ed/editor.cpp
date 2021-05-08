@@ -197,6 +197,10 @@ void Editor::DrawUI()
     {
         attrEditors[i].DrawUI();
     }
+    for (int i = 0; i < scriptEditors.size(); i++)
+    {
+        scriptEditors[i].DrawUI();
+    }
 
     // Safety.
     if (!enabled)
@@ -387,7 +391,7 @@ void Editor::DrawLevelEditor()
     {
         if (ImGui::Button("Edit Script"))
         {
-
+            OpenScript(map.references[0].dat);
         }
         numButtons++;
         if (numButtons < 2)
@@ -560,6 +564,18 @@ void Editor::OpenAttrEditor(std::string name)
     attrEditors.push_back(AttributeEditor(this, name));
 }
 
+void Editor::OpenScript(std::string name)
+{
+    for (int i = 0; i < scriptEditors.size(); i++)
+    {
+        if (strcmp(scriptEditors[i].name.c_str(), name.c_str()) == 0)
+        {
+            return;
+        }
+    }
+    scriptEditors.push_back(ScriptEditor(this, name));
+}
+
 void Editor::Update()
 {
 
@@ -592,6 +608,14 @@ void Editor::Update()
         else
         {
             attrEditors[i].Update();
+        }
+    }
+    for (int i = scriptEditors.size() - 1; i >= 0; i--)
+    {
+        if (!scriptEditors[i].open)
+        {
+            scriptEditors[i].Close();
+            scriptEditors.erase(scriptEditors.begin() + i);
         }
     }
 
