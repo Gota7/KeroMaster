@@ -352,6 +352,7 @@ void Editor::DrawLevelEditor()
     ImGuiStringEdit("Link Level", &map.references[RT_LINK_LEVEL].dat);
     ImGui::PushItemWidth(itemWidth);
     ImGuiStringEdit("NPC Palette", &map.references[RT_NPC_PALETTE].dat);
+    ImGui::Separator();
     ImGui::PushItemWidth(itemWidth);
     ImGui::InputScalar("Area X", ImGuiDataType_U16, &map.levelSettings[0]);
     ImGui::PushItemWidth(itemWidth);
@@ -366,6 +367,7 @@ void Editor::DrawLevelEditor()
     int tmpScrollType[NUM_TILESETS];
     for (int i = 0 ; i < NUM_TILESETS; i++)
     {
+        ImGui::Separator();
         ImGui::PushItemWidth(itemWidth);
         int index = map.tilesetSettings1[i];
         if (ImGui::Combo(("Tileset " + to_string(i) + " Tile Size").c_str(), &index, "Nothing\00016x16\0008x8\0004x4\0002x2\0001x1\0"))
@@ -389,6 +391,7 @@ void Editor::DrawLevelEditor()
     }
     for (int i = 0; i < NUM_TILESETS; i++)
     {
+        ImGui::Separator();
         ImGui::PushItemWidth(itemWidth / 2 - 5);
         ImGui::InputScalar(("##MapWidth" + to_string(i)).c_str(), ImGuiDataType_U16, &map.maps[i].oldWidth);
         ImGui::SameLine(0, -5.0);
@@ -417,6 +420,7 @@ void Editor::DrawLevelEditor()
                     if (map.maps[i].GetTile(x, y) != 0)
                     {
                         resizeMapLayer = i;
+                        resizeMode = SHIFT_RESIZE;
                         resizeWarning = true;
                         break;
                     }
@@ -427,9 +431,65 @@ void Editor::DrawLevelEditor()
                 map.maps[i].Resize(map.maps[i].oldWidth, map.maps[i].oldHeight);
             }
         }
+        if (ImGui::SmallButton(("Move Up##Map" + to_string(i)).c_str()))
+        {
+            resizeWarning = !map.maps[i].CanShift(SHIFT_UP);
+            if (resizeWarning)
+            {
+                resizeMode = SHIFT_UP;
+                resizeMapLayer = i;
+            }
+            else
+            {
+                map.maps[i].Shift(SHIFT_UP);
+            }
+        }
+        ImGui::SameLine();
+        if (ImGui::SmallButton(("Move Down##Map" + to_string(i)).c_str()))
+        {
+            resizeWarning = !map.maps[i].CanShift(SHIFT_DOWN);
+            if (resizeWarning)
+            {
+                resizeMode = SHIFT_DOWN;
+                resizeMapLayer = i;
+            }
+            else
+            {
+                map.maps[i].Shift(SHIFT_DOWN);
+            }
+        }
+        ImGui::SameLine();
+        if (ImGui::SmallButton(("Move Left##Map" + to_string(i)).c_str()))
+        {
+            resizeWarning = !map.maps[i].CanShift(SHIFT_LEFT);
+            if (resizeWarning)
+            {
+                resizeMode = SHIFT_LEFT;
+                resizeMapLayer = i;
+            }
+            else
+            {
+                map.maps[i].Shift(SHIFT_LEFT);
+            }
+        }
+        ImGui::SameLine();
+        if (ImGui::SmallButton(("Move Right##Map" + to_string(i)).c_str()))
+        {
+            resizeWarning = !map.maps[i].CanShift(SHIFT_RIGHT);
+            if (resizeWarning)
+            {
+                resizeMode = SHIFT_RIGHT;
+                resizeMapLayer = i;
+            }
+            else
+            {
+                map.maps[i].Shift(SHIFT_RIGHT);
+            }
+        }
     }
 
     int numButtons = 0;
+    ImGui::Separator();
     if (strcmp(map.references[RT_SCRIPT].dat.c_str(), "") != 0)
     {
         if (ImGui::Button("Edit Script"))
@@ -507,10 +567,21 @@ void Editor::DrawLevelEditor()
     {
         focus.ObserveFocus();
         focus.isModal |= true;
-        ImGui::Text("Resizing the map will lose data.\nAre you sure you want to continue?");
+        ImGui::Text("This map operation will lose data.\nAre you sure you want to continue?");
         if (ImGui::Button("Yes", ImVec2(itemWidth / 1.33, 0)))
         {
-            map.maps[resizeMapLayer].Resize(map.maps[resizeMapLayer].oldWidth, map.maps[resizeMapLayer].oldHeight);
+            switch (resizeMode)
+            {
+                case SHIFT_UP:
+                case SHIFT_DOWN:
+                case SHIFT_LEFT:
+                case SHIFT_RIGHT:
+                    map.maps[resizeMapLayer].Shift(resizeMode);
+                    break;
+                case SHIFT_RESIZE:
+                    map.maps[resizeMapLayer].Resize(map.maps[resizeMapLayer].oldWidth, map.maps[resizeMapLayer].oldHeight);
+                    break;
+            }
             ImGui::CloseCurrentPopup();
         }
         ImGui::SameLine();

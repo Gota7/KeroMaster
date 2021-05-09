@@ -66,6 +66,123 @@ void PxMap::Resize(u16 newWidth, u16 newHeight)
     delete[] bak;
 }
 
+bool PxMap::CanShift(ShiftDirection dir)
+{
+    if (width <= 1 && (dir == SHIFT_RIGHT || dir == SHIFT_LEFT))
+    {
+        return false;
+    }
+    if (height <= 1 && (dir == SHIFT_UP || dir == SHIFT_DOWN))
+    {
+        return false;
+    }
+    if (dir == SHIFT_UP)
+    {
+        for (int x = 0; x < width; x++)
+        {
+            if (GetTile(x, 0) != 0)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    else if (dir == SHIFT_DOWN)
+    {
+        for (int x = 0; x < width; x++)
+        {
+            if (GetTile(x, height - 1) != 0)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    else if (dir == SHIFT_LEFT)
+    {
+        for (int y = 0; y < height; y++)
+        {
+            if (GetTile(0, y) != 0)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    else if (dir == SHIFT_RIGHT)
+    {
+        for (int y = 0; y < height; y++)
+        {
+            if (GetTile(width - 1, y) != 0)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    return false;
+}
+
+void PxMap::Shift(ShiftDirection dir)
+{
+    if (dir == SHIFT_UP)
+    {
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 1; y < height; y++)
+            {
+                tiles[x + (y - 1) * width] = tiles[x + y * width];
+            }
+        }
+        for (int x = 0; x < width; x++)
+        {
+            tiles[x + (height - 1) * width] = 0;
+        }
+    }
+    else if (dir == SHIFT_DOWN)
+    {
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = height - 2; y >= 0; y--)
+            {
+                tiles[x + (y + 1) * width] = tiles[x + y * width];
+            }
+        }
+        for (int x = 0; x < width; x++)
+        {
+            tiles[x] = 0;
+        }
+    }
+    else if (dir == SHIFT_LEFT)
+    {
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 1; x < width; x++)
+            {
+                tiles[(x - 1) + y * width] = tiles[x + y * width];
+            }
+        }
+        for (int y = 0; y < height; y++)
+        {
+            tiles[width - 1 + y * width] = 0;
+        }
+    }
+    else if (dir == SHIFT_RIGHT)
+    {
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = width - 2; x >= 0; x--)
+            {
+                tiles[(x + 1) + y * width] = tiles[x + y * width];
+            }
+        }
+        for (int y = 0; y < height; y++)
+        {
+            tiles[y * width] = 0;
+        }
+    }
+}
+
 void PxMap::Unload()
 {
     delete[] tiles;

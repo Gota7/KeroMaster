@@ -16,6 +16,15 @@ const int NUM_TILESETS = 3;
 const int NUM_PARAMETERS = 3;
 const int NUM_BYTE_PARAMETERS = 2;
 
+enum ShiftDirection
+{
+    SHIFT_UP,
+    SHIFT_DOWN,
+    SHIFT_LEFT,
+    SHIFT_RIGHT,
+    SHIFT_RESIZE
+};
+
 struct PxMap : GReadable, GWriteable
 {
     u16 width = 0;
@@ -30,8 +39,9 @@ struct PxMap : GReadable, GWriteable
     u8 GetTile(u8 index);
     u8 GetTile(u8 x, u8 y);
     void Resize(u16 newWidth, u16 newHeight);
+    bool CanShift(ShiftDirection dir);
+    void Shift(ShiftDirection dir);
     void Unload();
-    // TODO: OFFSET MAP ABILITY!!!
 };
 
 enum ReferenceType

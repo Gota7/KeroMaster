@@ -54,6 +54,7 @@ struct Editor
     std::vector<ScriptEditor> scriptEditors = std::vector<ScriptEditor>();
     char* entityListing;
     bool resizeWarning = false;
+    ShiftDirection resizeMode = SHIFT_RESIZE;
     u8 resizeMapLayer = 0;
 
     void SetPath(std::string rsc);
