@@ -12,8 +12,8 @@ void PxMap::Read(GFile* f)
     }
     else
     {
-        width = f->ReadU16();
-        height = f->ReadU16();
+        width = oldWidth = f->ReadU16();
+        height = oldHeight = f->ReadU16();
 
         if (width * height > 0) flags = f->ReadU8();
 
@@ -47,6 +47,23 @@ u8 PxMap::GetTile(u8 index)
 u8 PxMap::GetTile(u8 x, u8 y)
 {
     return tiles[x + y * width];
+}
+
+void PxMap::Resize(u16 newWidth, u16 newHeight)
+{
+    u8* bak = tiles;
+    tiles = new u8[newWidth * newHeight];
+    memset(tiles, 0, newWidth * newHeight);
+    for (int x = 0; x < min(newWidth, width); x++)
+    {
+        for (int y = 0; y < min(newHeight, height); y++)
+        {
+            tiles[x + y * newWidth] = bak[x + y * width];
+        }
+    }
+    width = oldWidth = newWidth;
+    height = oldHeight = newHeight;
+    delete[] bak;
 }
 
 void PxMap::Unload()

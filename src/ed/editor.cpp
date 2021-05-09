@@ -152,7 +152,9 @@ void Editor::Draw()
     // Play area.
     if (showPlayArea)
     {
-        DrawRectangleLinesEx({ 0, 0, map.maps[0].width * MAP_SIZE * 8, map.maps[0].height * MAP_SIZE * 8 }, 3, RED);
+        if (viewLayers[2]) DrawRectangleLinesEx({ 0, 0, map.maps[2].width * MAP_SIZE * 8, map.maps[2].height * MAP_SIZE * 8 }, 3, RED);
+        if (viewLayers[1]) DrawRectangleLinesEx({ 0, 0, map.maps[1].width * MAP_SIZE * 8, map.maps[1].height * MAP_SIZE * 8 }, 3, RED);
+        if (viewLayers[0]) DrawRectangleLinesEx({ 0, 0, map.maps[0].width * MAP_SIZE * 8, map.maps[0].height * MAP_SIZE * 8 }, 3, RED);
     }
 
     // Grid.
@@ -341,15 +343,15 @@ void Editor::DrawLevelEditor()
     ImGui::PushItemWidth(itemWidth);
     ImGuiStringEdit("Level Title", &map.comment.dat);
     ImGui::PushItemWidth(itemWidth);
-    ImGuiStringEdit("Level Script", &map.references[0].dat);
+    ImGuiStringEdit("Level Script", &map.references[RT_SCRIPT].dat);
     ImGui::PushItemWidth(itemWidth);
-    ImGuiStringEdit("Next Level", &map.references[1].dat);
+    ImGuiStringEdit("Next Level", &map.references[RT_NEXT_LEVEL].dat);
     ImGui::PushItemWidth(itemWidth);
-    ImGuiStringEdit("Previous Level", &map.references[2].dat);
+    ImGuiStringEdit("Previous Level", &map.references[RT_PREV_LEVEL].dat);
     ImGui::PushItemWidth(itemWidth);
-    ImGuiStringEdit("Link Level", &map.references[3].dat);
+    ImGuiStringEdit("Link Level", &map.references[RT_LINK_LEVEL].dat);
     ImGui::PushItemWidth(itemWidth);
-    ImGuiStringEdit("NPC Palette", &map.references[4].dat);
+    ImGuiStringEdit("NPC Palette", &map.references[RT_NPC_PALETTE].dat);
     ImGui::PushItemWidth(itemWidth);
     ImGui::InputScalar("Area X", ImGuiDataType_U16, &map.levelSettings[0]);
     ImGui::PushItemWidth(itemWidth);
@@ -385,13 +387,41 @@ void Editor::DrawLevelEditor()
             }
         }
     }
+    for (int i = 0; i < NUM_TILESETS; i++)
+    {
+        ImGui::PushItemWidth(itemWidth / 2 - 5);
+        ImGui::InputScalar(("##MapWidth" + to_string(i)).c_str(), ImGuiDataType_U16, &map.maps[i].oldWidth);
+        ImGui::SameLine(0, -5.0);
+        ImGui::PushItemWidth(itemWidth / 2 - 5);
+        ImGui::InputScalar(("Map " + to_string(i) + " Size##MapHeight" + to_string(i)).c_str(), ImGuiDataType_U16, &map.maps[i].oldHeight);
+        ImGui::SameLine();
+        if (ImGui::SmallButton(("Resize##Map" + to_string(i)).c_str()))
+        {
+            bool warn = false;
+            for (int x = map.maps[i].oldWidth - 1; x < map.maps[i].width; x++)
+            {
+                for (int y = map.maps[i].oldHeight - 1; y < map.maps[i].height; y++)
+                {
+                    if (map.maps[i].GetTile(x, y) != 0)
+                    {
+                        warn = true;
+                        break;
+                    }
+                }
+            }
+            if (!warn)
+            {
+                map.maps[i].Resize(map.maps[i].oldWidth, map.maps[i].oldHeight);
+            } // TODO: FINISH WARNING!!!
+        }
+    }
 
     int numButtons = 0;
-    if (strcmp(map.references[0].dat.c_str(), "") != 0)
+    if (strcmp(map.references[RT_SCRIPT].dat.c_str(), "") != 0)
     {
         if (ImGui::Button("Edit Script"))
         {
-            OpenScript(map.references[0].dat);
+            OpenScript(map.references[RT_SCRIPT].dat);
         }
         numButtons++;
         if (numButtons < 2)
@@ -402,11 +432,11 @@ void Editor::DrawLevelEditor()
         }
     }
 
-    if (strcmp(map.references[1].dat.c_str(), "") != 0)
+    if (strcmp(map.references[RT_NEXT_LEVEL].dat.c_str(), "") != 0)
     {
         if (ImGui::Button("Edit Next Level"))
         {
-            LoadLevel(map.references[1].dat);
+            LoadLevel(map.references[RT_NEXT_LEVEL].dat);
         }
         numButtons++;
         if (numButtons < 2)
@@ -417,11 +447,11 @@ void Editor::DrawLevelEditor()
         }
     }
 
-    if (strcmp(map.references[2].dat.c_str(), "") != 0)
+    if (strcmp(map.references[RT_PREV_LEVEL].dat.c_str(), "") != 0)
     {
         if (ImGui::Button("Edit Previous Level"))
         {
-            LoadLevel(map.references[2].dat);
+            LoadLevel(map.references[RT_PREV_LEVEL].dat);
         }
         numButtons++;
         if (numButtons < 2)
@@ -432,11 +462,11 @@ void Editor::DrawLevelEditor()
         }
     }
 
-    if (strcmp(map.references[3].dat.c_str(), "") != 0)
+    if (strcmp(map.references[RT_LINK_LEVEL].dat.c_str(), "") != 0)
     {
         if (ImGui::Button("Edit Link Level"))
         {
-            LoadLevel(map.references[3].dat);
+            LoadLevel(map.references[RT_LINK_LEVEL].dat);
         }
         numButtons++;
         if (numButtons < 2)
@@ -538,6 +568,11 @@ void Editor::DrawToolbar()
     ToggleButton("BG", &viewLayers[2]);
 
     ImGui::End();
+}
+
+void Editor::DrawProfileEditor()
+{
+
 }
 
 void Editor::OpenTileset(std::string name)

@@ -68,6 +68,7 @@ struct Editor
     void DrawLevelEditor();
     void DrawEntityEditor();
     void DrawToolbar();
+    void DrawProfileEditor();
     void OpenTileset(std::string name);
     void OpenAttrEditor(std::string name);
     void OpenScript(std::string name);

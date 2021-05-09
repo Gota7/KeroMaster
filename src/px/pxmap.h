@@ -22,12 +22,16 @@ struct PxMap : GReadable, GWriteable
     u16 height = 0;
     u8 flags = 0;
     u8* tiles = nullptr;
+    u16 oldWidth = 0; // For editor.
+    u16 oldHeight = 0; // For editor.
     
     void Read(GFile* f);
     void Write(GFile* f);
     u8 GetTile(u8 index);
     u8 GetTile(u8 x, u8 y);
+    void Resize(u16 newWidth, u16 newHeight);
     void Unload();
+    // TODO: OFFSET MAP ABILITY!!!
 };
 
 enum ReferenceType
