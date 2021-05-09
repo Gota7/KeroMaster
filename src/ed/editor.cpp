@@ -397,22 +397,35 @@ void Editor::DrawLevelEditor()
         ImGui::SameLine();
         if (ImGui::SmallButton(("Resize##Map" + to_string(i)).c_str()))
         {
-            bool warn = false;
-            for (int x = map.maps[i].oldWidth - 1; x < map.maps[i].width; x++)
+            resizeWarning = false;
+            for (int x = map.maps[i].oldWidth; x < map.maps[i].width; x++)
             {
-                for (int y = map.maps[i].oldHeight - 1; y < map.maps[i].height; y++)
+                for (int y = 0; y < map.maps[i].height; y++)
                 {
                     if (map.maps[i].GetTile(x, y) != 0)
                     {
-                        warn = true;
+                        resizeMapLayer = i;
+                        resizeWarning = true;
                         break;
                     }
                 }
             }
-            if (!warn)
+            for (int y = map.maps[i].oldHeight; y < map.maps[i].height; y++)
+            {
+                for (int x = 0; x < map.maps[i].width; x++)
+                {
+                    if (map.maps[i].GetTile(x, y) != 0)
+                    {
+                        resizeMapLayer = i;
+                        resizeWarning = true;
+                        break;
+                    }
+                }
+            }
+            if (!resizeWarning)
             {
                 map.maps[i].Resize(map.maps[i].oldWidth, map.maps[i].oldHeight);
-            } // TODO: FINISH WARNING!!!
+            }
         }
     }
 
@@ -483,6 +496,31 @@ void Editor::DrawLevelEditor()
     }
 
     ImGui::End();
+
+    // Warning for resizing.
+    if (resizeWarning)
+    {
+        resizeWarning = false;
+        ImGui::OpenPopup("Map Warning");
+    }
+    if (ImGui::BeginPopupModal("Map Warning", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        focus.ObserveFocus();
+        focus.isModal |= true;
+        ImGui::Text("Resizing the map will lose data.\nAre you sure you want to continue?");
+        if (ImGui::Button("Yes", ImVec2(itemWidth / 1.33, 0)))
+        {
+            map.maps[resizeMapLayer].Resize(map.maps[resizeMapLayer].oldWidth, map.maps[resizeMapLayer].oldHeight);
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::SameLine();
+        ImGui::SetCursorPosX(ImGui::GetWindowSize().x - itemWidth / 1.33 - ImGui::GetStyle().WindowPadding.x);
+        if (ImGui::Button("No", ImVec2(itemWidth / 1.33, 0)))
+        {
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
+    }
 
 }
 

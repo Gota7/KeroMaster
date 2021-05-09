@@ -53,6 +53,8 @@ struct Editor
     std::vector<AttributeEditor> attrEditors = std::vector<AttributeEditor>();
     std::vector<ScriptEditor> scriptEditors = std::vector<ScriptEditor>();
     char* entityListing;
+    bool resizeWarning = false;
+    u8 resizeMapLayer = 0;
 
     void SetPath(std::string rsc);
     void LoadEnemies(std::string xml);
