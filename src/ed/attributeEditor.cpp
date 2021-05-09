@@ -72,7 +72,10 @@ void AttributeEditor::DrawUI()
     ImGui::InputScalar("Height", ImGuiDataType_U16, &ed->tilesets[name].oldHeight);
     if (ImGui::Button("Adjust Size"))
     {
-        
+        ed->tilesets[name].width = ed->tilesets[name].oldWidth;
+        ed->tilesets[name].height = ed->tilesets[name].oldHeight;
+        // TODO: ATTRIBUTE SHIFTING??? MAP FIXING???
+        ed->ResizeAllTilesetViewers(name);
     }
     ImGui::SameLine();
     if (ImGui::Button("Save"))

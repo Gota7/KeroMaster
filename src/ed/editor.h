@@ -75,6 +75,7 @@ struct Editor
     void OpenTileset(std::string name);
     void OpenAttrEditor(std::string name);
     void OpenScript(std::string name);
+    void ResizeAllTilesetViewers(std::string name);
     void Update();
     void CheckPan();
     void CheckScroll();

@@ -43,7 +43,7 @@ void TilesetEditor::Draw()
     if (currTile >= 0 && currTile < ed->tilesets[name].width * ed->tilesets[name].height)
     {
         u16 x = currTile % ed->tilesets[name].width;
-        u16 y = ed->tilesets[name].height - currTile / ed->tilesets[name].height - 1;
+        u16 y = ed->tilesets[name].height - currTile / ed->tilesets[name].width - 1;
         DrawRectangleLinesEx( { (float)x * 8 * 2, (float)(y - selectionHeight + 1) * 8 * 2, (float)8 * 2 * selectionWidth, (float)8 * 2 * selectionHeight }, 1, ColorAlpha(YELLOW, .5f));
     }
     EndTextureMode();
@@ -171,6 +171,7 @@ void TilesetEditor::CalcTiles()
     selectionWidth = abs(endTileX - startTileX) + 1;
     selectionHeight = abs(endTileY - startTileY) + 1;
     currTile = currTileX + currTileY * ed->tilesets[name].width;
+    printf("%d\n", currTile);
 }
 
 void TilesetEditor::Close()

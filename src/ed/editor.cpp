@@ -801,6 +801,30 @@ void Editor::Update()
 
 }
 
+void Editor::ResizeAllTilesetViewers(std::string name)
+{
+    if (tilesets.find(name) == tilesets.end())
+    {
+        return;
+    }
+    for (int i = 0; i < tilesetEditors.size(); i++)
+    {
+        if (tilesetEditors[i].open && strcmp(tilesetEditors[i].name.c_str(), name.c_str()) == 0)
+        {
+            UnloadRenderTexture(tilesetEditors[i].target);
+            tilesetEditors[i].target = LoadRenderTexture(tilesets[name].width * 8 * 2, tilesets[name].height * 8 * 2);
+        }
+    }
+    for (int i = 0; i < attrEditors.size(); i++)
+    {
+        if (attrEditors[i].open && strcmp(attrEditors[i].name.c_str(), name.c_str()) == 0)
+        {
+            UnloadRenderTexture(attrEditors[i].target);
+            attrEditors[i].target = LoadRenderTexture(tilesets[name].width * 8 * 2 + (float)Tileset::attrTex.width, max((float)tilesets[name].height * 8 * 2, (float)Tileset::attrTex.height));
+        }
+    }
+}
+
 void Editor::CheckPan()
 {
     if (inPan)
