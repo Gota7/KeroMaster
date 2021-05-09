@@ -32,8 +32,8 @@ struct ScriptEditor
     ImVector<char> buf;
     static bool loadedGuide;
     bool open = false;
-    ScriptHelpData* commands;
-    int numCommands = 0;
+    static ScriptHelpData* commands;
+    static int numCommands;
     char search[5] = { 0, 0, 0, 0, 0 };
 
     ScriptEditor(Editor* ed, std::string scriptName);

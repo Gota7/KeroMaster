@@ -4,6 +4,8 @@
 using namespace std;
 
 bool ScriptEditor::loadedGuide = false;
+ScriptHelpData* ScriptEditor::commands;
+int ScriptEditor::numCommands = 0;
 
 ScriptEditor::ScriptEditor(Editor* ed, string scriptName)
 {
@@ -108,7 +110,6 @@ void ScriptEditor::DrawUI()
         SaveScript();
     }
     ImGui::Columns(2);
-    // TODO: RESIZABLE INPUT!!!
     ImGui::InputTextMultiline("##Script", buf.begin(), buf.size(), ImVec2(-FLT_MIN, ImGui::GetWindowSize().y - ImGui::GetCursorPosY() - ImGui::GetStyle().FramePadding.y * 4), ImGuiInputTextFlags_Multiline | ImGuiInputTextFlags_CallbackResize, ResizeCallback, &buf);
     ImGui::NextColumn();
     ImGui::InputText("Search", search, 5);
