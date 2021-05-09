@@ -160,10 +160,26 @@ void Editor::Draw()
     // Grid.
     if (showGrid)
     {
-        const float GRID_ALPHA = 0.1;
-        for (int i = 0; i < map.maps[0].width; i++)
+        int gridWidth = 0;
+        int gridHeight = 0;
+        for (int i = 0; i < NUM_TILESETS; i++)
         {
-            for (int j = 0; j < map.maps[0].height; j++)
+            if (viewLayers[i])
+            {
+                if (map.maps[i].width > gridWidth)
+                {
+                    gridWidth = map.maps[i].width;
+                }
+                if (map.maps[i].height > gridHeight)
+                {
+                    gridHeight = map.maps[i].height;
+                }
+            }
+        }
+        const float GRID_ALPHA = 0.1;
+        for (int i = 0; i < gridWidth; i++)
+        {
+            for (int j = 0; j < gridHeight; j++)
             {
                 Color c;
                 if (i % 2 != j % 2)
