@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<script>
+    <command name="dely" desc="Delay for a given amount of frames.">
+        <arg type="num" desc="Time measured in 1/60th of a second." />
+    </command>
+    <command name="dl20" desc="Delay for 20 frames (1/3rd of a second)." />
+    <command name="dl60" desc="Delay for 60 frames (1 second)." />
+    <command name="jump" desc="Jump to a label.">
+        <arg type="str" desc="Which label to jump to." />
+    </command>
+</script>

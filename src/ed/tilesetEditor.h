@@ -21,7 +21,8 @@ struct TilesetEditor
     int selectionWidth;
     int selectionHeight;
     ImVec2 imgPos;
-    float imgSize;
+    float imgSizeX;
+    float imgSizeY;
     bool viewAttr = false;
     bool selectingTiles = false;
     int startMouseX;

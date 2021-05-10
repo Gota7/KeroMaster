@@ -126,6 +126,10 @@ void Editor::Draw()
     {
         tilesetEditors[i].Draw();
     }
+    for (int i = 0; i < attrEditors.size(); i++)
+    {
+        attrEditors[i].Draw();
+    }
 
     // Safety.
     if (!enabled)
@@ -148,16 +152,34 @@ void Editor::Draw()
     // Play area.
     if (showPlayArea)
     {
-        DrawRectangleLinesEx({ 0, 0, map.maps[0].width * MAP_SIZE * 8, map.maps[0].height * MAP_SIZE * 8 }, 3, RED);
+        if (viewLayers[2]) DrawRectangleLinesEx({ 0, 0, map.maps[2].width * MAP_SIZE * 8, map.maps[2].height * MAP_SIZE * 8 }, 3, RED);
+        if (viewLayers[1]) DrawRectangleLinesEx({ 0, 0, map.maps[1].width * MAP_SIZE * 8, map.maps[1].height * MAP_SIZE * 8 }, 3, RED);
+        if (viewLayers[0]) DrawRectangleLinesEx({ 0, 0, map.maps[0].width * MAP_SIZE * 8, map.maps[0].height * MAP_SIZE * 8 }, 3, RED);
     }
 
     // Grid.
     if (showGrid)
     {
-        const float GRID_ALPHA = 0.1;
-        for (int i = 0; i < map.maps[0].width; i++)
+        int gridWidth = 0;
+        int gridHeight = 0;
+        for (int i = 0; i < NUM_TILESETS; i++)
         {
-            for (int j = 0; j < map.maps[0].height; j++)
+            if (viewLayers[i])
+            {
+                if (map.maps[i].width > gridWidth)
+                {
+                    gridWidth = map.maps[i].width;
+                }
+                if (map.maps[i].height > gridHeight)
+                {
+                    gridHeight = map.maps[i].height;
+                }
+            }
+        }
+        const float GRID_ALPHA = 0.1;
+        for (int i = 0; i < gridWidth; i++)
+        {
+            for (int j = 0; j < gridHeight; j++)
             {
                 Color c;
                 if (i % 2 != j % 2)
@@ -188,6 +210,14 @@ void Editor::DrawUI()
     for (int i = 0; i < tilesetEditors.size(); i++)
     {
         tilesetEditors[i].DrawUI();
+    }
+    for (int i = 0; i < attrEditors.size(); i++)
+    {
+        attrEditors[i].DrawUI();
+    }
+    for (int i = 0; i < scriptEditors.size(); i++)
+    {
+        scriptEditors[i].DrawUI();
     }
 
     // Safety.
@@ -335,15 +365,16 @@ void Editor::DrawLevelEditor()
     ImGui::PushItemWidth(itemWidth);
     ImGuiStringEdit("Level Title", &map.comment.dat);
     ImGui::PushItemWidth(itemWidth);
-    ImGuiStringEdit("Level Script", &map.references[0].dat);
+    ImGuiStringEdit("Level Script", &map.references[RT_SCRIPT].dat);
     ImGui::PushItemWidth(itemWidth);
-    ImGuiStringEdit("Next Level", &map.references[1].dat);
+    ImGuiStringEdit("Next Level", &map.references[RT_NEXT_LEVEL].dat);
     ImGui::PushItemWidth(itemWidth);
-    ImGuiStringEdit("Previous Level", &map.references[2].dat);
+    ImGuiStringEdit("Previous Level", &map.references[RT_PREV_LEVEL].dat);
     ImGui::PushItemWidth(itemWidth);
-    ImGuiStringEdit("Link Level", &map.references[3].dat);
+    ImGuiStringEdit("Link Level", &map.references[RT_LINK_LEVEL].dat);
     ImGui::PushItemWidth(itemWidth);
-    ImGuiStringEdit("NPC Palette", &map.references[4].dat);
+    ImGuiStringEdit("NPC Palette", &map.references[RT_NPC_PALETTE].dat);
+    ImGui::Separator();
     ImGui::PushItemWidth(itemWidth);
     ImGui::InputScalar("Area X", ImGuiDataType_U16, &map.levelSettings[0]);
     ImGui::PushItemWidth(itemWidth);
@@ -358,6 +389,7 @@ void Editor::DrawLevelEditor()
     int tmpScrollType[NUM_TILESETS];
     for (int i = 0 ; i < NUM_TILESETS; i++)
     {
+        ImGui::Separator();
         ImGui::PushItemWidth(itemWidth);
         int index = map.tilesetSettings1[i];
         if (ImGui::Combo(("Tileset " + to_string(i) + " Tile Size").c_str(), &index, "Nothing\00016x16\0008x8\0004x4\0002x2\0001x1\0"))
@@ -375,17 +407,116 @@ void Editor::DrawLevelEditor()
             ImGui::SameLine();
             if (ImGui::SmallButton(("Open##Tileset" + to_string(i)).c_str()))
             {
-                tilesetEditors.push_back(TilesetEditor(this, map.tilesets[i].dat));
+                OpenTileset(map.tilesets[i].dat);
+            }
+        }
+    }
+    for (int i = 0; i < NUM_TILESETS; i++)
+    {
+        ImGui::Separator();
+        ImGui::PushItemWidth(itemWidth / 2 - 5);
+        ImGui::InputScalar(("##MapWidth" + to_string(i)).c_str(), ImGuiDataType_U16, &map.maps[i].oldWidth);
+        ImGui::SameLine(0, -5.0);
+        ImGui::PushItemWidth(itemWidth / 2 - 5);
+        ImGui::InputScalar(("Map " + to_string(i) + " Size##MapHeight" + to_string(i)).c_str(), ImGuiDataType_U16, &map.maps[i].oldHeight);
+        ImGui::SameLine();
+        if (ImGui::SmallButton(("Resize##Map" + to_string(i)).c_str()))
+        {
+            resizeWarning = false;
+            for (int x = map.maps[i].oldWidth; x < map.maps[i].width; x++)
+            {
+                for (int y = 0; y < map.maps[i].height; y++)
+                {
+                    if (map.maps[i].GetTile(x, y) != 0)
+                    {
+                        resizeMapLayer = i;
+                        resizeWarning = true;
+                        break;
+                    }
+                }
+            }
+            for (int y = map.maps[i].oldHeight; y < map.maps[i].height; y++)
+            {
+                for (int x = 0; x < map.maps[i].width; x++)
+                {
+                    if (map.maps[i].GetTile(x, y) != 0)
+                    {
+                        resizeMapLayer = i;
+                        resizeMode = SHIFT_RESIZE;
+                        resizeWarning = true;
+                        break;
+                    }
+                }
+            }
+            if (!resizeWarning)
+            {
+                map.maps[i].Resize(map.maps[i].oldWidth, map.maps[i].oldHeight);
+            }
+        }
+        if (ImGui::SmallButton(("Move Up##Map" + to_string(i)).c_str()))
+        {
+            resizeWarning = !map.maps[i].CanShift(SHIFT_UP);
+            if (resizeWarning)
+            {
+                resizeMode = SHIFT_UP;
+                resizeMapLayer = i;
+            }
+            else
+            {
+                map.maps[i].Shift(SHIFT_UP);
+            }
+        }
+        ImGui::SameLine();
+        if (ImGui::SmallButton(("Move Down##Map" + to_string(i)).c_str()))
+        {
+            resizeWarning = !map.maps[i].CanShift(SHIFT_DOWN);
+            if (resizeWarning)
+            {
+                resizeMode = SHIFT_DOWN;
+                resizeMapLayer = i;
+            }
+            else
+            {
+                map.maps[i].Shift(SHIFT_DOWN);
+            }
+        }
+        ImGui::SameLine();
+        if (ImGui::SmallButton(("Move Left##Map" + to_string(i)).c_str()))
+        {
+            resizeWarning = !map.maps[i].CanShift(SHIFT_LEFT);
+            if (resizeWarning)
+            {
+                resizeMode = SHIFT_LEFT;
+                resizeMapLayer = i;
+            }
+            else
+            {
+                map.maps[i].Shift(SHIFT_LEFT);
+            }
+        }
+        ImGui::SameLine();
+        if (ImGui::SmallButton(("Move Right##Map" + to_string(i)).c_str()))
+        {
+            resizeWarning = !map.maps[i].CanShift(SHIFT_RIGHT);
+            if (resizeWarning)
+            {
+                resizeMode = SHIFT_RIGHT;
+                resizeMapLayer = i;
+            }
+            else
+            {
+                map.maps[i].Shift(SHIFT_RIGHT);
             }
         }
     }
 
     int numButtons = 0;
-    if (strcmp(map.references[0].dat.c_str(), "") != 0)
+    ImGui::Separator();
+    if (strcmp(map.references[RT_SCRIPT].dat.c_str(), "") != 0)
     {
         if (ImGui::Button("Edit Script"))
         {
-
+            OpenScript(map.references[RT_SCRIPT].dat);
         }
         numButtons++;
         if (numButtons < 2)
@@ -396,11 +527,11 @@ void Editor::DrawLevelEditor()
         }
     }
 
-    if (strcmp(map.references[1].dat.c_str(), "") != 0)
+    if (strcmp(map.references[RT_NEXT_LEVEL].dat.c_str(), "") != 0)
     {
         if (ImGui::Button("Edit Next Level"))
         {
-            LoadLevel(map.references[1].dat);
+            LoadLevel(map.references[RT_NEXT_LEVEL].dat);
         }
         numButtons++;
         if (numButtons < 2)
@@ -411,11 +542,11 @@ void Editor::DrawLevelEditor()
         }
     }
 
-    if (strcmp(map.references[2].dat.c_str(), "") != 0)
+    if (strcmp(map.references[RT_PREV_LEVEL].dat.c_str(), "") != 0)
     {
         if (ImGui::Button("Edit Previous Level"))
         {
-            LoadLevel(map.references[2].dat);
+            LoadLevel(map.references[RT_PREV_LEVEL].dat);
         }
         numButtons++;
         if (numButtons < 2)
@@ -426,11 +557,11 @@ void Editor::DrawLevelEditor()
         }
     }
 
-    if (strcmp(map.references[3].dat.c_str(), "") != 0)
+    if (strcmp(map.references[RT_LINK_LEVEL].dat.c_str(), "") != 0)
     {
         if (ImGui::Button("Edit Link Level"))
         {
-            LoadLevel(map.references[3].dat);
+            LoadLevel(map.references[RT_LINK_LEVEL].dat);
         }
         numButtons++;
         if (numButtons < 2)
@@ -447,6 +578,42 @@ void Editor::DrawLevelEditor()
     }
 
     ImGui::End();
+
+    // Warning for resizing.
+    if (resizeWarning)
+    {
+        resizeWarning = false;
+        ImGui::OpenPopup("Map Warning");
+    }
+    if (ImGui::BeginPopupModal("Map Warning", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        focus.ObserveFocus();
+        focus.isModal |= true;
+        ImGui::Text("This map operation will lose data.\nAre you sure you want to continue?");
+        if (ImGui::Button("Yes", ImVec2(itemWidth / 1.33, 0)))
+        {
+            switch (resizeMode)
+            {
+                case SHIFT_UP:
+                case SHIFT_DOWN:
+                case SHIFT_LEFT:
+                case SHIFT_RIGHT:
+                    map.maps[resizeMapLayer].Shift(resizeMode);
+                    break;
+                case SHIFT_RESIZE:
+                    map.maps[resizeMapLayer].Resize(map.maps[resizeMapLayer].oldWidth, map.maps[resizeMapLayer].oldHeight);
+                    break;
+            }
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::SameLine();
+        ImGui::SetCursorPosX(ImGui::GetWindowSize().x - itemWidth / 1.33 - ImGui::GetStyle().WindowPadding.x);
+        if (ImGui::Button("No", ImVec2(itemWidth / 1.33, 0)))
+        {
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
+    }
 
 }
 
@@ -576,6 +743,47 @@ void Editor::DrawToolbar()
     ImGui::End();
 }
 
+void Editor::DrawProfileEditor()
+{
+
+}
+
+void Editor::OpenTileset(std::string name)
+{
+    for (int i = 0; i < tilesetEditors.size(); i++)
+    {
+        if (strcmp(tilesetEditors[i].name.c_str(), name.c_str()) == 0)
+        {
+            return;
+        }
+    }
+    tilesetEditors.push_back(TilesetEditor(this, name));
+}
+
+void Editor::OpenAttrEditor(std::string name)
+{
+    for (int i = 0; i < attrEditors.size(); i++)
+    {
+        if (strcmp(attrEditors[i].name.c_str(), name.c_str()) == 0)
+        {
+            return;
+        }
+    }
+    attrEditors.push_back(AttributeEditor(this, name));
+}
+
+void Editor::OpenScript(std::string name)
+{
+    for (int i = 0; i < scriptEditors.size(); i++)
+    {
+        if (strcmp(scriptEditors[i].name.c_str(), name.c_str()) == 0)
+        {
+            return;
+        }
+    }
+    scriptEditors.push_back(ScriptEditor(this, name));
+}
+
 void Editor::Update()
 {
 
@@ -596,6 +804,26 @@ void Editor::Update()
         else
         {
             tilesetEditors[i].Update();
+        }
+    }
+    for (int i = attrEditors.size() - 1; i >= 0; i--)
+    {
+        if (!attrEditors[i].open)
+        {
+            attrEditors[i].Close();
+            attrEditors.erase(attrEditors.begin() + i);
+        }
+        else
+        {
+            attrEditors[i].Update();
+        }
+    }
+    for (int i = scriptEditors.size() - 1; i >= 0; i--)
+    {
+        if (!scriptEditors[i].open)
+        {
+            scriptEditors[i].Close();
+            scriptEditors.erase(scriptEditors.begin() + i);
         }
     }
 
@@ -619,6 +847,30 @@ void Editor::Update()
     // Update focus.
     focus.Update();
 
+}
+
+void Editor::ResizeAllTilesetViewers(std::string name)
+{
+    if (tilesets.find(name) == tilesets.end())
+    {
+        return;
+    }
+    for (int i = 0; i < tilesetEditors.size(); i++)
+    {
+        if (tilesetEditors[i].open && strcmp(tilesetEditors[i].name.c_str(), name.c_str()) == 0)
+        {
+            UnloadRenderTexture(tilesetEditors[i].target);
+            tilesetEditors[i].target = LoadRenderTexture(tilesets[name].width * 8 * 2, tilesets[name].height * 8 * 2);
+        }
+    }
+    for (int i = 0; i < attrEditors.size(); i++)
+    {
+        if (attrEditors[i].open && strcmp(attrEditors[i].name.c_str(), name.c_str()) == 0)
+        {
+            UnloadRenderTexture(attrEditors[i].target);
+            attrEditors[i].target = LoadRenderTexture(tilesets[name].width * 8 * 2 + (float)Tileset::attrTex.width, max((float)tilesets[name].height * 8 * 2, (float)Tileset::attrTex.height));
+        }
+    }
 }
 
 void Editor::CheckPan()

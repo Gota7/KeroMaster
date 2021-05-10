@@ -43,7 +43,7 @@ void TilesetEditor::Draw()
     if (currTile >= 0 && currTile < ed->tilesets[name].width * ed->tilesets[name].height)
     {
         u16 x = currTile % ed->tilesets[name].width;
-        u16 y = ed->tilesets[name].height - currTile / ed->tilesets[name].height - 1;
+        u16 y = ed->tilesets[name].height - currTile / ed->tilesets[name].width - 1;
         DrawRectangleLinesEx( { (float)x * 8 * 2, (float)(y - selectionHeight + 1) * 8 * 2, (float)8 * 2 * selectionWidth, (float)8 * 2 * selectionHeight }, 1, ColorAlpha(YELLOW, .5f));
     }
     EndTextureMode();
@@ -62,24 +62,11 @@ void TilesetEditor::DrawUI()
     // Interface.
     ImGui::Begin(("Tileset - " + name).c_str(), &open);
     ed->focus.ObserveFocus();
-    const int itemWidth = 150;
-    ImGui::PushItemWidth(itemWidth);
-    ImGui::InputScalar("Flags", ImGuiDataType_U8, &ed->tilesets[name].flags);
-    ImGui::PushItemWidth(30);
-    ImGui::InputScalar("Width", ImGuiDataType_U16, &ed->tilesets[name].oldWidth);
-    ImGui::PushItemWidth(30);
-    ImGui::SameLine();
-    ImGui::InputScalar("Height", ImGuiDataType_U16, &ed->tilesets[name].oldHeight);
-    ImGui::SameLine();
-    if (ImGui::Button("Adjust Size"))
-    {
-        currTile = -1;
-    }
     ImGui::Checkbox("View Attributes", &viewAttr);
     ImGui::SameLine();
     if (ImGui::Button("Edit Attributes"))
     {
-
+        ed->OpenAttrEditor(name);
     }
     float w = ImGui::GetWindowWidth() - ImGui::GetCursorPosX();
     float h = ImGui::GetWindowHeight() - ImGui::GetCursorPosY();
@@ -98,7 +85,8 @@ void TilesetEditor::DrawUI()
         h = texH * scale;
     }
     imgPos = ImGui::GetCursorScreenPos();
-    imgSize = w;
+    imgSizeX = w;
+    imgSizeY = h;
     RLImGuiImageSize(&target.texture, (int)h, (int)w);
     ImGui::End();
     
@@ -118,14 +106,20 @@ void TilesetEditor::Update()
         return;
     }
 
+    // Check.
+    if (currTile >= ed->tilesets[name].width * ed->tilesets[name].height)
+    {
+        currTile = -1;
+    }
+
     // Tile clicked.
     int mouseX = GetMouseX();
     int mouseY = GetMouseY();
     if (ed->focus.mouseInWindow && \
         mouseX > imgPos.x && \
-        mouseX < imgPos.x + imgSize && \
+        mouseX < imgPos.x + imgSizeX && \
         mouseY > imgPos.y && \
-        mouseY < imgPos.y + imgSize && \
+        mouseY < imgPos.y + imgSizeY && \
         IsMouseButtonPressed(MOUSE_RIGHT_BUTTON)
     )
     {
@@ -150,10 +144,10 @@ void TilesetEditor::CalcTiles()
 {
     int mouseX = GetMouseX();
     int mouseY = GetMouseY();
-    int startTileX = (startMouseX - imgPos.x) / imgSize * ed->tilesets[name].width;
-    int startTileY = (startMouseY - imgPos.y) / imgSize * ed->tilesets[name].height;
-    int endTileX = (mouseX - imgPos.x) / imgSize * ed->tilesets[name].width;
-    int endTileY = (mouseY - imgPos.y) / imgSize * ed->tilesets[name].height;
+    int startTileX = (startMouseX - imgPos.x) / imgSizeX * ed->tilesets[name].width;
+    int startTileY = (startMouseY - imgPos.y) / imgSizeY * ed->tilesets[name].height;
+    int endTileX = (mouseX - imgPos.x) / imgSizeX * ed->tilesets[name].width;
+    int endTileY = (mouseY - imgPos.y) / imgSizeY * ed->tilesets[name].height;
     if (endTileX >= ed->tilesets[name].width)
     {
         endTileX = ed->tilesets[name].width - 1;
@@ -165,7 +159,8 @@ void TilesetEditor::CalcTiles()
     if (endTileY >= ed->tilesets[name].height)
     {
         endTileY = ed->tilesets[name].height - 1;
-    } else if (endTileY < 0)
+    }
+    else if (endTileY < 0)
     {
         endTileY = 0;
     }
@@ -176,6 +171,7 @@ void TilesetEditor::CalcTiles()
     selectionWidth = abs(endTileX - startTileX) + 1;
     selectionHeight = abs(endTileY - startTileY) + 1;
     currTile = currTileX + currTileY * ed->tilesets[name].width;
+    printf("%d\n", currTile);
 }
 
 void TilesetEditor::Close()
