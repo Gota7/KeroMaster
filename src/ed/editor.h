@@ -12,7 +12,7 @@ struct TilesetEditor;
 
 enum class EditorTool {
     Hand,
-    Brush,
+    TileBrush,
     Eraser
 };
 
@@ -35,13 +35,14 @@ struct Editor
     s32 tileMouseX;
     s32 tileMouseY;
     bool showPlayArea = true;
-    bool showGrid = true;
+    bool showGrid = false;
     bool viewLayers[3] = { true, true, true };
     bool viewEntityBoxes = true;
     bool viewEntities = true;
     bool viewTileAttributes = false;
     bool inPan = false;
     bool openTilesetsOnLoad = false;
+    u8 currentLayer = 0;
     EditorTool currentTool = EditorTool::Hand;
     FocusData focus;
     Entity* editingEntity = NULL;
@@ -61,6 +62,7 @@ struct Editor
     void DrawMainMenu();
     void DrawLevelEditor();
     void DrawEntityEditor();
+    void DrawPalette();
     void DrawToolbar();
     void Update();
     void CheckPan();

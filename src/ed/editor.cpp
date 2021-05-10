@@ -202,6 +202,8 @@ void Editor::DrawUI()
     // Entity editor.
     DrawEntityEditor();
 
+    DrawPalette();
+
     // Toolbar.
     DrawToolbar();
 }
@@ -248,6 +250,10 @@ void Editor::DrawMainMenu()
         }
         if (ImGui::BeginMenu("Edit"))
         {
+            if (ImGui::MenuItem("Undo", "Ctrl+Z"))
+            {
+            }
+
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("View"))
@@ -446,35 +452,50 @@ void Editor::DrawLevelEditor()
 
 void Editor::DrawEntityEditor()
 {
-    if (editingEntity != NULL)
-    {
-        ImGui::Begin("Entity Editor", NULL, ImGuiWindowFlags_AlwaysAutoResize);
-        ImGui::SetWindowPos(ImVec2(10.0f, 80.0f), ImGuiCond_FirstUseEver);
+    if (editingEntity == nullptr) return;
     
-        focus.ObserveFocus();
-        int currId = editingEntity->id;
-        const int itemWidth = 150;
-        ImGui::PushItemWidth(itemWidth);
-        if (ImGui::Combo("Entity Id", &currId, entityListing))
-        {
-            editingEntity->id = currId;
-        }
-        ImGui::PushItemWidth(itemWidth);
-        ImGui::InputScalar("Flags", ImGuiDataType_U8, &editingEntity->flags);
-        ImGui::PushItemWidth(itemWidth);
-        ImGui::InputScalar("Unknown", ImGuiDataType_U8, &editingEntity->unk);
-        for (int i = 0; i < NUM_BYTE_PARAMETERS; i++)
-        {
-            ImGui::PushItemWidth(itemWidth);
-            ImGui::InputScalar(("Parameter " + to_string(i)).c_str(), ImGuiDataType_U8, &editingEntity->parametersByte[i]);
-        }
-        for (int i = 0; i < NUM_PARAMETERS - NUM_BYTE_PARAMETERS; i++)
-        {
-            ImGui::PushItemWidth(itemWidth);
-            ImGuiStringEdit(("Parameter " + to_string(i + NUM_BYTE_PARAMETERS)).c_str(), &editingEntity->parametersStr[i].dat);
-        }
-        ImGui::End();
+    ImGui::Begin("Entity Editor", NULL, ImGuiWindowFlags_AlwaysAutoResize);
+    ImGui::SetWindowPos(ImVec2(10.0f, 80.0f), ImGuiCond_FirstUseEver);
+
+    focus.ObserveFocus();
+    int currId = editingEntity->id;
+    const int itemWidth = 150;
+    ImGui::PushItemWidth(itemWidth);
+    if (ImGui::Combo("Entity Id", &currId, entityListing))
+    {
+        editingEntity->id = currId;
     }
+    ImGui::PushItemWidth(itemWidth);
+    ImGui::InputScalar("Flags", ImGuiDataType_U8, &editingEntity->flags);
+    ImGui::PushItemWidth(itemWidth);
+    ImGui::InputScalar("Unknown", ImGuiDataType_U8, &editingEntity->unk);
+    for (int i = 0; i < NUM_BYTE_PARAMETERS; i++)
+    {
+        ImGui::PushItemWidth(itemWidth);
+        ImGui::InputScalar(("Parameter " + to_string(i)).c_str(), ImGuiDataType_U8, &editingEntity->parametersByte[i]);
+    }
+    for (int i = 0; i < NUM_PARAMETERS - NUM_BYTE_PARAMETERS; i++)
+    {
+        ImGui::PushItemWidth(itemWidth);
+        ImGuiStringEdit(("Parameter " + to_string(i + NUM_BYTE_PARAMETERS)).c_str(), &editingEntity->parametersStr[i].dat);
+    }
+    ImGui::End();
+}
+
+void Editor::DrawPalette() 
+{
+    if (currentTool != EditorTool::TileBrush) return;
+
+    ImGui::Begin("Palette", NULL, ImGuiWindowFlags_AlwaysAutoResize);
+    ImGui::SetWindowPos(ImVec2(10.0f, 80.0f), ImGuiCond_FirstUseEver);
+    focus.ObserveFocus();
+
+    auto te = &tilesetEditors[currentLayer];
+    if (te->open) {
+        ImGui::Image(&te->target.texture, ImVec2(256, 256));
+    }
+
+    ImGui::End();
 }
 
 void Editor::DrawToolbar() 
@@ -498,32 +519,59 @@ void Editor::DrawToolbar()
         if (active) ImGui::PopStyleColor();
     };
 
-    auto ToggleButton = [&](const char* label, bool* value) {
-        bool active = *value;
-
+    auto ToggleButton = [&](const char* label, bool active, bool* rightToggle) -> bool {
+        bool action = false;
         if (active) ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive));
         
         if (index++ > 0) ImGui::SameLine();
         if (ImGui::Button(label)) {
-            *value = !*value;
+            action = true;
+        } else if (ImGui::IsItemClicked(1)) {
+            if (rightToggle != nullptr) {
+                *rightToggle = !*rightToggle;
+            }
         }
         
         if (active) ImGui::PopStyleColor();
+        return action;
+    };
+
+    auto Tooltip = [](const char* message) {
+        if (ImGui::IsItemHovered())
+        {
+            ImGui::BeginTooltip();
+            ImGui::SetTooltip("%s", message);
+            ImGui::EndTooltip();
+        }
     };
 
     ToolButton("Hand", EditorTool::Hand);
-    ToolButton("Brush", EditorTool::Brush);
+    ToolButton("Tile Brush", EditorTool::TileBrush);
     ToolButton("Eraser", EditorTool::Eraser);
 
     ImGui::SameLine();
     ImGui::SliderFloat("", &cam.zoom, 0.25f, 5.0f, "Scale: %.2fx", ImGuiSliderFlags_NoRoundToFormat);
-
+    
     ImGui::SameLine();
     ImGui::Checkbox("Grid", &showGrid);
 
-    ToggleButton("FG", &viewLayers[0]);
-    ToggleButton("MG", &viewLayers[1]);
-    ToggleButton("BG", &viewLayers[2]);
+    if (ToggleButton("FG", currentLayer == 0, &viewLayers[0])) {
+        currentLayer = 0;
+        viewLayers[0] = true;
+    }
+    Tooltip("Foreground layer\nRight click to toggle visibility.");
+
+    if (ToggleButton("MG", currentLayer == 1, &viewLayers[1])) {
+        currentLayer = 1;
+        viewLayers[1] = true;
+    }
+    Tooltip("Middleground layer\nRight click to toggle visibility.");
+
+    if (ToggleButton("BG", currentLayer == 2, &viewLayers[2])) {
+        currentLayer = 2;
+        viewLayers[2] = true;
+    }
+    Tooltip("Background layer\nRight click to toggle visibility.");
 
     ImGui::End();
 }
