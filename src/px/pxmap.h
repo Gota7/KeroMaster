@@ -16,13 +16,13 @@ const int NUM_TILESETS = 3;
 const int NUM_PARAMETERS = 3;
 const int NUM_BYTE_PARAMETERS = 2;
 
-enum ShiftDirection
+enum class ShiftDirection
 {
-    SHIFT_UP,
-    SHIFT_DOWN,
-    SHIFT_LEFT,
-    SHIFT_RIGHT,
-    SHIFT_RESIZE
+    Up,
+    Down,
+    Left,
+    Right,
+    Resize
 };
 
 struct PxMap : GReadable, GWriteable
@@ -36,8 +36,10 @@ struct PxMap : GReadable, GWriteable
     
     void Read(GFile* f);
     void Write(GFile* f);
-    u8 GetTile(u8 index);
-    u8 GetTile(u8 x, u8 y);
+    u8 SetTile(u32 index, u8 newTile);
+    u8 SetTile(u16 x, u16 y, u8 newTile);
+    u8 GetTile(u32 index);
+    u8 GetTile(u16 x, u16 y);
     void Resize(u16 newWidth, u16 newHeight);
     bool CanShift(ShiftDirection dir);
     void Shift(ShiftDirection dir);

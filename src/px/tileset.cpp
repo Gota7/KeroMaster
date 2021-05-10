@@ -79,6 +79,47 @@ void Tileset::Write(string rsc_k, string tilesetName)
     }
 }
 
+const char* Tileset::GetAttributeName(u8 index) {
+    u8 attr = GetTilesetAttr(index);
+
+    switch (attr) {
+        case 0: return "non-solid";
+        case 1: return "solid";
+        case 2: return "one-way from right??";
+        case 3: return "one-way from left??";
+        case 4: return "solid breakable";
+        case 5: return "spike";
+        case 7: return "platform";
+        case 8: return "top left high 22.5° slope";
+        case 9: return "top left low 22.5° slope";
+        case 10: return "top right low 22.5° slope";
+        case 11: return "top right high 22.5° slope";
+        case 12: return "bottom left high 22.5° slope";
+        case 13: return "bottom left low 22.5° slope";
+        case 14: return "bottom right low 22.5° slope";
+        case 15: return "bottom right high 22.5° slope";
+        case 33: return "moving platform marker left";
+        case 34: return "moving platform marker right";
+        case 35: return "moving platform marker up";
+        case 36: return "moving platform marker down";
+        case 40: return "top left 45° slope";
+        case 41: return "top right 45° slope";
+        case 42: return "bottom left 45° slope";
+        case 43: return "bottom right 45° slope";
+        case 49: return "ladder";
+        case 50: return "ladder top";
+        case 51: return "player block/npc non-solid";
+        case 52: return "player non-solid/npc block?";
+        case 56: return "mud";
+        case 57: return "ice";
+        case 58: return "snow";
+        case 64: return "non-solid water";
+        case 65: return "solid water";
+        default:
+            return "unknown";
+    }
+}
+
 u8 Tileset::GetTilesetAttr(u8 index)
 {
     if (tiles == NULL)

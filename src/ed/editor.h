@@ -8,7 +8,7 @@
 #include "scriptEditor.h"
 #include "rlImGui/focusData.h"
 
-const float MAP_SIZE = 2.0f;
+constexpr float MAP_SIZE = 2.0f;
 
 struct AttributeEditor;
 struct TilesetEditor;
@@ -45,8 +45,12 @@ struct Editor
     bool viewEntities = true;
     bool viewTileAttributes = false;
     bool inPan = false;
+    bool dragLeft = false;
+    bool dragRight = false;
     bool openTilesetsOnLoad = false;
+    bool showPaletteAttributes = false;;
     u8 currentLayer = 0;
+    u16 currentTile = 0;
     EditorTool currentTool = EditorTool::Hand;
     FocusData focus;
     Entity* editingEntity = NULL;
@@ -55,7 +59,7 @@ struct Editor
     std::vector<ScriptEditor> scriptEditors = std::vector<ScriptEditor>();
     char* entityListing;
     bool resizeWarning = false;
-    ShiftDirection resizeMode = SHIFT_RESIZE;
+    ShiftDirection resizeMode = ShiftDirection::Resize;
     u8 resizeMapLayer = 0;
 
     void SetPath(std::string rsc);
@@ -82,6 +86,7 @@ struct Editor
     void CheckPan();
     void CheckScroll();
     void CheckZoom();
+    void CheckEdit();
 };
 
 int cmpstr(const void* a, const void* b);
