@@ -10,6 +10,8 @@ std::map<u8, EntityDisplay> Editor::entities;
 
 using namespace imgui_addons;
 
+static char debug_string[1024] = {0};
+
 int cmpstr(const void* a, const void* b)
 {
     const char* aa = *(const char**)a;
@@ -195,6 +197,19 @@ void Editor::Draw()
         }
     }
 
+    if (currentTool == EditorTool::TileBrush) {
+        int tileX = ((mouseX - cam.offset.x) / (MAP_SIZE * 8) / cam.zoom);
+        int tileY = ((mouseY - cam.offset.y) / (MAP_SIZE * 8) / cam.zoom);
+        static Color alphaTint = ColorFromNormalized({ 1.0, 1.0, 1.0, 0.6 });
+
+        PxMap& m = map.maps[currentLayer];
+        Tileset& t = tilesets[map.tilesets[currentLayer].dat];
+
+        Vector2 pos = {origin.x + tileX * 8 * MAP_SIZE, origin.y + tileY * 8 * MAP_SIZE};
+
+        t.Draw(currentTile, pos, 0, 0, MAP_SIZE, false, false, false, 0, 0, alphaTint);
+    }
+
     // Pop.
     EndMode2D();
 
@@ -231,6 +246,8 @@ void Editor::DrawUI()
 
     // Entity editor.
     DrawEntityEditor();
+
+    DrawPalette();
 
     // Toolbar.
     DrawToolbar();
@@ -278,6 +295,10 @@ void Editor::DrawMainMenu()
         }
         if (ImGui::BeginMenu("Edit"))
         {
+            if (ImGui::MenuItem("Undo", "Ctrl+Z"))
+            {
+            }
+
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("View"))
@@ -302,6 +323,9 @@ void Editor::DrawMainMenu()
         if (ImGui::MenuItem("About"))
         {   
         }
+
+        ImGui::Text("%s", debug_string);
+
         ImGui::EndMainMenuBar();
     }
 
@@ -333,7 +357,7 @@ void Editor::DrawMainMenu()
 
 }
 
-static const std::vector<const char*> scrollTypes = {
+const char* scrollTypes[] = {
     "Normal",
     "3/4",
     "Half",
@@ -344,6 +368,28 @@ static const std::vector<const char*> scrollTypes = {
     "H Half",
     "H Quater",
     "V0 Half",
+    "\0"
+};
+
+const char* tileScales[] = {
+    "0 (undefined - falls back to 2)",
+    "1 (16x16)",
+    "2 (8x8)",
+    "3 (5.33x5.33)",
+    "4 (4x4)",
+    "5 (3.2x3.2)",
+    "6 (2.66x2.66)",
+    "7 (2.29x2.29)",
+    "8 (2x2)",
+    "9 (1.77x1.77)",
+    "10 (1.6x1.6)",
+    "11 (1.45x1.45)",
+    "12 (1.33x1.33)",
+    "13 (1.23x1.23)",
+    "14 (1.14x1.14)",
+    "15 (1.06x1.06)",
+    "16 (1x1)",
+    "\0"
 };
 
 void Editor::DrawLevelEditor()
@@ -386,12 +432,12 @@ void Editor::DrawLevelEditor()
         ImGui::Separator();
         ImGui::PushItemWidth(itemWidth);
         int index = map.tilesetSettings1[i];
-        if (ImGui::Combo(("Tileset " + to_string(i) + " Tile Size").c_str(), &index, "Nothing\00016x16\0008x8\0004x4\0002x2\0001x1\0"))
+        if (ImGui::Combo(("Tileset " + to_string(i) + " Tile Size").c_str(), &index, tileScales, IM_ARRAYSIZE(tileScales)))
         {
             map.tilesetSettings1[i] = (u8)index;
         }
         tmpScrollType[i] = map.tilesetSettings2[i];
-        ImGui::Combo(("Tileset " + to_string(i) + " Scroll Mode").c_str(), &tmpScrollType[i], scrollTypes.data(), scrollTypes.size());
+        ImGui::Combo(("Tileset " + to_string(i) + " Scroll Mode").c_str(), &tmpScrollType[i], scrollTypes, IM_ARRAYSIZE(scrollTypes));
         ImGui::PushItemWidth(itemWidth);
         map.tilesetSettings2[i] = (u8)tmpScrollType[i];
         ImGui::PushItemWidth(itemWidth);
@@ -436,7 +482,7 @@ void Editor::DrawLevelEditor()
                     if (map.maps[i].GetTile(x, y) != 0)
                     {
                         resizeMapLayer = i;
-                        resizeMode = SHIFT_RESIZE;
+                        resizeMode = ShiftDirection::Resize;
                         resizeWarning = true;
                         break;
                     }
@@ -449,57 +495,57 @@ void Editor::DrawLevelEditor()
         }
         if (ImGui::SmallButton(("Move Up##Map" + to_string(i)).c_str()))
         {
-            resizeWarning = !map.maps[i].CanShift(SHIFT_UP);
+            resizeWarning = !map.maps[i].CanShift(ShiftDirection::Up);
             if (resizeWarning)
             {
-                resizeMode = SHIFT_UP;
+                resizeMode = ShiftDirection::Up;
                 resizeMapLayer = i;
             }
             else
             {
-                map.maps[i].Shift(SHIFT_UP);
+                map.maps[i].Shift(ShiftDirection::Up);
             }
         }
         ImGui::SameLine();
         if (ImGui::SmallButton(("Move Down##Map" + to_string(i)).c_str()))
         {
-            resizeWarning = !map.maps[i].CanShift(SHIFT_DOWN);
+            resizeWarning = !map.maps[i].CanShift(ShiftDirection::Down);
             if (resizeWarning)
             {
-                resizeMode = SHIFT_DOWN;
+                resizeMode = ShiftDirection::Down;
                 resizeMapLayer = i;
             }
             else
             {
-                map.maps[i].Shift(SHIFT_DOWN);
+                map.maps[i].Shift(ShiftDirection::Down);
             }
         }
         ImGui::SameLine();
         if (ImGui::SmallButton(("Move Left##Map" + to_string(i)).c_str()))
         {
-            resizeWarning = !map.maps[i].CanShift(SHIFT_LEFT);
+            resizeWarning = !map.maps[i].CanShift(ShiftDirection::Left);
             if (resizeWarning)
             {
-                resizeMode = SHIFT_LEFT;
+                resizeMode = ShiftDirection::Left;
                 resizeMapLayer = i;
             }
             else
             {
-                map.maps[i].Shift(SHIFT_LEFT);
+                map.maps[i].Shift(ShiftDirection::Left);
             }
         }
         ImGui::SameLine();
         if (ImGui::SmallButton(("Move Right##Map" + to_string(i)).c_str()))
         {
-            resizeWarning = !map.maps[i].CanShift(SHIFT_RIGHT);
+            resizeWarning = !map.maps[i].CanShift(ShiftDirection::Right);
             if (resizeWarning)
             {
-                resizeMode = SHIFT_RIGHT;
+                resizeMode = ShiftDirection::Right;
                 resizeMapLayer = i;
             }
             else
             {
-                map.maps[i].Shift(SHIFT_RIGHT);
+                map.maps[i].Shift(ShiftDirection::Right);
             }
         }
     }
@@ -588,13 +634,13 @@ void Editor::DrawLevelEditor()
         {
             switch (resizeMode)
             {
-                case SHIFT_UP:
-                case SHIFT_DOWN:
-                case SHIFT_LEFT:
-                case SHIFT_RIGHT:
+                case ShiftDirection::Up:
+                case ShiftDirection::Down:
+                case ShiftDirection::Left:
+                case ShiftDirection::Right:
                     map.maps[resizeMapLayer].Shift(resizeMode);
                     break;
-                case SHIFT_RESIZE:
+                case ShiftDirection::Resize:
                     map.maps[resizeMapLayer].Resize(map.maps[resizeMapLayer].oldWidth, map.maps[resizeMapLayer].oldHeight);
                     break;
             }
@@ -613,35 +659,95 @@ void Editor::DrawLevelEditor()
 
 void Editor::DrawEntityEditor()
 {
-    if (editingEntity != NULL)
-    {
-        ImGui::Begin("Entity Editor", NULL, ImGuiWindowFlags_AlwaysAutoResize);
-        ImGui::SetWindowPos(ImVec2(10.0f, 80.0f), ImGuiCond_FirstUseEver);
+    if (editingEntity == nullptr) return;
     
-        focus.ObserveFocus();
-        int currId = editingEntity->id;
-        const int itemWidth = 150;
-        ImGui::PushItemWidth(itemWidth);
-        if (ImGui::Combo("Entity Id", &currId, entityListing))
-        {
-            editingEntity->id = currId;
-        }
-        ImGui::PushItemWidth(itemWidth);
-        ImGui::InputScalar("Flags", ImGuiDataType_U8, &editingEntity->flags);
-        ImGui::PushItemWidth(itemWidth);
-        ImGui::InputScalar("Unknown", ImGuiDataType_U8, &editingEntity->unk);
-        for (int i = 0; i < NUM_BYTE_PARAMETERS; i++)
-        {
-            ImGui::PushItemWidth(itemWidth);
-            ImGui::InputScalar(("Parameter " + to_string(i)).c_str(), ImGuiDataType_U8, &editingEntity->parametersByte[i]);
-        }
-        for (int i = 0; i < NUM_PARAMETERS - NUM_BYTE_PARAMETERS; i++)
-        {
-            ImGui::PushItemWidth(itemWidth);
-            ImGuiStringEdit(("Parameter " + to_string(i + NUM_BYTE_PARAMETERS)).c_str(), &editingEntity->parametersStr[i].dat);
-        }
-        ImGui::End();
+    ImGui::Begin("Entity Editor", NULL, ImGuiWindowFlags_AlwaysAutoResize);
+    ImGui::SetWindowPos(ImVec2(10.0f, 80.0f), ImGuiCond_FirstUseEver);
+
+    focus.ObserveFocus();
+    int currId = editingEntity->id;
+    const int itemWidth = 150;
+    ImGui::PushItemWidth(itemWidth);
+    if (ImGui::Combo("Entity Id", &currId, entityListing))
+    {
+        editingEntity->id = currId;
     }
+    ImGui::PushItemWidth(itemWidth);
+    ImGui::InputScalar("Flags", ImGuiDataType_U8, &editingEntity->flags);
+    ImGui::PushItemWidth(itemWidth);
+    ImGui::InputScalar("Unknown", ImGuiDataType_U8, &editingEntity->unk);
+    for (int i = 0; i < NUM_BYTE_PARAMETERS; i++)
+    {
+        ImGui::PushItemWidth(itemWidth);
+        ImGui::InputScalar(("Parameter " + to_string(i)).c_str(), ImGuiDataType_U8, &editingEntity->parametersByte[i]);
+    }
+    for (int i = 0; i < NUM_PARAMETERS - NUM_BYTE_PARAMETERS; i++)
+    {
+        ImGui::PushItemWidth(itemWidth);
+        ImGuiStringEdit(("Parameter " + to_string(i + NUM_BYTE_PARAMETERS)).c_str(), &editingEntity->parametersStr[i].dat);
+    }
+    ImGui::End();
+}
+
+void Editor::DrawPalette() 
+{
+    if (currentTool != EditorTool::TileBrush) return;
+
+    ImGui::Begin("Palette", NULL, ImGuiWindowFlags_AlwaysAutoResize);
+    ImGui::SetWindowPos(ImVec2(10.0f, 80.0f), ImGuiCond_FirstUseEver);
+    focus.ObserveFocus();
+    ImGui::Checkbox("Show attributes", &showPaletteAttributes);
+    ImGui::Dummy(ImVec2(0, 4));
+
+    auto te = tilesets.find(map.tilesets[0].dat);
+    if (te != tilesets.end())
+    {
+        float scale = te->second.textureScale;
+        if (scale == 0.0f) scale = 2.0f;
+        scale = 1 / scale;
+
+        ImGui::Text("Tile ID: %d\nAttribute: %s\n", currentTile, te->second.GetAttributeName(currentTile));
+
+        const ImVec2 p = ImGui::GetCursorScreenPos();
+        ImGui::Image(&te->second.tex, ImVec2(256, 256), ImVec2(0, 0), ImVec2(scale, scale));
+        if (showPaletteAttributes) {
+            for (int i = 0; i < 256; i++) {
+                int attr = te->second.GetTilesetAttr(i);
+                int tileX = i % 16;
+                int tileY = i / 16;
+                int attrX = attr % 16;
+                int attrY = attr / 16;
+
+                ImGui::SetCursorScreenPos(ImVec2(p.x + tileX * 16, p.y + tileY * 16));
+                const ImVec2 uv1 = ImVec2(attrX / 16.0f, attrY / 16.0f);
+                const ImVec2 uv2 = ImVec2(uv1.x + 1/16.0f, uv1.y + 1/16.0f);
+                
+                ImGui::Image(&Tileset::attrTex, ImVec2(16, 16), uv1, uv2);
+            }
+        }
+
+        auto drawList = ImGui::GetWindowDrawList();
+        auto cursorPos = ImVec2(
+            p.x + 16 * (currentTile % 16), 
+            p.y + 16 * (currentTile / 16)
+        );
+        drawList->AddRect(cursorPos, ImVec2(cursorPos.x + 16, cursorPos.y + 16), ImColor(255, 255, 255), 0, 0, 2);
+
+        if (ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+            const ImVec2 mousePos = ImGui::GetMousePos();
+            const ImVec2 mousePosRel = ImVec2(mousePos.x - p.x, mousePos.y - p.y);
+
+            if (mousePosRel.x >= 0 && mousePosRel.x < 256 &&
+                mousePosRel.y >= 0 && mousePosRel.y < 256) 
+            {
+                int tileX = mousePosRel.x / 16;
+                int tileY = mousePosRel.y / 16;
+                currentTile = tileY * 16 + tileX;
+            }
+        }
+    }
+
+    ImGui::End();
 }
 
 void Editor::DrawToolbar() 
@@ -665,32 +771,59 @@ void Editor::DrawToolbar()
         if (active) ImGui::PopStyleColor();
     };
 
-    auto ToggleButton = [&](const char* label, bool* value) {
-        bool active = *value;
-
+    auto ToggleButton = [&](const char* label, bool active, bool* rightToggle) -> bool {
+        bool action = false;
         if (active) ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive));
         
         if (index++ > 0) ImGui::SameLine();
         if (ImGui::Button(label)) {
-            *value = !*value;
+            action = true;
+        } else if (ImGui::IsItemClicked(1)) {
+            if (rightToggle != nullptr) {
+                *rightToggle = !*rightToggle;
+            }
         }
         
         if (active) ImGui::PopStyleColor();
+        return action;
+    };
+
+    auto Tooltip = [](const char* message) {
+        if (ImGui::IsItemHovered())
+        {
+            ImGui::BeginTooltip();
+            ImGui::SetTooltip("%s", message);
+            ImGui::EndTooltip();
+        }
     };
 
     ToolButton("Hand", EditorTool::Hand);
-    ToolButton("Brush", EditorTool::Brush);
+    ToolButton("Tile Brush", EditorTool::TileBrush);
     ToolButton("Eraser", EditorTool::Eraser);
 
     ImGui::SameLine();
     ImGui::SliderFloat("", &cam.zoom, 0.25f, 5.0f, "Scale: %.2fx", ImGuiSliderFlags_NoRoundToFormat);
-
+    
     ImGui::SameLine();
     ImGui::Checkbox("Grid", &showGrid);
 
-    ToggleButton("FG", &viewLayers[0]);
-    ToggleButton("MG", &viewLayers[1]);
-    ToggleButton("BG", &viewLayers[2]);
+    if (ToggleButton("FG", currentLayer == 0, &viewLayers[0])) {
+        currentLayer = 0;
+        viewLayers[0] = true;
+    }
+    Tooltip("Foreground layer\nRight click to toggle visibility.");
+
+    if (ToggleButton("MG", currentLayer == 1, &viewLayers[1])) {
+        currentLayer = 1;
+        viewLayers[1] = true;
+    }
+    Tooltip("Middleground layer\nRight click to toggle visibility.");
+
+    if (ToggleButton("BG", currentLayer == 2, &viewLayers[2])) {
+        currentLayer = 2;
+        viewLayers[2] = true;
+    }
+    Tooltip("Background layer\nRight click to toggle visibility.");
 
     ImGui::End();
 }
@@ -792,6 +925,8 @@ void Editor::Update()
     // Zooming.
     CheckZoom();
 
+    CheckEdit();
+
     // Set mouse position.
     oldMouseX = mouseX;
     oldMouseY = mouseY;
@@ -829,22 +964,17 @@ void Editor::CheckPan()
 {
     if (inPan)
     {
-        if (IsMouseButtonUp(MOUSE_RIGHT_BUTTON) && (currentTool == EditorTool::Hand && IsMouseButtonUp(MOUSE_LEFT_BUTTON)))
-        {
-            inPan = false;
-        }
-        else
-        {
-            MoveCamX(mouseX - oldMouseX);
-            MoveCamY(mouseY - oldMouseY);
-        }
-    }
-    else if (!focus.mouseInWindow && (
-            IsMouseButtonPressed(MOUSE_RIGHT_BUTTON) 
-            || (currentTool == EditorTool::Hand && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-        ) && !focus.isModal)
+        dragLeft = currentTool == EditorTool::Hand && !IsMouseButtonUp(MOUSE_LEFT_BUTTON);
+        dragRight = !IsMouseButtonUp(MOUSE_RIGHT_BUTTON);
+        inPan = dragLeft || dragRight;
+
+        MoveCamX(mouseX - oldMouseX);
+        MoveCamY(mouseY - oldMouseY);
+    } else if (!focus.mouseInWindow && !focus.isModal)
     {
-        inPan = true;
+        dragLeft = currentTool == EditorTool::Hand && IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
+        dragRight = IsMouseButtonPressed(MOUSE_RIGHT_BUTTON);
+        inPan = dragLeft || dragRight;
     }
 }
 
@@ -854,25 +984,22 @@ void Editor::CheckScroll()
     {
         return;
     }
+
     if (IsKeyDown(KEY_W) || IsKeyDown(KEY_UP))
     {
         cam.offset.y += scrollSpeed;
-        //cam.target.y -= scrollSpeed;
     }
     if (IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN))
     {
         cam.offset.y -= scrollSpeed;
-        //cam.target.y += scrollSpeed;
     }
     if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT))
     {
         cam.offset.x += scrollSpeed;
-        //cam.target.x -= scrollSpeed;
     }
     if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT))
     {
         cam.offset.x -= scrollSpeed;
-        //cam.target.x += scrollSpeed;
     }
 }
 
@@ -917,5 +1044,37 @@ void Editor::CheckZoom()
             cam.zoom = 8.0f;
         }
     }
+}
 
+void Editor::CheckEdit()
+{
+    if (focus.mouseInWindow || focus.isModal)
+    {
+        return;
+    }
+
+    if (currentTool == EditorTool::TileBrush) {
+        PxMap& layer = map.maps[currentLayer];
+
+        int tileX = ((mouseX - cam.offset.x) / (MAP_SIZE * 8) / cam.zoom);
+        int tileY = ((mouseY - cam.offset.y) / (MAP_SIZE * 8) / cam.zoom);
+
+        if (tileX >= 0 && tileX < layer.width && tileY >= 0 && tileY < layer.height) {
+            if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
+                layer.SetTile(tileX, tileY, currentTile);
+            }
+        }
+    } else if (currentTool == EditorTool::Eraser) {
+        // separate code because we want to add stamping capabilities to the above
+        PxMap& layer = map.maps[currentLayer];
+
+        int tileX = ((mouseX - cam.offset.x) / (MAP_SIZE * 8) / cam.zoom);
+        int tileY = ((mouseY - cam.offset.y) / (MAP_SIZE * 8) / cam.zoom);
+
+        if (tileX >= 0 && tileX < layer.width && tileY >= 0 && tileY < layer.height) {
+            if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
+                layer.SetTile(tileX, tileY, 0);
+            }
+        }
+    }
 }

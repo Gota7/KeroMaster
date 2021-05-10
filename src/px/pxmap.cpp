@@ -39,14 +39,31 @@ void PxMap::Write(GFile* f)
     }
 }
 
-u8 PxMap::GetTile(u8 index)
+u8 PxMap::SetTile(u32 index, u8 newTile) 
 {
+    if (index > width * height) return 0;
+
+    u8 oldTile = tiles[index];
+    tiles[index] = newTile;
+    return oldTile;
+}
+
+u8 PxMap::SetTile(u16 x, u16 y, u8 newTile)
+{
+    return SetTile(x + y * width, newTile);
+}
+
+
+u8 PxMap::GetTile(u32 index)
+{
+    if (index > width * height) return 0;
+
     return tiles[index];
 }
 
-u8 PxMap::GetTile(u8 x, u8 y)
+u8 PxMap::GetTile(u16 x, u16 y)
 {
-    return tiles[x + y * width];
+    return GetTile(x + y * width);
 }
 
 void PxMap::Resize(u16 newWidth, u16 newHeight)
@@ -68,15 +85,15 @@ void PxMap::Resize(u16 newWidth, u16 newHeight)
 
 bool PxMap::CanShift(ShiftDirection dir)
 {
-    if (width <= 1 && (dir == SHIFT_RIGHT || dir == SHIFT_LEFT))
+    if (width <= 1 && (dir == ShiftDirection::Right || dir == ShiftDirection::Left))
     {
         return false;
     }
-    if (height <= 1 && (dir == SHIFT_UP || dir == SHIFT_DOWN))
+    if (height <= 1 && (dir == ShiftDirection::Up || dir == ShiftDirection::Down))
     {
         return false;
     }
-    if (dir == SHIFT_UP)
+    if (dir == ShiftDirection::Up)
     {
         for (int x = 0; x < width; x++)
         {
@@ -87,7 +104,7 @@ bool PxMap::CanShift(ShiftDirection dir)
         }
         return true;
     }
-    else if (dir == SHIFT_DOWN)
+    else if (dir == ShiftDirection::Down)
     {
         for (int x = 0; x < width; x++)
         {
@@ -98,7 +115,7 @@ bool PxMap::CanShift(ShiftDirection dir)
         }
         return true;
     }
-    else if (dir == SHIFT_LEFT)
+    else if (dir == ShiftDirection::Left)
     {
         for (int y = 0; y < height; y++)
         {
@@ -109,7 +126,7 @@ bool PxMap::CanShift(ShiftDirection dir)
         }
         return true;
     }
-    else if (dir == SHIFT_RIGHT)
+    else if (dir == ShiftDirection::Right)
     {
         for (int y = 0; y < height; y++)
         {
@@ -125,7 +142,7 @@ bool PxMap::CanShift(ShiftDirection dir)
 
 void PxMap::Shift(ShiftDirection dir)
 {
-    if (dir == SHIFT_UP)
+    if (dir == ShiftDirection::Up)
     {
         for (int x = 0; x < width; x++)
         {
@@ -139,7 +156,7 @@ void PxMap::Shift(ShiftDirection dir)
             tiles[x + (height - 1) * width] = 0;
         }
     }
-    else if (dir == SHIFT_DOWN)
+    else if (dir == ShiftDirection::Down)
     {
         for (int x = 0; x < width; x++)
         {
@@ -153,7 +170,7 @@ void PxMap::Shift(ShiftDirection dir)
             tiles[x] = 0;
         }
     }
-    else if (dir == SHIFT_LEFT)
+    else if (dir == ShiftDirection::Left)
     {
         for (int y = 0; y < height; y++)
         {
@@ -167,7 +184,7 @@ void PxMap::Shift(ShiftDirection dir)
             tiles[width - 1 + y * width] = 0;
         }
     }
-    else if (dir == SHIFT_RIGHT)
+    else if (dir == ShiftDirection::Right)
     {
         for (int y = 0; y < height; y++)
         {
@@ -349,18 +366,21 @@ void Map::DrawLayer(u8 layerNum, map<string, Tileset>& tilesets, Vector2 origin,
     {
         return;
     }
-    PxMap* m = &maps[layerNum];
-    Tileset* t = &tilesets[this->tilesets[layerNum].dat];
-    t->textureScale = tilesetSettings1[layerNum];
-    if (t->textureScale == 0) {
-        t->textureScale = 2;
+
+    PxMap& m = maps[layerNum];
+    Tileset& t = tilesets[this->tilesets[layerNum].dat];
+    t.textureScale = tilesetSettings1[layerNum];
+
+    if (t.textureScale == 0) 
+    {
+        t.textureScale = 2;
     }
 
-    for (u16 y = 0; y < m->height; y++)
+    for (u16 y = 0; y < m.height; y++)
     {
-        for (u16 x = 0; x < m->width; x++)
+        for (u16 x = 0; x < m.width; x++)
         {
-            t->Draw(m->GetTile(x, y), origin, x, y, mapScale, showAttr);
+            t.Draw(m.GetTile(x, y), origin, x, y, mapScale, showAttr);
         }
     }
 }
