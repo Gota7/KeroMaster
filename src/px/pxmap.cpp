@@ -366,18 +366,21 @@ void Map::DrawLayer(u8 layerNum, map<string, Tileset>& tilesets, Vector2 origin,
     {
         return;
     }
-    PxMap* m = &maps[layerNum];
-    Tileset* t = &tilesets[this->tilesets[layerNum].dat];
-    t->textureScale = tilesetSettings1[layerNum];
-    if (t->textureScale == 0) {
-        t->textureScale = 2;
+
+    PxMap& m = maps[layerNum];
+    Tileset& t = tilesets[this->tilesets[layerNum].dat];
+    t.textureScale = tilesetSettings1[layerNum];
+
+    if (t.textureScale == 0) 
+    {
+        t.textureScale = 2;
     }
 
-    for (u16 y = 0; y < m->height; y++)
+    for (u16 y = 0; y < m.height; y++)
     {
-        for (u16 x = 0; x < m->width; x++)
+        for (u16 x = 0; x < m.width; x++)
         {
-            t->Draw(m->GetTile(x, y), origin, x, y, mapScale, showAttr);
+            t.Draw(m.GetTile(x, y), origin, x, y, mapScale, showAttr);
         }
     }
 }

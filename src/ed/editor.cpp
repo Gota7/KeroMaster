@@ -197,6 +197,19 @@ void Editor::Draw()
         }
     }
 
+    if (currentTool == EditorTool::TileBrush) {
+        int tileX = ((mouseX - cam.offset.x) / (MAP_SIZE * 8) / cam.zoom);
+        int tileY = ((mouseY - cam.offset.y) / (MAP_SIZE * 8) / cam.zoom);
+        static Color alphaTint = ColorFromNormalized({ 1.0, 1.0, 1.0, 0.6 });
+
+        PxMap& m = map.maps[currentLayer];
+        Tileset& t = tilesets[map.tilesets[currentLayer].dat];
+
+        Vector2 pos = {origin.x + tileX * 8 * MAP_SIZE, origin.y + tileY * 8 * MAP_SIZE};
+
+        t.Draw(currentTile, pos, 0, 0, MAP_SIZE, false, false, false, 0, 0, alphaTint);
+    }
+
     // Pop.
     EndMode2D();
 
@@ -1051,7 +1064,17 @@ void Editor::CheckEdit()
                 layer.SetTile(tileX, tileY, currentTile);
             }
         }
+    } else if (currentTool == EditorTool::Eraser) {
+        // separate code because we want to add stamping capabilities to the above
+        PxMap& layer = map.maps[currentLayer];
 
-        //sprintf(debug_string, "%d %d %f %f", tileX, tileY, cam.offset.x, cam.offset.y);
+        int tileX = ((mouseX - cam.offset.x) / (MAP_SIZE * 8) / cam.zoom);
+        int tileY = ((mouseY - cam.offset.y) / (MAP_SIZE * 8) / cam.zoom);
+
+        if (tileX >= 0 && tileX < layer.width && tileY >= 0 && tileY < layer.height) {
+            if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
+                layer.SetTile(tileX, tileY, 0);
+            }
+        }
     }
 }
