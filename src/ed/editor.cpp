@@ -120,6 +120,32 @@ void Editor::MoveCamY(float amount, bool relative)
     }
 }
 
+int Editor::GetTileX(s8 layer)
+{
+    int ret = ((mouseX - cam.offset.x) / (MAP_SIZE * 8) / cam.zoom);
+    if (ret < 0 || (layer != -1 && ret >= map.maps[layer].width))
+    {
+        return -1;
+    }
+    else
+    {
+        return ret;
+    }
+}
+
+int Editor::GetTileY(s8 layer)
+{
+    int ret = ((mouseY - cam.offset.y) / (MAP_SIZE * 8) / cam.zoom);
+    if (ret < 0 || (layer != -1 && ret >= map.maps[layer].width))
+    {
+        return -1;
+    }
+    else
+    {
+        return ret;
+    }
+}
+
 void Editor::Draw()
 {
 
@@ -197,9 +223,10 @@ void Editor::Draw()
         }
     }
 
-    if (currentTool == EditorTool::TileBrush) {
-        int tileX = ((mouseX - cam.offset.x) / (MAP_SIZE * 8) / cam.zoom);
-        int tileY = ((mouseY - cam.offset.y) / (MAP_SIZE * 8) / cam.zoom);
+    if (currentTool == EditorTool::TileBrush)
+    {
+        int tileX = GetTileX();
+        int tileY = GetTileY();
         static Color alphaTint = ColorFromNormalized({ 1.0, 1.0, 1.0, 0.6 });
 
         PxMap& m = map.maps[currentLayer];
@@ -208,6 +235,24 @@ void Editor::Draw()
         Vector2 pos = {origin.x + tileX * 8 * MAP_SIZE, origin.y + tileY * 8 * MAP_SIZE};
 
         t.Draw(currentTile, pos, 0, 0, MAP_SIZE, false, false, false, 0, 0, alphaTint);
+    }
+
+    if (isPlacingEntity)
+    {
+        bool draw = true;
+        int tileX = GetTileX();
+        int tileY = GetTileY();
+        if (tileX < 0) { draw = false; }
+        if (tileY < 0) { draw = false; }
+        if (tileX > 0xFFFF) { draw = false; }
+        if (tileY > 0xFFFF) { draw = false; }
+        string tilesetNames[3];
+        tilesetNames[0] = map.tilesets[0].dat;
+        tilesetNames[1] = map.tilesets[1].dat;
+        tilesetNames[2] = map.tilesets[2].dat;
+        Str tmp;
+        tmp.dat = "";
+        if (draw) entities[placeEntityId].Draw(placeEntityId, tmp, 0, true, map.references[RT_NPC_PALETTE].dat, tilesetNames, tilesets, origin, tileX, tileY, MAP_SIZE, viewEntityBoxes);
     }
 
     // Pop.
@@ -247,10 +292,15 @@ void Editor::DrawUI()
     // Entity editor.
     DrawEntityEditor();
 
+    // Draw palette.
     DrawPalette();
 
     // Toolbar.
     DrawToolbar();
+
+    // Profile editor.
+    DrawProfileEditor();
+
 }
 
 void Editor::DrawMainMenu()
@@ -800,6 +850,7 @@ void Editor::DrawToolbar()
     ToolButton("Hand", EditorTool::Hand);
     ToolButton("Tile Brush", EditorTool::TileBrush);
     ToolButton("Eraser", EditorTool::Eraser);
+    ToolButton("Entity Hand", EditorTool::EntityHand);
 
     ImGui::SameLine();
     ImGui::SliderFloat("", &cam.zoom, 0.25f, 5.0f, "Scale: %.2fx", ImGuiSliderFlags_NoRoundToFormat);
@@ -824,13 +875,34 @@ void Editor::DrawToolbar()
         viewLayers[2] = true;
     }
     Tooltip("Background layer\nRight click to toggle visibility.");
+    if (currentTool == EditorTool::EntityHand)
+    {
+        ImGui::SameLine();
+        ImGui::Combo("Place Entity Id", &placeEntityId, entityListing);
+        ImGui::SameLine();
+        if (ToggleButton("+", isPlacingEntity, nullptr))
+        {
+            isPlacingEntity = !isPlacingEntity;
+        }
+        Tooltip("Click after hitting to place an entity. Holding shift while placing will allow you to press multiple.");
+    }
 
     ImGui::End();
 }
 
 void Editor::DrawProfileEditor()
 {
-
+    ImGui::Begin("Profile Editor");
+    focus.ObserveFocus();
+    if (ImGui::BeginTabBar("Profile Tabs"))
+    {
+        if (ImGui::BeginTabItem("Screen Settings"))
+        {
+            ImGui::EndTabItem();
+        }
+        ImGui::EndTabBar();
+    }
+    ImGui::End();
 }
 
 void Editor::OpenTileset(std::string name)
@@ -925,7 +997,11 @@ void Editor::Update()
     // Zooming.
     CheckZoom();
 
+    // Check for editing.
     CheckEdit();
+
+    // Check entity.
+    CheckEntity();
 
     // Set mouse position.
     oldMouseX = mouseX;
@@ -1074,6 +1150,83 @@ void Editor::CheckEdit()
         if (tileX >= 0 && tileX < layer.width && tileY >= 0 && tileY < layer.height) {
             if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
                 layer.SetTile(tileX, tileY, 0);
+            }
+        }
+    }
+}
+
+void Editor::CheckEntity()
+{
+    if (!isPlacingEntity && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && currentTool == EditorTool::EntityHand && !focus.mouseInWindow)
+    {
+        int tileX = GetTileX();
+        int tileY = GetTileY();
+        bool found = false;
+        for (int i = 0; i < map.entities.size(); i++)
+        {
+            if (tileX == map.entities[i].xPos && tileY == map.entities[i].yPos)
+            {
+                if (editingEntity != nullptr)
+                {
+                    editingEntity->beingEdited = false;
+                }
+                editingEntity = &map.entities[i];
+                map.entities[i].beingEdited = true;
+                found = true;
+                break;
+            }
+        }
+        if (!found && editingEntity != nullptr)
+        {
+            editingEntity->beingEdited = false;
+            editingEntity = nullptr;
+        }
+    }
+    else if (!isPlacingEntity && editingEntity != nullptr && IsMouseButtonDown(MOUSE_LEFT_BUTTON) && currentTool == EditorTool::EntityHand && !focus.mouseInWindow)
+    {
+        int tileX = GetTileX();
+        int tileY = GetTileY();
+        if (tileX < 0) { tileX = 0; }
+        if (tileY < 0) { tileY = 0; }
+        if (tileX > 0xFFFF) { tileX = 0xFFFF; }
+        if (tileY > 0xFFFF) { tileY = 0xFFFF; }
+        editingEntity->xPos = tileX;
+        editingEntity->yPos = tileY;
+    }
+    else if (isPlacingEntity && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+    {
+        int tileX = GetTileX();
+        int tileY = GetTileY();
+        if (tileX < 0) { return; }
+        if (tileY < 0) { return; }
+        if (tileX > 0xFFFF) { return; }
+        if (tileY > 0xFFFF) { return; }
+        Entity e = Entity();
+        e.beingEdited = false;
+        e.flags = 1;
+        e.id = placeEntityId;
+        e.parametersByte[0] = 0;
+        e.parametersByte[1] = 0;
+        e.parametersStr[0].dat = "";
+        e.unk = 0;
+        e.xPos = tileX;
+        e.yPos = tileY;
+        map.entities.push_back(e);
+        if (IsKeyUp(KEY_LEFT_SHIFT) && IsKeyUp(KEY_RIGHT_SHIFT))
+        {
+            isPlacingEntity = false;
+        }
+    }
+    if (editingEntity != nullptr && IsKeyPressed(KEY_DELETE))
+    {
+        editingEntity->beingEdited = false;
+        Entity* e = editingEntity;
+        editingEntity = nullptr;
+        for (int i = 0; i < map.entities.size(); i++)
+        {
+            if (&map.entities[i] == e)
+            {
+                map.entities.erase(map.entities.begin() + i);
             }
         }
     }

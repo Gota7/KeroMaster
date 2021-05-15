@@ -17,7 +17,8 @@ struct ScriptEditor;
 enum class EditorTool {
     Hand,
     TileBrush,
-    Eraser
+    Eraser,
+    EntityHand
 };
 
 struct Editor
@@ -61,6 +62,8 @@ struct Editor
     bool resizeWarning = false;
     ShiftDirection resizeMode = ShiftDirection::Resize;
     u8 resizeMapLayer = 0;
+    int placeEntityId = 0;
+    bool isPlacingEntity = false;
 
     void SetPath(std::string rsc);
     void LoadEnemies(std::string xml);
@@ -70,6 +73,8 @@ struct Editor
     void UnloadLevel();
     void MoveCamX(float amount, bool relative = true);
     void MoveCamY(float amount, bool relative = true);
+    int GetTileX(s8 layer = -1);
+    int GetTileY(s8 layer = -1);
     void Draw();
     void DrawUI();
     void DrawMainMenu();
@@ -87,6 +92,7 @@ struct Editor
     void CheckScroll();
     void CheckZoom();
     void CheckEdit();
+    void CheckEntity();
 };
 
 int cmpstr(const void* a, const void* b);
