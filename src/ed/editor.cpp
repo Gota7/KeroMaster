@@ -8,6 +8,7 @@
 std::map<string, Tileset> Editor::tilesets;
 std::map<u8, EntityDisplay> Editor::entities;
 Settings Editor::settings;
+Color Editor::fadeColor = { 255, 0, 0, 255 };
 
 using namespace imgui_addons;
 
@@ -164,6 +165,7 @@ void Editor::Draw()
     // Safety.
     if (!enabled)
     {
+        ClearBackground(fadeColor);
         return;
     }
 
@@ -340,6 +342,8 @@ void Editor::DrawMainMenu()
             }
             if (ImGui::MenuItem("Close", "Ctrl+Shift+C"))
             {
+                enabled = false;
+                map.Unload(tilesets);
             }
             if (ImGui::MenuItem("Quit", "Ctrl+Shift+Q"))
             {
@@ -782,7 +786,7 @@ void Editor::DrawPalette()
     ImGui::Checkbox("Show attributes", &showPaletteAttributes);
     ImGui::Dummy(ImVec2(0, 4));
 
-    auto te = tilesets.find(map.tilesets[0].dat);
+    auto te = tilesets.find(map.tilesets[currentLayer].dat);
     if (te != tilesets.end())
     {
         float scale = te->second.textureScale;
@@ -792,9 +796,9 @@ void Editor::DrawPalette()
         ImGui::Text("Tile ID: %d\nAttribute: %s\n", currentTile, te->second.GetAttributeName(currentTile));
 
         const ImVec2 p = ImGui::GetCursorScreenPos();
-        ImGui::Image(&te->second.tex, ImVec2(256, 256), ImVec2(0, 0), ImVec2(scale, scale));
+        ImGui::Image(&te->second.tex, ImVec2(te->second.width * 16, te->second.height * 16), ImVec2(0, 0), ImVec2(scale, scale));
         if (showPaletteAttributes) {
-            for (int i = 0; i < 256; i++) {
+            for (int i = 0; i < te->second.width * 16; i++) {
                 int attr = te->second.GetTilesetAttr(i);
                 int tileX = i % 16;
                 int tileY = i / 16;
@@ -820,8 +824,8 @@ void Editor::DrawPalette()
             const ImVec2 mousePos = ImGui::GetMousePos();
             const ImVec2 mousePosRel = ImVec2(mousePos.x - p.x, mousePos.y - p.y);
 
-            if (mousePosRel.x >= 0 && mousePosRel.x < 256 &&
-                mousePosRel.y >= 0 && mousePosRel.y < 256) 
+            if (mousePosRel.x >= 0 && mousePosRel.x < te->second.width * 16 &&
+                mousePosRel.y >= 0 && mousePosRel.y < te->second.height * 16) 
             {
                 int tileX = mousePosRel.x / 16;
                 int tileY = mousePosRel.y / 16;
@@ -980,6 +984,7 @@ void Editor::Update()
     // Safety.
     if (!enabled)
     {
+        UpdateFadeColor();
         return;
     }
 
@@ -1249,6 +1254,25 @@ void Editor::CheckEntity()
             {
                 map.entities.erase(map.entities.begin() + i);
             }
+        }
+    }
+}
+
+void Editor::UpdateFadeColor()
+{
+    static int decColor = 0;
+    static int tmr = 0;
+    int incColor = decColor == 2 ? 0 : (decColor + 1);
+    (&fadeColor.r)[incColor]++;
+    (&fadeColor.r)[decColor]--;
+    tmr++;
+    if (tmr > 255)
+    {
+        tmr = 0;
+        decColor++;
+        if (decColor > 2)
+        {
+            decColor = 0;
         }
     }
 }

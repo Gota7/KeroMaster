@@ -32,6 +32,7 @@ struct Editor
     Camera2D cam = {0};
     static std::map<string, Tileset> tilesets;
     static std::map<u8, EntityDisplay> entities;
+    static Color fadeColor;
     string rsc = "";
     bool enabled = false;
     Vector2 origin;
@@ -97,6 +98,7 @@ struct Editor
     void CheckZoom();
     void CheckEdit();
     void CheckEntity();
+    void UpdateFadeColor();
 };
 
 int cmpstr(const void* a, const void* b);

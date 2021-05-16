@@ -43,7 +43,7 @@ static int EditorLoop() {
         BeginDrawing();
         if (e.settings.show)
         {
-            ClearBackground(BLACK);
+            ClearBackground(e.fadeColor);
             BeginRLImGui();
             if (runOnce)
             {

@@ -38,8 +38,7 @@ const char* ActionTypes[] = {
     "Hand",
     "Tile Brush",
     "Eraser",
-    "Entity Hand",
-    "\0"
+    "Entity Hand"
 };
 
 void Settings::ShowWindow(Editor* ed)
@@ -91,7 +90,7 @@ void Settings::ShowWindow(Editor* ed)
                 ImGui::EndListBox();
                 ImGui::EndPopup();
             }
-            if (strcmp(lastLevel.c_str(), "") != 0)
+            if (strcmp(lastLevel.c_str(), "") != 0 && GFile::FileExists((rscPath + "/field/" + lastLevel + ".pxpack").c_str()))
             {
                 ImGui::Separator();
                 ImGui::Text("Action Button:");
