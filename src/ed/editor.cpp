@@ -9,6 +9,8 @@ std::map<string, Tileset> Editor::tilesets;
 std::map<u8, EntityDisplay> Editor::entities;
 Settings Editor::settings;
 Color Editor::fadeColor = { 255, 0, 0, 255 };
+double Editor::timer;
+bool Editor::doFullscreen = false;
 
 using namespace imgui_addons;
 
@@ -321,6 +323,7 @@ void Editor::DrawMainMenu()
     bool doSaveAs = (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) && IsKeyDown(KEY_S);
     bool doClose = (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) && IsKeyDown(KEY_C);
     bool doQuit = (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) && IsKeyDown(KEY_Q);
+    bool isFullscreening = false;
 
     // File menu.
     if (ImGui::BeginMainMenuBar())
@@ -379,6 +382,10 @@ void Editor::DrawMainMenu()
             ImGui::Checkbox("Entities", &viewEntities);
             ImGui::Separator();
             ImGui::Checkbox("Tile Attributes", &viewTileAttributes);
+            if (ImGui::Button("Fullscreen"))
+            {
+                isFullscreening = true;
+            }
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("Help"))
@@ -427,6 +434,20 @@ void Editor::DrawMainMenu()
     else if (doQuit)
     {
         exit(0);
+    }
+    else if (isFullscreening || doFullscreen)
+    {
+        if (!IsWindowFullscreen() && !doFullscreen)
+        {
+            MaximizeWindow();
+            timer = GetTime();
+            doFullscreen = true;
+        }
+        if (GetTime() > timer + 0.1)
+        {
+            ToggleFullscreen();
+            doFullscreen = false;
+        }
     }
 
     // Settings.

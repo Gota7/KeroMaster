@@ -61,6 +61,20 @@ static int EditorLoop() {
         EndRLImGui();
         EndDrawing();
         e.Update();
+        if (IsKeyPressed(KEY_F4) || e.doFullscreen)
+        {
+            if (!IsWindowFullscreen() && !e.doFullscreen)
+            {
+                MaximizeWindow();
+                e.timer = GetTime();
+                e.doFullscreen = true;
+            }
+            if (GetTime() > e.timer + 0.1)
+            {
+                ToggleFullscreen();
+                e.doFullscreen = false;
+            }
+        }
     }
 
     return 0;

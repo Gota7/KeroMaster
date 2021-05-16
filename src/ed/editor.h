@@ -33,6 +33,8 @@ struct Editor
     static std::map<string, Tileset> tilesets;
     static std::map<u8, EntityDisplay> entities;
     static Color fadeColor;
+    static double timer;
+    static bool doFullscreen;
     string rsc = "";
     bool enabled = false;
     Vector2 origin;
