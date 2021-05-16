@@ -315,6 +315,12 @@ void Editor::DrawMainMenu()
     static char** files;
     bool openPopup = false;
     bool openSettings = false;
+    bool doNew = (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && IsKeyDown(KEY_N);
+    bool doOpen = (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && IsKeyDown(KEY_O);
+    bool doSave = (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && IsKeyDown(KEY_S);
+    bool doSaveAs = (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) && IsKeyDown(KEY_S);
+    bool doClose = (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) && IsKeyDown(KEY_C);
+    bool doQuit = (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) && IsKeyDown(KEY_Q);
 
     // File menu.
     if (ImGui::BeginMainMenuBar())
@@ -323,30 +329,27 @@ void Editor::DrawMainMenu()
         {
             if (ImGui::MenuItem("New", "Ctrl+N"))
             {
+                doNew = true;
             }
             if (ImGui::MenuItem("Open", "Ctrl+O"))
             {
-                numFiles = 0;
-                files = GetDirectoryFiles((rsc + "/field").c_str(), &numFiles);
-                qsort(files, numFiles, sizeof(char*), cmpstr);
-                ImVec2 center = ImGui::GetMainViewport()->GetCenter();
-                ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-                openPopup = true;
+                doOpen = true;
             }
             if (ImGui::MenuItem("Save", "Ctrl+S"))
             {
-                map.Write(rsc, mapName);
+                doSave = true;
             }
             if (ImGui::MenuItem("Save As", "Ctrl+Shift+S"))
             {
+                doSaveAs = true;
             }
             if (ImGui::MenuItem("Close", "Ctrl+Shift+C"))
             {
-                enabled = false;
-                map.Unload(tilesets);
+                doClose = true;
             }
             if (ImGui::MenuItem("Quit", "Ctrl+Shift+Q"))
             {
+                doQuit = true;
             }
             ImGui::EndMenu();
         }
@@ -391,6 +394,41 @@ void Editor::DrawMainMenu()
         ImGui::EndMainMenuBar();
     }
 
+    // Options.
+    if (doNew)
+    {
+
+    }
+    else if (doOpen)
+    {
+        numFiles = 0;
+        files = GetDirectoryFiles((rsc + "/field").c_str(), &numFiles);
+        qsort(files, numFiles, sizeof(char*), cmpstr);
+        ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+        ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+        openPopup = true;
+    }
+    else if (doSaveAs)
+    {
+
+    }
+    else if (doSave)
+    {
+        if (enabled)
+        {
+            map.Write(rsc, mapName);
+        }
+    }
+    else if (doClose)
+    {
+        enabled = false;
+        map.Unload(tilesets);
+    }
+    else if (doQuit)
+    {
+        exit(0);
+    }
+
     // Settings.
     if (openSettings)
     {
@@ -422,6 +460,10 @@ void Editor::DrawMainMenu()
             }
         }
         ImGui::EndListBox();
+        if (ImGui::Button("Cancel"))
+        {
+            ImGui::CloseCurrentPopup();
+        }
         ImGui::EndPopup();
     }
 
