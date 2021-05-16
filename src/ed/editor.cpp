@@ -1302,19 +1302,11 @@ void Editor::CheckEntity()
 
 void Editor::UpdateFadeColor()
 {
-    static int decColor = 0;
-    static int tmr = 0;
-    int incColor = decColor == 2 ? 0 : (decColor + 1);
-    (&fadeColor.r)[incColor]++;
-    (&fadeColor.r)[decColor]--;
-    tmr++;
-    if (tmr > 255)
+    Vector3 col = ColorToHSV(fadeColor);
+    col.x += 0.25;
+    if (col.x >= 360)
     {
-        tmr = 0;
-        decColor++;
-        if (decColor > 2)
-        {
-            decColor = 0;
-        }
+        col.x = 0;
     }
+    fadeColor = ColorFromHSV(col.x, col.y, col.z);
 }
