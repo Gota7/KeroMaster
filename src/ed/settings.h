@@ -1,18 +1,31 @@
 #pragma once
 
 #include "raylib.h"
+#include "editor.h"
 #include <string>
 #include <cstring>
 
 using namespace std;
 
+struct Editor;
+enum class EditorTool;
+struct FocusData;
+
 struct Settings
 {
     string rscPath = "";
-    MouseButton placeTile = MOUSE_LEFT_BUTTON;
-    MouseButton removeTile = MOUSE_RIGHT_BUTTON;
-    MouseButton panView = MOUSE_MIDDLE_BUTTON;
-    bool allowPlaceTile = true;
-    bool allowRemoveTile = true;
-    bool allowPanView = true;
+    string lastLevel = "";
+    EditorTool leftClick = (EditorTool)4;
+    EditorTool rightClick = (EditorTool)0;
+    EditorTool middleClick = (EditorTool)3;
+    bool show = false;
+
+    void Load();
+    void Save();
+    void ShowWindow(Editor* ed);
+    bool ButtonUp(EditorTool tool);
+    bool ButtonDown(EditorTool tool);
+    bool ButtonPressed(EditorTool tool);
+    bool ButtonReleased(EditorTool tool);
+    bool ButtonClicked(EditorTool tool, bool repeat = false);
 };

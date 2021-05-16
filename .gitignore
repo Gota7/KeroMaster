@@ -46,3 +46,4 @@ include/CMakeFiles
 CMakeCache.txt
 *.cmake
 imgui.ini
+settings.ini

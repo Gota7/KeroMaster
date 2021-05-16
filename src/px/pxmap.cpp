@@ -353,6 +353,7 @@ void Map::Write(string rsc_k, string mapName)
             e->parametersStr[i].Write(&f);
         }
     }
+    f.Close();
 }
 
 void Map::Clear()

@@ -24,12 +24,13 @@ void ImGuiTooltip(string tip)
     }
 }
 
-void ImGuiStringEdit(const char* label, string* toEdit)
+bool ImGuiStringEdit(const char* label, string* toEdit)
 {
     char buf[128];
     strcpy(buf, &(*toEdit)[0]);
-    ImGui::InputText(label, buf, 128);
+    bool ret = ImGui::InputText(label, buf, 128);
     *toEdit = string(buf);
+    return ret;
 }
 
 void ImGuiColorEdit(const char* label, u8* toEdit)

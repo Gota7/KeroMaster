@@ -7,6 +7,7 @@
 
 std::map<string, Tileset> Editor::tilesets;
 std::map<u8, EntityDisplay> Editor::entities;
+Settings Editor::settings;
 
 using namespace imgui_addons;
 
@@ -81,7 +82,6 @@ void Editor::LoadLevel(string name)
     origin = { 0, 0 };
     map.Load(rsc, name, tilesets);
     enabled = true;
-    //editingEntity = &map.entities[0];
     for (int i = 0; i < NUM_TILESETS; i++)
     {
         if (strcmp(map.tilesets[i].dat.c_str(), "") != 0)
@@ -89,6 +89,8 @@ void Editor::LoadLevel(string name)
             if (openTilesetsOnLoad) { tilesetEditors.push_back(TilesetEditor(this, map.tilesets[i].dat)); }
         }
     }
+    settings.lastLevel = name;
+    settings.Save();
 }
 
 void Editor::UnloadLevel()
@@ -310,6 +312,7 @@ void Editor::DrawMainMenu()
     static int numFiles;
     static char** files;
     bool openPopup = false;
+    bool openSettings = false;
 
     // File menu.
     if (ImGui::BeginMainMenuBar())
@@ -349,6 +352,11 @@ void Editor::DrawMainMenu()
             {
             }
 
+            if (ImGui::MenuItem("Settings"))
+            {
+                openSettings = true;
+            }
+
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("View"))
@@ -378,6 +386,14 @@ void Editor::DrawMainMenu()
 
         ImGui::EndMainMenuBar();
     }
+
+    // Settings.
+    if (openSettings)
+    {
+        ImGui::OpenPopup("Editor Settings");
+        openSettings = false;
+    }
+    settings.ShowWindow(this);
 
     // Level select.
     if (openPopup)
@@ -716,25 +732,42 @@ void Editor::DrawEntityEditor()
 
     focus.ObserveFocus();
     int currId = editingEntity->id;
+    EntityDisplay* d = &entities[currId];
     const int itemWidth = 150;
     ImGui::PushItemWidth(itemWidth);
     if (ImGui::Combo("Entity Id", &currId, entityListing))
     {
         editingEntity->id = currId;
     }
+    if (strcmp(d->description.c_str(), "") != 0)
+    {
+        ImGuiTooltip(d->description);
+    }
     ImGui::PushItemWidth(itemWidth);
     ImGui::InputScalar("Flags", ImGuiDataType_U8, &editingEntity->flags);
+    if (strcmp(d->flagDescription.c_str(), "") != 0)
+    {
+        ImGuiTooltip(d->flagDescription);
+    }
     ImGui::PushItemWidth(itemWidth);
     ImGui::InputScalar("Unknown", ImGuiDataType_U8, &editingEntity->unk);
     for (int i = 0; i < NUM_BYTE_PARAMETERS; i++)
     {
         ImGui::PushItemWidth(itemWidth);
         ImGui::InputScalar(("Parameter " + to_string(i)).c_str(), ImGuiDataType_U8, &editingEntity->parametersByte[i]);
+        if (strcmp(d->parameterDescriptions[i].c_str(), "") != 0)
+    {
+        ImGuiTooltip(d->parameterDescriptions[i]);
+    }
     }
     for (int i = 0; i < NUM_PARAMETERS - NUM_BYTE_PARAMETERS; i++)
     {
         ImGui::PushItemWidth(itemWidth);
         ImGuiStringEdit(("Parameter " + to_string(i + NUM_BYTE_PARAMETERS)).c_str(), &editingEntity->parametersStr[i].dat);
+        if (strcmp(d->parameterDescriptions[i + NUM_BYTE_PARAMETERS].c_str(), "") != 0)
+        {
+            ImGuiTooltip(d->parameterDescriptions[i + NUM_BYTE_PARAMETERS]);
+        }
     }
     ImGui::End();
 }
@@ -783,7 +816,7 @@ void Editor::DrawPalette()
         );
         drawList->AddRect(cursorPos, ImVec2(cursorPos.x + 16, cursorPos.y + 16), ImColor(255, 255, 255), 0, 0, 2);
 
-        if (ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+        if ((currentTool == EditorTool::TileBrush && settings.ButtonClicked(EditorTool::CurrentTool)) || settings.ButtonClicked(EditorTool::TileBrush)) {
             const ImVec2 mousePos = ImGui::GetMousePos();
             const ImVec2 mousePosRel = ImVec2(mousePos.x - p.x, mousePos.y - p.y);
 
@@ -806,7 +839,7 @@ void Editor::DrawToolbar()
     ImGui::SetWindowPos(ImVec2(10.0f, 30.0f), ImGuiCond_FirstUseEver);
 
     focus.ObserveFocus();
-        
+
     int index = 0;
     auto ToolButton = [&](const char* label, EditorTool tool) {
         bool active = currentTool == tool;
@@ -1040,16 +1073,16 @@ void Editor::CheckPan()
 {
     if (inPan)
     {
-        dragLeft = currentTool == EditorTool::Hand && !IsMouseButtonUp(MOUSE_LEFT_BUTTON);
-        dragRight = !IsMouseButtonUp(MOUSE_RIGHT_BUTTON);
+        dragLeft = currentTool == EditorTool::Hand && !settings.ButtonUp(EditorTool::CurrentTool);
+        dragRight = !settings.ButtonUp(EditorTool::Hand);
         inPan = dragLeft || dragRight;
 
         MoveCamX(mouseX - oldMouseX);
         MoveCamY(mouseY - oldMouseY);
     } else if (!focus.mouseInWindow && !focus.isModal)
     {
-        dragLeft = currentTool == EditorTool::Hand && IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
-        dragRight = IsMouseButtonPressed(MOUSE_RIGHT_BUTTON);
+        dragLeft = currentTool == EditorTool::Hand && settings.ButtonPressed(EditorTool::CurrentTool);
+        dragRight = settings.ButtonPressed(EditorTool::Hand);
         inPan = dragLeft || dragRight;
     }
 }
@@ -1129,35 +1162,23 @@ void Editor::CheckEdit()
         return;
     }
 
-    if (currentTool == EditorTool::TileBrush) {
-        PxMap& layer = map.maps[currentLayer];
+    PxMap& layer = map.maps[currentLayer];
 
-        int tileX = ((mouseX - cam.offset.x) / (MAP_SIZE * 8) / cam.zoom);
-        int tileY = ((mouseY - cam.offset.y) / (MAP_SIZE * 8) / cam.zoom);
-
-        if (tileX >= 0 && tileX < layer.width && tileY >= 0 && tileY < layer.height) {
-            if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
-                layer.SetTile(tileX, tileY, currentTile);
-            }
+    int tileX = ((mouseX - cam.offset.x) / (MAP_SIZE * 8) / cam.zoom);
+    int tileY = ((mouseY - cam.offset.y) / (MAP_SIZE * 8) / cam.zoom);
+    if (tileX >= 0 && tileX < layer.width && tileY >= 0 && tileY < layer.height) {
+        if ((currentTool == EditorTool::TileBrush && settings.ButtonDown(EditorTool::CurrentTool)) || settings.ButtonDown(EditorTool::TileBrush)) {
+            layer.SetTile(tileX, tileY, currentTile);
         }
-    } else if (currentTool == EditorTool::Eraser) {
-        // separate code because we want to add stamping capabilities to the above
-        PxMap& layer = map.maps[currentLayer];
-
-        int tileX = ((mouseX - cam.offset.x) / (MAP_SIZE * 8) / cam.zoom);
-        int tileY = ((mouseY - cam.offset.y) / (MAP_SIZE * 8) / cam.zoom);
-
-        if (tileX >= 0 && tileX < layer.width && tileY >= 0 && tileY < layer.height) {
-            if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
-                layer.SetTile(tileX, tileY, 0);
-            }
+        else if ((currentTool == EditorTool::Eraser && settings.ButtonDown(EditorTool::CurrentTool)) || settings.ButtonDown(EditorTool::Eraser)) {
+            layer.SetTile(tileX, tileY, 0);
         }
     }
 }
 
 void Editor::CheckEntity()
 {
-    if (!isPlacingEntity && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && currentTool == EditorTool::EntityHand && !focus.mouseInWindow)
+    if (!isPlacingEntity && ((settings.ButtonPressed(EditorTool::CurrentTool) && currentTool == EditorTool::EntityHand) || settings.ButtonPressed(EditorTool::EntityHand)) && !focus.mouseInWindow)
     {
         int tileX = GetTileX();
         int tileY = GetTileY();
@@ -1182,7 +1203,7 @@ void Editor::CheckEntity()
             editingEntity = nullptr;
         }
     }
-    else if (!isPlacingEntity && editingEntity != nullptr && IsMouseButtonDown(MOUSE_LEFT_BUTTON) && currentTool == EditorTool::EntityHand && !focus.mouseInWindow)
+    else if (!isPlacingEntity && editingEntity != nullptr && ((settings.ButtonDown(EditorTool::CurrentTool) && currentTool == EditorTool::EntityHand) || settings.ButtonDown(EditorTool::EntityHand)) && !focus.mouseInWindow)
     {
         int tileX = GetTileX();
         int tileY = GetTileY();
@@ -1193,7 +1214,7 @@ void Editor::CheckEntity()
         editingEntity->xPos = tileX;
         editingEntity->yPos = tileY;
     }
-    else if (isPlacingEntity && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+    else if (isPlacingEntity && ((settings.ButtonPressed(EditorTool::CurrentTool) && currentTool == EditorTool::EntityHand) || settings.ButtonPressed(EditorTool::EntityHand)))
     {
         int tileX = GetTileX();
         int tileY = GetTileY();

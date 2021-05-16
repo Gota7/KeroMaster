@@ -4,6 +4,7 @@
 #include "raylib.h"
 #include "../px/pxmap.h"
 #include "tilesetEditor.h"
+#include "settings.h"
 #include "attributeEditor.h"
 #include "scriptEditor.h"
 #include "rlImGui/focusData.h"
@@ -13,16 +14,19 @@ constexpr float MAP_SIZE = 2.0f;
 struct AttributeEditor;
 struct TilesetEditor;
 struct ScriptEditor;
+struct Settings;
 
-enum class EditorTool {
+enum class EditorTool : int {
     Hand,
     TileBrush,
     Eraser,
-    EntityHand
+    EntityHand,
+    CurrentTool
 };
 
 struct Editor
 {
+    static Settings settings;
     Map map;
     string mapName = "";
     Camera2D cam = {0};

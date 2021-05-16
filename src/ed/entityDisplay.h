@@ -32,7 +32,7 @@ struct EntityDisplay
     string name = "";
     string description = "";
     string flagDescription = "";
-    string parameterDescriptions[3];
+    string parameterDescriptions[3] = { "", "", "" };
     int numTiles = 0;
     EntityTile* tiles;
     bool allowRollYourOwnSprite = true;
