@@ -62,6 +62,20 @@ void TilesetEditor::DrawUI()
     // Interface.
     ImGui::Begin(("Tileset - " + name).c_str(), &open);
     ed->focus.ObserveFocus();
+    if (allowLayer0)
+    {
+        ImGui::RadioButton("Foreground", &currLayer, 0);
+        if (allowLayer1 || allowLayer2) ImGui::SameLine();
+    }
+    if (allowLayer1)
+    {
+        ImGui::RadioButton("Middleground", &currLayer, 1);
+        if (allowLayer2) ImGui::SameLine();
+    }
+    if (allowLayer2)
+    {
+        ImGui::RadioButton("Background", &currLayer, 2);
+    }
     ImGui::Checkbox("View Attributes", &viewAttr);
     ImGui::SameLine();
     if (ImGui::Button("Edit Attributes"))
@@ -171,11 +185,19 @@ void TilesetEditor::CalcTiles()
     selectionWidth = abs(endTileX - startTileX) + 1;
     selectionHeight = abs(endTileY - startTileY) + 1;
     currTile = currTileX + currTileY * ed->tilesets[name].width;
-    printf("%d\n", currTile);
+    if (currTile != -1)
+    {
+        ed->RemoveAllOtherTilesetViewerSelections(this);
+        ed->editingTileset = this;
+    }
 }
 
 void TilesetEditor::Close()
 {
+    if (ed->editingTileset == this)
+    {
+        ed->editingTileset = nullptr;
+    }
     open = false;
     UnloadRenderTexture(target);
 }

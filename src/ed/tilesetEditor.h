@@ -27,6 +27,10 @@ struct TilesetEditor
     bool selectingTiles = false;
     int startMouseX;
     int startMouseY;
+    bool allowLayer0 = false;
+    bool allowLayer1 = false;
+    bool allowLayer2 = false;
+    int currLayer = -1;
 
     TilesetEditor(Editor* ed, string name);
     void Draw();

@@ -58,7 +58,7 @@ struct Editor
     bool openTilesetsOnLoad = false;
     bool showPaletteAttributes = false;;
     u8 currentLayer = 0;
-    u16 currentTile = 0;
+    int currentTile = -1;
     EditorTool currentTool = EditorTool::Hand;
     FocusData focus;
     Entity* editingEntity = NULL;
@@ -71,6 +71,7 @@ struct Editor
     u8 resizeMapLayer = 0;
     int placeEntityId = 0;
     bool isPlacingEntity = false;
+    TilesetEditor* editingTileset = nullptr;
 
     void SetPath(std::string rsc);
     void LoadEnemies(std::string xml);
@@ -94,6 +95,7 @@ struct Editor
     void OpenAttrEditor(std::string name);
     void OpenScript(std::string name);
     void ResizeAllTilesetViewers(std::string name);
+    void RemoveAllOtherTilesetViewerSelections(TilesetEditor* exclude);
     void Update();
     void CheckPan();
     void CheckScroll();

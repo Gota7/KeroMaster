@@ -20,6 +20,7 @@ void Settings::Load()
         leftClick = (EditorTool)f["Settings"]["LeftClick"].as<int>();
         rightClick = (EditorTool)f["Settings"]["RightClick"].as<int>();
         middleClick = (EditorTool)f["Settings"]["MiddleClick"].as<int>();
+        usePalette = f["Settings"]["UsePalette"].as<bool>();
     }
 }
 
@@ -31,6 +32,7 @@ void Settings::Save()
     f["Settings"]["LeftClick"] = (int)leftClick;
     f["Settings"]["RightClick"] = (int)rightClick;
     f["Settings"]["MiddleClick"] = (int)middleClick;
+    f["Settings"]["UsePalette"] = usePalette;
     f.save("settings.ini");
 }
 
@@ -62,7 +64,7 @@ void Settings::ShowWindow(Editor* ed)
         }
         if (strcmp(rscPath.c_str(), "") != 0)
         {
-            ImGui::Text(("Level To Open: " + lastLevel).c_str());
+            ImGui::Text("%s", ("Level To Open: " + lastLevel).c_str());
             ImGui::SameLine();
             if (ImGui::SmallButton("...##Last Level"))
             {
@@ -126,6 +128,8 @@ void Settings::ShowWindow(Editor* ed)
                 {
                     ImGui::Combo("Middle Click Action", (int*)&middleClick, ActionTypes, IM_ARRAYSIZE(ActionTypes));
                 }
+                ImGui::Separator();
+                ImGui::Checkbox("Use Tile Palette", &usePalette);
                 ImGui::Separator();
                 if (ImGui::Button("Save And Close"))
                 {

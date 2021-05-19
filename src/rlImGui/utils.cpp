@@ -19,7 +19,7 @@ void ImGuiTooltip(string tip)
     if (ImGui::IsItemHovered())
     {
         ImGui::BeginTooltip();
-        ImGui::SetTooltip(tip.c_str());
+        ImGui::SetTooltip("%s", tip.c_str());
         ImGui::EndTooltip();
     }
 }

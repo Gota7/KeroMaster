@@ -229,18 +229,36 @@ void Editor::Draw()
         }
     }
 
-    if (currentTool == EditorTool::TileBrush)
+    int tileDraw = currentTile;
+    int layerDraw = currentLayer;
+    int numTilesX = 1;
+    int numTilesY = 1;
+    if (tileDraw == -1 && editingTileset != nullptr)
+    {
+        tileDraw = editingTileset->currTile;
+        layerDraw = editingTileset->currLayer;
+        numTilesX = editingTileset->selectionWidth;
+        numTilesY = editingTileset->selectionHeight;
+    }
+    if (currentTool == EditorTool::TileBrush && tileDraw != -1)
     {
         int tileX = GetTileX();
         int tileY = GetTileY();
         static Color alphaTint = ColorFromNormalized({ 1.0, 1.0, 1.0, 0.6 });
 
-        PxMap& m = map.maps[currentLayer];
-        Tileset& t = tilesets[map.tilesets[currentLayer].dat];
+        PxMap& m = map.maps[layerDraw];
+        Tileset& t = tilesets[map.tilesets[layerDraw].dat];
 
-        Vector2 pos = {origin.x + tileX * 8 * MAP_SIZE, origin.y + tileY * 8 * MAP_SIZE};
-
-        t.Draw(currentTile, pos, 0, 0, MAP_SIZE, false, false, false, 0, 0, alphaTint);
+        for (int x = 0; x < numTilesX; x++)
+        {
+            for (int y = 0; y < numTilesY; y++)
+            {
+                if (x >= 0 && y >= 0 & tileX + x < m.width && tileY + y < m.height)
+                {
+                    t.Draw(tileDraw + x + y * t.width, origin, tileX + x, tileY + y, MAP_SIZE, false, false, false, 0, 0, alphaTint);
+                }
+            }
+        }
     }
 
     if (isPlacingEntity)
@@ -299,7 +317,7 @@ void Editor::DrawUI()
     DrawEntityEditor();
 
     // Draw palette.
-    DrawPalette();
+    if (settings.usePalette) DrawPalette();
 
     // Toolbar.
     DrawToolbar();
@@ -881,7 +899,7 @@ void Editor::DrawPalette()
             p.x + 16 * (currentTile % 16), 
             p.y + 16 * (currentTile / 16)
         );
-        drawList->AddRect(cursorPos, ImVec2(cursorPos.x + 16, cursorPos.y + 16), ImColor(255, 255, 255), 0, 0, 2);
+        if (currentTile != -1) drawList->AddRect(cursorPos, ImVec2(cursorPos.x + 16, cursorPos.y + 16), ImColor(255, 255, 255), 0, 0, 2);
 
         if ((currentTool == EditorTool::TileBrush && settings.ButtonClicked(EditorTool::CurrentTool)) || settings.ButtonClicked(EditorTool::TileBrush)) {
             const ImVec2 mousePos = ImGui::GetMousePos();
@@ -892,6 +910,7 @@ void Editor::DrawPalette()
             {
                 int tileX = mousePosRel.x / 16;
                 int tileY = mousePosRel.y / 16;
+                RemoveAllOtherTilesetViewerSelections(nullptr);
                 currentTile = tileY * 16 + tileX;
             }
         }
@@ -1014,7 +1033,11 @@ void Editor::OpenTileset(std::string name)
             return;
         }
     }
-    tilesetEditors.push_back(TilesetEditor(this, name));
+    auto t = TilesetEditor(this, name);
+    if (strcmp(name.c_str(), map.tilesets[2].dat.c_str()) == 0) { t.allowLayer2 = true; t.currLayer = 2; }
+    if (strcmp(name.c_str(), map.tilesets[1].dat.c_str()) == 0) { t.allowLayer1 = true; t.currLayer = 1; }
+    if (strcmp(name.c_str(), map.tilesets[0].dat.c_str()) == 0) { t.allowLayer0 = true; t.currLayer = 0; }
+    tilesetEditors.push_back(t);
 }
 
 void Editor::OpenAttrEditor(std::string name)
@@ -1137,6 +1160,18 @@ void Editor::ResizeAllTilesetViewers(std::string name)
     }
 }
 
+void Editor::RemoveAllOtherTilesetViewerSelections(TilesetEditor* exclude)
+{
+    currentTile = -1;
+    for (int i = 0; i < tilesetEditors.size(); i++)
+    {
+        if (&tilesetEditors[i] != exclude)
+        {
+            tilesetEditors[i].currTile = -1;
+        }
+    }
+}
+
 void Editor::CheckPan()
 {
     if (inPan)
@@ -1230,13 +1265,32 @@ void Editor::CheckEdit()
         return;
     }
 
-    PxMap& layer = map.maps[currentLayer];
-
+    int placeLayer = currentLayer;
     int tileX = ((mouseX - cam.offset.x) / (MAP_SIZE * 8) / cam.zoom);
     int tileY = ((mouseY - cam.offset.y) / (MAP_SIZE * 8) / cam.zoom);
-    if (tileX >= 0 && tileX < layer.width && tileY >= 0 && tileY < layer.height) {
+    int placeTile = currentTile;
+    int placeW = 1;
+    int placeH = 1;
+    if (placeTile == -1 && editingTileset != nullptr)
+    {
+        placeTile = editingTileset->currTile;
+        placeLayer = editingTileset->currLayer;
+        placeW = editingTileset->selectionWidth;
+        placeH = editingTileset->selectionHeight;
+    }
+    PxMap& layer = map.maps[placeLayer];
+    if (placeTile != -1 && tileX >= 0 && tileX < layer.width && tileY >= 0 && tileY < layer.height) {
         if ((currentTool == EditorTool::TileBrush && settings.ButtonDown(EditorTool::CurrentTool)) || settings.ButtonDown(EditorTool::TileBrush)) {
-            layer.SetTile(tileX, tileY, currentTile);
+            for (int x = 0; x < placeW; x++)
+            {
+                for (int y = 0; y < placeH; y++)
+                {
+                    if (tileX + x >= 0 && tileY + y >= 0)
+                    {
+                        layer.SetTile(tileX + x, tileY + y, placeTile + x + y * tilesets[map.tilesets[placeLayer].dat].width);
+                    }
+                }
+            }
         }
         else if ((currentTool == EditorTool::Eraser && settings.ButtonDown(EditorTool::CurrentTool)) || settings.ButtonDown(EditorTool::Eraser)) {
             layer.SetTile(tileX, tileY, 0);

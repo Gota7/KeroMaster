@@ -131,7 +131,7 @@ void ScriptEditor::DrawUI()
         string txt = c->name + " - " + c->description;
         if (c->numArgs == 0)
         {
-            ImGui::Text((" * " + txt).c_str());
+            ImGui::Text("%s", (" * " + txt).c_str());
         }
         else 
         {
@@ -140,7 +140,7 @@ void ScriptEditor::DrawUI()
                 for (int j = 0; j < c->numArgs; j++)
                 {
                     ScriptHelpArg* a = &c->args[j];
-                    ImGui::Text((" " + to_string(j) + ": " + (a->type == ARG_TYPE_STRING ? "String: " : "Number: ") + a->description).c_str());
+                    ImGui::Text("%s", (" " + to_string(j) + ": " + (a->type == ARG_TYPE_STRING ? "String: " : "Number: ") + a->description).c_str());
                 }
                 ImGui::TreePop();
             }

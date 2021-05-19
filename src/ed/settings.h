@@ -15,6 +15,7 @@ struct Settings
 {
     string rscPath = "";
     string lastLevel = "";
+    bool usePalette = true;
     EditorTool leftClick = (EditorTool)4;
     EditorTool rightClick = (EditorTool)0;
     EditorTool middleClick = (EditorTool)3;
