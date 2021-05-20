@@ -21,6 +21,7 @@ void Settings::Load()
         rightClick = (EditorTool)f["Settings"]["RightClick"].as<int>();
         middleClick = (EditorTool)f["Settings"]["MiddleClick"].as<int>();
         usePalette = f["Settings"]["UsePalette"].as<bool>();
+        style.Load(f["Settings"]["Style"].as<string>());
     }
 }
 
@@ -33,6 +34,7 @@ void Settings::Save()
     f["Settings"]["RightClick"] = (int)rightClick;
     f["Settings"]["MiddleClick"] = (int)middleClick;
     f["Settings"]["UsePalette"] = usePalette;
+    f["Settings"]["Style"] = style.name;
     f.save("settings.ini");
 }
 
@@ -49,10 +51,14 @@ void Settings::ShowWindow(Editor* ed)
     static int numFiles;
     static char** files;
     static int actionMouse = 0;
-    if (ImGui::BeginPopupModal("Editor Settings", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+    if (ImGui::BeginPopupModal("Editor Settings", nullptr, ImGuiWindowFlags_AlwaysAutoResize | (show ? ImGuiWindowFlags_MenuBar : 0)))
     {
         ed->focus.ObserveFocus();
         ed->focus.isModal |= true;
+        if (show)
+        {
+            ed->DrawMainMenu(true);
+        }
         if (ImGuiStringEdit("Resource Path", &rscPath))
         {
             lastLevel = "";
@@ -90,6 +96,19 @@ void Settings::ShowWindow(Editor* ed)
                     }
                 }
                 ImGui::EndListBox();
+                ImGui::EndPopup();
+            }
+            if (ImGui::Button("Update Object Data Folder"))
+            {
+                ImGui::OpenPopup("Notice");
+            }
+            if (ImGui::BeginPopupModal("Notice", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+            {
+                ImGui::Text("Go to https://github.com/Gota7/KeroMaster and download the object_data folder.\nReplace it with the current one, then restart the editor for changes to take effect!");
+                if (ImGui::Button("Ok"))
+                {
+                    ImGui::CloseCurrentPopup();
+                }
                 ImGui::EndPopup();
             }
             if (strcmp(lastLevel.c_str(), "") != 0 && GFile::FileExists((rscPath + "/field/" + lastLevel + ".pxpack").c_str()))

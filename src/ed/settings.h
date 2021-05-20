@@ -2,6 +2,7 @@
 
 #include "raylib.h"
 #include "editor.h"
+#include "style.h"
 #include <string>
 #include <cstring>
 
@@ -19,6 +20,8 @@ struct Settings
     EditorTool leftClick = (EditorTool)4;
     EditorTool rightClick = (EditorTool)0;
     EditorTool middleClick = (EditorTool)3;
+    EditorStyle style;
+    ImVector<char> styles;
     bool show = false;
 
     void Load();

@@ -85,7 +85,7 @@ struct Editor
     int GetTileY(s8 layer = -1);
     void Draw();
     void DrawUI();
-    void DrawMainMenu();
+    void DrawMainMenu(bool startup = false);
     void DrawLevelEditor();
     void DrawEntityEditor();
     void DrawPalette();

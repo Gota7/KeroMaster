@@ -327,7 +327,7 @@ void Editor::DrawUI()
 
 }
 
-void Editor::DrawMainMenu()
+void Editor::DrawMainMenu(bool startup)
 {
 
     // Vars.
@@ -336,48 +336,52 @@ void Editor::DrawMainMenu()
     static string newFileName = "";
     bool openPopup = false;
     bool openSettings = false;
-    bool doNew = (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && IsKeyDown(KEY_N);
-    bool doOpen = (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && IsKeyDown(KEY_O);
-    bool doSave = (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && IsKeyDown(KEY_S);
-    bool doSaveAs = (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) && IsKeyDown(KEY_S);
-    bool doClose = (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) && IsKeyDown(KEY_C);
-    bool doQuit = (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) && IsKeyDown(KEY_Q);
+    bool doNew = !startup && (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && IsKeyDown(KEY_N);
+    bool doOpen = !startup && (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && IsKeyDown(KEY_O);
+    bool doSave = !startup && (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && IsKeyDown(KEY_S);
+    bool doSaveAs = !startup && (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) && IsKeyDown(KEY_S);
+    bool doClose = !startup && (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) && IsKeyDown(KEY_C);
+    bool doQuit = !startup && (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) && IsKeyDown(KEY_Q);
     bool isFullscreening = false;
     bool openNewLevelPopup = false;
+    bool openAboutPopup = false;
     static bool isNew = false;
 
     // File menu.
-    if (ImGui::BeginMainMenuBar())
+    if (startup ? ImGui::BeginMenuBar() : ImGui::BeginMainMenuBar())
     {
-        if (ImGui::BeginMenu("File"))
+        if (!startup)
         {
-            if (ImGui::MenuItem("New", "Ctrl+N"))
+            if (ImGui::BeginMenu("File"))
             {
-                doNew = true;
+                if (ImGui::MenuItem("New", "Ctrl+N"))
+                {
+                    doNew = true;
+                }
+                if (ImGui::MenuItem("Open", "Ctrl+O"))
+                {
+                    doOpen = true;
+                }
+                if (ImGui::MenuItem("Save", "Ctrl+S"))
+                {
+                    doSave = true;
+                }
+                if (ImGui::MenuItem("Save As", "Ctrl+Shift+S"))
+                {
+                    doSaveAs = true;
+                }
+                if (ImGui::MenuItem("Close", "Ctrl+Shift+C"))
+                {
+                    doClose = true;
+                }
+                if (ImGui::MenuItem("Quit", "Ctrl+Shift+Q"))
+                {
+                    doQuit = true;
+                }
+                ImGui::EndMenu();
             }
-            if (ImGui::MenuItem("Open", "Ctrl+O"))
-            {
-                doOpen = true;
-            }
-            if (ImGui::MenuItem("Save", "Ctrl+S"))
-            {
-                doSave = true;
-            }
-            if (ImGui::MenuItem("Save As", "Ctrl+Shift+S"))
-            {
-                doSaveAs = true;
-            }
-            if (ImGui::MenuItem("Close", "Ctrl+Shift+C"))
-            {
-                doClose = true;
-            }
-            if (ImGui::MenuItem("Quit", "Ctrl+Shift+Q"))
-            {
-                doQuit = true;
-            }
-            ImGui::EndMenu();
         }
-        if (ImGui::BeginMenu("Edit"))
+        if (!startup && ImGui::BeginMenu("Edit"))
         {
             if (ImGui::MenuItem("Undo", "Ctrl+Z"))
             {
@@ -390,7 +394,7 @@ void Editor::DrawMainMenu()
 
             ImGui::EndMenu();
         }
-        if (ImGui::BeginMenu("View"))
+        if (!startup && ImGui::BeginMenu("View"))
         {
             ImGui::Checkbox("Play Area", &showPlayArea);
             ImGui::Checkbox("Show Grid", &showGrid);
@@ -414,12 +418,13 @@ void Editor::DrawMainMenu()
             ImGui::EndMenu();
         }
         if (ImGui::MenuItem("About"))
-        {   
+        {
+            openAboutPopup = true;
         }
 
         ImGui::Text("%s", debug_string);
 
-        ImGui::EndMainMenuBar();
+        if (startup) { ImGui::EndMenuBar(); } else { ImGui::EndMainMenuBar(); }
     }
 
     // Options.
@@ -511,6 +516,28 @@ void Editor::DrawMainMenu()
         ImGui::EndPopup();
     }
 
+    // About.
+    if (openAboutPopup)
+    {
+        ImGui::OpenPopup("About");
+        openAboutPopup = false;
+    }
+    if (ImGui::BeginPopupModal("About", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        focus.ObserveFocus();
+        focus.isModal |= true;
+        ImGui::TextColored(ImVec4(.4, 1, 0, 1), "Kero Master");
+        ImGui::TextColored(ImVec4(1, .1, .5, 1), "\tAn editor for Kero Blaster, Pink Hour, and Pink Heaven.");
+        ImGui::Separator();
+        ImGui::TextColored(ImVec4(0, 1, 1, 1), "Alula - Windows & SHIFT-JIS support, tile editing, palette, various fixes/improvements.");
+        ImGui::TextColored(ImVec4(1, 0, 1, 1), "Gota7 - UI design, format support, entity editing, script editing, tileset editing, editor data.");
+        ImGui::Separator();
+        if (ImGui::Button("Ok")) {
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
+    }
+
     // New level.
     static bool closeNewLevel;
     if (openNewLevelPopup)
@@ -525,7 +552,7 @@ void Editor::DrawMainMenu()
         focus.ObserveFocus();
         focus.isModal |= true;
         ImGuiStringEdit("Level Name", &newFileName);
-        if (strcmp(newFileName.c_str(), ""))
+        if (strcmp(newFileName.c_str(), "") != 0)
         {
             if (closeNewLevel)
             {
@@ -568,11 +595,6 @@ void Editor::DrawMainMenu()
                     ImGui::OpenPopup("Overwrite Level");
                 }
             }
-            ImGui::SameLine();
-            if (ImGui::Button("Cancel"))
-            {
-                ImGui::CloseCurrentPopup();
-            }
             if (ImGui::BeginPopupModal("Overwrite Level", NULL, ImGuiWindowFlags_AlwaysAutoResize))
                 {
                     if (ImGui::Button("Yes"))
@@ -597,6 +619,14 @@ void Editor::DrawMainMenu()
                     }
                     ImGui::EndPopup();
                 }
+        }
+        if (strcmp(newFileName.c_str(), "") != 0)
+        {
+            ImGui::SameLine();
+        }
+        if (ImGui::Button("Cancel"))
+        {
+            ImGui::CloseCurrentPopup();
         }
         ImGui::EndPopup();
     }
@@ -650,27 +680,37 @@ void Editor::DrawLevelEditor()
     const int itemWidth = 150;
     ImGui::PushItemWidth(itemWidth);
     ImGuiStringEdit("Level Title", &map.comment.dat);
+    ImGuiTooltip("Internal name for the level.\nThis does not seem important?");
     ImGui::PushItemWidth(itemWidth);
     ImGuiStringEdit("Level Script", &map.references[RT_SCRIPT].dat);
+    ImGuiTooltip("Name of the .pxeve file in the text directory to use for level scripting.");
     ImGui::PushItemWidth(itemWidth);
     ImGuiStringEdit("Next Level", &map.references[RT_NEXT_LEVEL].dat);
+    ImGuiTooltip("Name of the .pxpack in the field folder that appears after this level.");
     ImGui::PushItemWidth(itemWidth);
     ImGuiStringEdit("Previous Level", &map.references[RT_PREV_LEVEL].dat);
+    ImGuiTooltip("Name of the .pxpack in the field folder that appears before this level.");
     ImGui::PushItemWidth(itemWidth);
     ImGuiStringEdit("Link Level", &map.references[RT_LINK_LEVEL].dat);
+    ImGuiTooltip("Name of the .pxpack in the field folder for debug linking.");
     ImGui::PushItemWidth(itemWidth);
     ImGuiStringEdit("NPC Palette", &map.references[RT_NPC_PALETTE].dat);
+    ImGuiTooltip("Name of the .png in the img folder for NPCs to use (that depend on the NPC palette).");
     ImGui::Separator();
     ImGui::PushItemWidth(itemWidth);
     ImGui::InputScalar("Area X", ImGuiDataType_U16, &map.levelSettings[0]);
+    ImGuiTooltip("Start X tile for the area (usually 0).\nSeems to have no effect?");
     ImGui::PushItemWidth(itemWidth);
     ImGui::InputScalar("Area Y", ImGuiDataType_U16, &map.levelSettings[2]);
+    ImGuiTooltip("Start Y tile for the area (usually 0).\nSeems to have no effect?");
     ImGui::PushItemWidth(itemWidth);
     ImGui::InputScalar("Area Number", ImGuiDataType_U8, &map.levelSettings[4]);
+    ImGuiTooltip("Which area the level is a part of.\nSeems to have no effect?");
     ImGui::PushItemWidth(itemWidth);
 
     ImGui::PushItemWidth(itemWidth);
     ImGuiColorEdit("Background Color", &map.levelSettings[5]);
+    ImGuiTooltip("Color to display in the background.");
 
     int tmpScrollType[NUM_TILESETS];
     for (int i = 0 ; i < NUM_TILESETS; i++)
@@ -682,8 +722,10 @@ void Editor::DrawLevelEditor()
         {
             map.tilesetSettings1[i] = (u8)index;
         }
+        ImGuiTooltip("Size of how the tiles should be used.");
         tmpScrollType[i] = map.tilesetSettings2[i];
         ImGui::Combo(("Tileset " + to_string(i) + " Scroll Mode").c_str(), &tmpScrollType[i], scrollTypes, IM_ARRAYSIZE(scrollTypes));
+        ImGuiTooltip("How to scroll tiles when the camera moves.");
         ImGui::PushItemWidth(itemWidth);
         map.tilesetSettings2[i] = (u8)tmpScrollType[i];
         ImGui::PushItemWidth(itemWidth);
@@ -696,6 +738,7 @@ void Editor::DrawLevelEditor()
                 OpenTileset(map.tilesets[i].dat);
             }
         }
+        ImGuiTooltip("Name of the tileset to use in the img folder.");
     }
     for (int i = 0; i < NUM_TILESETS; i++)
     {
@@ -1302,19 +1345,19 @@ void Editor::CheckScroll()
         return;
     }
 
-    if (IsKeyDown(KEY_W) || IsKeyDown(KEY_UP))
+    if (IsKeyUp(KEY_LEFT_CONTROL) && IsKeyUp(KEY_RIGHT_CONTROL) && IsKeyUp(KEY_LEFT_SHIFT) && IsKeyUp(KEY_RIGHT_SHIFT) && (IsKeyDown(KEY_W) || IsKeyDown(KEY_UP)))
     {
         cam.offset.y += scrollSpeed;
     }
-    if (IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN))
+    if (IsKeyUp(KEY_LEFT_CONTROL) && IsKeyUp(KEY_RIGHT_CONTROL) && IsKeyUp(KEY_LEFT_SHIFT) && IsKeyUp(KEY_RIGHT_SHIFT) && (IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN)))
     {
         cam.offset.y -= scrollSpeed;
     }
-    if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT))
+    if (IsKeyUp(KEY_LEFT_CONTROL) && IsKeyUp(KEY_RIGHT_CONTROL) && IsKeyUp(KEY_LEFT_SHIFT) && IsKeyUp(KEY_RIGHT_SHIFT) && (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT)))
     {
         cam.offset.x += scrollSpeed;
     }
-    if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT))
+    if (IsKeyUp(KEY_LEFT_CONTROL) && IsKeyUp(KEY_RIGHT_CONTROL) && IsKeyUp(KEY_LEFT_SHIFT) && IsKeyUp(KEY_RIGHT_SHIFT) && (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT)))
     {
         cam.offset.x -= scrollSpeed;
     }
@@ -1330,17 +1373,21 @@ void Editor::CheckZoom()
     }
 
     // Targetting (Make zooming be where mouse is).
-    float oldTargX = cam.target.x;
+    
+    /*float oldTargX = cam.target.x;
     float oldTargY = cam.target.y;
     cam.target.x = mouseX - oldMouseX;
     cam.target.y = mouseY - oldMouseY;
     cam.offset.x -= (oldTargX - cam.target.x) * cam.zoom;
-    cam.offset.y -= (oldTargY - cam.target.y) * cam.zoom;
+    cam.offset.y -= (oldTargY - cam.target.y) * cam.zoom;*/
 
     // Zooming.
     float zoom = GetMouseWheelMove();
     if (zoom != 0)
     {
+        float beforeMouseX = (mouseX - cam.offset.x) / MAP_SIZE / cam.zoom;
+        float beforeMouseY = (mouseY - cam.offset.y) / MAP_SIZE / cam.zoom;
+
         if (cam.zoom < 1.0f) {
             zoomSpeed = 0.125f;
         } else if (cam.zoom < 3.0f) {
@@ -1356,11 +1403,17 @@ void Editor::CheckZoom()
         {
             cam.zoom = .25f;
         }
-        else if (cam.zoom > 8.0f)
+        else if (cam.zoom > 5.0f)
         {
-            cam.zoom = 8.0f;
+            cam.zoom = 5.0f;
         }
+        float afterMouseX = (mouseX - cam.offset.x) / MAP_SIZE / cam.zoom;
+        float afterMouseY = (mouseY - cam.offset.y) / MAP_SIZE / cam.zoom;
+        //printf("%f, %f\n", beforeMouseX, afterMouseX);
+        //cam.offset.x += (afterMouseX - beforeMouseX);
+        //cam.offset.y += (afterMouseY - beforeMouseY); TODO!!!
     }
+    
 }
 
 void Editor::CheckEdit()
