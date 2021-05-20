@@ -333,6 +333,7 @@ void Editor::DrawMainMenu()
     // Vars.
     static int numFiles;
     static char** files;
+    static string newFileName = "";
     bool openPopup = false;
     bool openSettings = false;
     bool doNew = (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && IsKeyDown(KEY_N);
@@ -342,6 +343,8 @@ void Editor::DrawMainMenu()
     bool doClose = (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) && IsKeyDown(KEY_C);
     bool doQuit = (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) && IsKeyDown(KEY_Q);
     bool isFullscreening = false;
+    bool openNewLevelPopup = false;
+    static bool isNew = false;
 
     // File menu.
     if (ImGui::BeginMainMenuBar())
@@ -422,7 +425,8 @@ void Editor::DrawMainMenu()
     // Options.
     if (doNew)
     {
-
+        openNewLevelPopup = true;
+        isNew = true;
     }
     else if (doOpen)
     {
@@ -435,7 +439,8 @@ void Editor::DrawMainMenu()
     }
     else if (doSaveAs)
     {
-
+        isNew = false;
+        openNewLevelPopup = true;
     }
     else if (doSave)
     {
@@ -502,6 +507,96 @@ void Editor::DrawMainMenu()
         if (ImGui::Button("Cancel"))
         {
             ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
+    }
+
+    // New level.
+    static bool closeNewLevel;
+    if (openNewLevelPopup)
+    {
+        ImGui::OpenPopup("Enter Level Name");
+        newFileName = "";
+        openNewLevelPopup = false;
+        closeNewLevel = false;
+    }
+    if (ImGui::BeginPopupModal("Enter Level Name", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        focus.ObserveFocus();
+        focus.isModal |= true;
+        ImGuiStringEdit("Level Name", &newFileName);
+        if (strcmp(newFileName.c_str(), ""))
+        {
+            if (closeNewLevel)
+            {
+                ImGui::CloseCurrentPopup();
+            }
+            static Map m;
+            if (ImGui::Button("Save"))
+            {
+                m.levelSettings[0] = 0;
+                m.levelSettings[1] = 0;
+                m.levelSettings[2] = 0;
+                m.levelSettings[3] = 0;
+                m.levelSettings[4] = 1;
+                m.levelSettings[5] = 0;
+                m.levelSettings[6] = 0;
+                m.levelSettings[7] = 0;
+                m.tilesetSettings1[0] = 2;
+                m.tilesetSettings1[1] = 2;
+                m.tilesetSettings1[2] = 2;
+                m.tilesetSettings2[0] = 0;
+                m.tilesetSettings2[1] = 0;
+                m.tilesetSettings2[2] = 0;
+                bool needsVerify = GFile::FileExists((rsc + "/field/" + newFileName + ".pxpack").c_str());
+                if (!needsVerify)
+                {
+                    if (isNew)
+                    {
+                        m.Write(rsc, newFileName);
+                    }
+                    else
+                    {
+                        map.Write(rsc, newFileName);
+                    }
+                    UnloadLevel();
+                    LoadLevel(newFileName);
+                    ImGui::CloseCurrentPopup();
+                }
+                else
+                {
+                    ImGui::OpenPopup("Overwrite Level");
+                }
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Cancel"))
+            {
+                ImGui::CloseCurrentPopup();
+            }
+            if (ImGui::BeginPopupModal("Overwrite Level", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+                {
+                    if (ImGui::Button("Yes"))
+                    {
+                        if (isNew)
+                        {
+                            m.Write(rsc, newFileName);
+                        }
+                        else
+                        {
+                            map.Write(rsc, newFileName);
+                        }
+                        UnloadLevel();
+                        LoadLevel(newFileName);
+                        ImGui::CloseCurrentPopup();
+                        closeNewLevel = true;
+                    }
+                    ImGui::SameLine();
+                    if (ImGui::Button("No"))
+                    {
+                        ImGui::CloseCurrentPopup();
+                    }
+                    ImGui::EndPopup();
+                }
         }
         ImGui::EndPopup();
     }
@@ -765,7 +860,17 @@ void Editor::DrawLevelEditor()
     
     if (ImGui::Button("Reload Tilesets"))
     {
-
+        for (int i = 0; i < NUM_TILESETS; i++)
+        {
+            tilesets[map.tilesets[i].dat].Unload();
+            tilesets.erase(map.tilesets[i].dat);
+        }
+        for (int i = 0; i < NUM_TILESETS; i++)
+        {
+            Tileset t;
+            t.Load(rsc, map.tilesets[i].dat);
+            tilesets[map.tilesets[i].dat] = t;
+        }
     }
 
     ImGui::End();
