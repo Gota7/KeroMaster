@@ -15,6 +15,7 @@ AttributeEditor::AttributeEditor(Editor* ed, string name)
     else if (ed->tilesets[name].tiles == NULL)
     {
         ed->tilesets[name].tiles = new u8[ed->tilesets[name].width * ed->tilesets[name].height];
+        memset(ed->tilesets[name].tiles, 0, ed->tilesets[name].width * ed->tilesets[name].height);
     }
     target = LoadRenderTexture(ed->tilesets[name].width * 8 * 2 + (float)Tileset::attrTex.width, max((float)ed->tilesets[name].height * 8 * 2, (float)Tileset::attrTex.height));
 }
