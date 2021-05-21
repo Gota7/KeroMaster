@@ -1,17 +1,21 @@
 #pragma once
 
 #include <string>
+#include <mutex>
 #include "raylib.h"
 #include "imgui.h"
 #include "pxtone/pxtn.h"
 #include "pxtone/pxtnService.h"
 #include "../gbin/gfile.h"
+#include "miniaudio.h"
 
 // Buffer.
-const u32 NUM_CHANNELS = 1;
-const u32 SAMPLE_RATE = 44100;
-const u32 BUFFER_SAMPLES = 10000;
-const u32 BUFFER_SIZE = pxtnBITPERSAMPLE / 8 * NUM_CHANNELS * BUFFER_SAMPLES;
+constexpr u32 NUM_CHANNELS = 2;
+constexpr u32 SAMPLE_RATE = 44100;
+constexpr u32 BUFFER_SAMPLES = 512;
+//constexpr u32 BUFFER_SAMPLES = SAMPLE_RATE * 300 / 1000;
+constexpr u32 BUFFER_SIZE = 4096;
+//constexpr u32 BUFFER_SIZE = BUFFER_SAMPLES * NUM_CHANNELS * sizeof(u16);
 
 // Background music player.
 struct BgmPlayer
@@ -19,10 +23,12 @@ struct BgmPlayer
     static std::string rsc;
     static pxtnService pxtn;
     static FILE* handle;
-    static AudioStream strm;
     static bool playing;
+    static bool audioInitialized;
     static u8 buffer[BUFFER_SIZE];
     static float prevVolume;
+    static std::mutex audioMutex;
+    static ma_device device;
     
     static ImVector<char*> songList;
     static char** songNameBuf;
@@ -39,7 +45,7 @@ struct BgmPlayer
     static void Stop();
     static int32_t GetPos();
     static int32_t GetEnd();
-    static void Update();
+    static void AudioCallback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount);
 };
 
 int cmpstr2(const void* a, const void* b);

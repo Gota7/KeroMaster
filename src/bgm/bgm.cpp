@@ -4,14 +4,16 @@ using namespace std;
 
 string BgmPlayer::rsc;
 pxtnService BgmPlayer::pxtn;
-FILE* BgmPlayer::handle = nullptr;
-AudioStream BgmPlayer::strm;
+FILE *BgmPlayer::handle = nullptr;
 bool BgmPlayer::playing = false;
+bool BgmPlayer::audioInitialized = false;
+std::mutex BgmPlayer::audioMutex;
+ma_device BgmPlayer::device;
 u8 BgmPlayer::buffer[BUFFER_SIZE];
 float BgmPlayer::volume = 1;
 float BgmPlayer::prevVolume = 1;
-ImVector<char*> BgmPlayer::songList;
-char** BgmPlayer::songNameBuf = nullptr;
+ImVector<char *> BgmPlayer::songList;
+char **BgmPlayer::songNameBuf = nullptr;
 int BgmPlayer::numSongs = 0;
 string BgmPlayer::currSong;
 int BgmPlayer::currSongInd = 0;
@@ -27,9 +29,18 @@ void BgmPlayer::Init(string rsc_k)
         return;
     }
     pxtn.set_destination_quality(NUM_CHANNELS, SAMPLE_RATE);
-    InitAudioDevice();
-    SetAudioStreamBufferSizeDefault(BUFFER_SAMPLES);
-    strm = InitAudioStream(SAMPLE_RATE, pxtnBITPERSAMPLE, NUM_CHANNELS);
+
+    ma_device_config config = ma_device_config_init(ma_device_type_playback);
+    config.playback.format = ma_format_s16;
+    config.playback.channels = NUM_CHANNELS;
+    config.sampleRate = SAMPLE_RATE;
+    config.dataCallback = AudioCallback;
+
+    if (ma_device_init(NULL, &config, &device) == MA_SUCCESS)
+    {
+        audioInitialized = true;
+        ma_device_start(&device);
+    }
 }
 
 void BgmPlayer::LoadSongList()
@@ -39,14 +50,14 @@ void BgmPlayer::LoadSongList()
         free(songNameBuf);
         songNameBuf = nullptr;
     }
-    char** tmp = GetDirectoryFiles((rsc + "/bgm").c_str(), &numSongs);
-    songNameBuf = (char**)malloc((numSongs - 2) * sizeof(char*));
-    qsort(tmp, numSongs, sizeof(char*), cmpstr2);
+    char **tmp = GetDirectoryFiles((rsc + "/bgm").c_str(), &numSongs);
+    songNameBuf = (char **)malloc((numSongs - 2) * sizeof(char *));
+    qsort(tmp, numSongs, sizeof(char *), cmpstr2);
     songList.clear();
     for (int i = 2; i < numSongs; i++)
     {
-        const char* dat = GetFileNameWithoutExt(tmp[i]);
-        songNameBuf[i - 2] = (char*)malloc((strlen(dat) + 1) * sizeof(char));
+        const char *dat = GetFileNameWithoutExt(tmp[i]);
+        songNameBuf[i - 2] = (char *)malloc((strlen(dat) + 1) * sizeof(char));
         strcpy(songNameBuf[i - 2], dat);
         songList.push_back(songNameBuf[i - 2]);
         if (strcmp(songList[i - 2], currSong.c_str()) == 0)
@@ -64,23 +75,30 @@ void BgmPlayer::Play(string bgmName)
         fclose(handle);
         handle = nullptr;
     }
+
+    audioMutex.lock();
     currSong = bgmName;
     handle = fopen((rsc + "/bgm/" + bgmName + ".ptcop").c_str(), "r");
+    playing = false;
+
     pxtnDescriptor desc;
     int32_t event_num = 0;
     if (!desc.set_file_r(handle))
     {
         printf("PXTONE LOAD ERROR!\n");
+        audioMutex.unlock();
         return;
     }
     if (pxtn.read(&desc) != pxtnOK)
     {
         printf("PXTONE LOAD ERROR!\n");
+        audioMutex.unlock();
         return;
     }
     if (pxtn.tones_ready() != pxtnOK)
     {
         printf("PXTONE LOAD ERROR!\n");
+        audioMutex.unlock();
         return;
     }
     pxtnVOMITPREPARATION prep = {0};
@@ -88,14 +106,14 @@ void BgmPlayer::Play(string bgmName)
     prep.start_pos_float = 0;
     prep.master_volume = volume;
     pxtn.moo_preparation(&prep);
-    PlayAudioStream(strm);
     playing = true;
+
+    audioMutex.unlock();
 }
 
 void BgmPlayer::Pause()
 {
     playing = false;
-    PauseAudioStream(strm);
 }
 
 void BgmPlayer::Resume()
@@ -103,7 +121,6 @@ void BgmPlayer::Resume()
     if (handle != nullptr)
     {
         playing = true;
-        ResumeAudioStream(strm);
     }
 }
 
@@ -112,7 +129,6 @@ void BgmPlayer::Stop()
     if (handle != nullptr)
     {
         playing = false;
-        StopAudioStream(strm);
         fclose(handle);
         handle = nullptr;
     }
@@ -128,34 +144,33 @@ int32_t BgmPlayer::GetEnd()
     return pxtn.moo_get_end_clock();
 }
 
-void BgmPlayer::Update()
+void BgmPlayer::AudioCallback(ma_device *pDevice, void *pOutput, const void *pInput, ma_uint32 frameCount)
 {
-    if (!playing)
+    bool lock = audioMutex.try_lock();
+    if (!playing || !lock)
     {
+        memset(pOutput, 0, frameCount * NUM_CHANNELS * sizeof(s16));
         return;
     }
+
     if (prevVolume != volume)
     {
         pxtn.moo_set_master_volume(volume);
     }
     prevVolume = volume;
-    if (IsAudioStreamProcessed(strm))
+
+    if (!pxtn.Moo(pOutput, frameCount * NUM_CHANNELS * sizeof(s16)))
     {
-        u32 numSamples = BUFFER_SAMPLES;
-        if (!pxtn.Moo(buffer, BUFFER_SIZE))
-        {
-            printf("PXTONE PLAY ERROR!\n");
-            StopAudioStream(strm);
-            playing = false;
-            return;
-        }
-        UpdateAudioStream(strm, buffer, numSamples);
+        printf("PXTONE PLAY ERROR!\n");
+        playing = false;
     }
+
+    audioMutex.unlock();
 }
 
-int cmpstr2(const void* a, const void* b)
+int cmpstr2(const void *a, const void *b)
 {
-    const char* aa = *(const char**)a;
-    const char* bb = *(const char**)b;
+    const char *aa = *(const char **)a;
+    const char *bb = *(const char **)b;
     return strcmp(aa, bb);
 }

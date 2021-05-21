@@ -78,7 +78,6 @@ static int EditorLoop() {
                 e.doFullscreen = false;
             }
         }
-        BgmPlayer::Update();
     }
 
     return 0;
@@ -95,8 +94,6 @@ int main(int argc, char *argv[])
     SetupRLImGui(true);
     exit = EditorLoop();
     ShutdownRLImGui();
-    CloseAudioStream(BgmPlayer::strm);
-    CloseAudioDevice();
     CloseWindow();
 
     return exit;
