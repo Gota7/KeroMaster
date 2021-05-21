@@ -12,10 +12,6 @@
 // Buffer.
 constexpr u32 NUM_CHANNELS = 2;
 constexpr u32 SAMPLE_RATE = 44100;
-constexpr u32 BUFFER_SAMPLES = 512;
-//constexpr u32 BUFFER_SAMPLES = SAMPLE_RATE * 300 / 1000;
-constexpr u32 BUFFER_SIZE = 4096;
-//constexpr u32 BUFFER_SIZE = BUFFER_SAMPLES * NUM_CHANNELS * sizeof(u16);
 
 // Background music player.
 struct BgmPlayer
@@ -25,7 +21,6 @@ struct BgmPlayer
     static FILE* handle;
     static bool playing;
     static bool audioInitialized;
-    static u8 buffer[BUFFER_SIZE];
     static float prevVolume;
     static std::mutex audioMutex;
     static ma_device device;
