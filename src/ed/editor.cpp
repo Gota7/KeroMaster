@@ -1042,7 +1042,10 @@ void Editor::DrawPalette()
         ImGui::Text("Tile ID: %d\nAttribute: %s\n", currentTile, te->second.GetAttributeName(currentTile));
 
         const ImVec2 p = ImGui::GetCursorScreenPos();
+        ImVec2 tmp = ImGui::GetCursorPos();
         ImGui::Image(&te->second.tex, ImVec2(te->second.width * 16, te->second.height * 16), ImVec2(0, 0), ImVec2(scale, scale));
+        ImGui::SetCursorPos(tmp);
+        ImGui::InvisibleButton("NoDrag", ImVec2(te->second.width * 16, te->second.height * 16));
         if (showPaletteAttributes) {
             for (int i = 0; i < te->second.width * 16; i++) {
                 int attr = te->second.GetTilesetAttr(i);
@@ -1068,20 +1071,7 @@ void Editor::DrawPalette()
 
         const ImVec2 mousePos = ImGui::GetMousePos();
         const ImVec2 mousePosRel = ImVec2(mousePos.x - p.x, mousePos.y - p.y);
-        if (currentTool == EditorTool::TileBrush && ImGui::IsMouseClicked(MOUSE_LEFT_BUTTON)) {
-
-            if (mousePosRel.x >= 0 && mousePosRel.x < te->second.width * 16 &&
-                mousePosRel.y >= 0 && mousePosRel.y < te->second.height * 16) 
-            {
-                int tileX = mousePosRel.x / 16;
-                int tileY = mousePosRel.y / 16;
-                selectionWidth = 1;
-                selectionHeight = 1;
-                RemoveAllOtherTilesetViewerSelections(nullptr);
-                currentTile = tileY * te->second.width + tileX;
-            }
-        }
-        else if (currentTool == EditorTool::TileBrush && ImGui::IsMouseDown(MOUSE_RIGHT_BUTTON) && !isSelecting && mousePosRel.x >= 0 && mousePosRel.x < te->second.width * 16 &&
+        if (currentTool == EditorTool::TileBrush && ImGui::IsMouseDown(MOUSE_LEFT_BUTTON) && !isSelecting && mousePosRel.x >= 0 && mousePosRel.x < te->second.width * 16 &&
                 mousePosRel.y >= 0 && mousePosRel.y < te->second.height * 16)
         {
             isSelecting = true;
@@ -1092,7 +1082,7 @@ void Editor::DrawPalette()
             RemoveAllOtherTilesetViewerSelections(nullptr);
             currentTile = tileY * te->second.width + tileX;
         }
-        else if (isSelecting && currentTool == EditorTool::TileBrush && ImGui::IsMouseReleased(MOUSE_RIGHT_BUTTON))
+        else if (isSelecting && currentTool == EditorTool::TileBrush && ImGui::IsMouseReleased(MOUSE_LEFT_BUTTON))
         {
             isSelecting = false;
         }

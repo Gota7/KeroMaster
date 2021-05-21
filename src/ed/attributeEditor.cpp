@@ -104,7 +104,10 @@ void AttributeEditor::DrawUI()
     imgPos = ImGui::GetCursorScreenPos();
     imgSizeX = w;
     imgSizeY = h;
+    ImVec2 tmp = ImGui::GetCursorPos();
     RLImGuiImageSize(&target.texture, (int)h, (int)w);
+    ImGui::SetCursorPos(tmp);
+    ImGui::InvisibleButton("NoDrag", ImVec2((int)w, (int)h));
     ImGui::End();
 
 }
@@ -132,7 +135,7 @@ void AttributeEditor::Update()
         mouseY > imgPos.y && \
         mouseY < imgPos.y + imgSizeY && \
         isFocused && \
-        IsMouseButtonDown(MOUSE_RIGHT_BUTTON)
+        IsMouseButtonDown(MOUSE_LEFT_BUTTON)
     )
     {
         int tX = (mouseX - imgPos.x) / imgSizeX * (ed->tilesets[name].width + 16);

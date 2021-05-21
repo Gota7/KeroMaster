@@ -44,7 +44,7 @@ void TilesetEditor::Draw()
     {
         u16 x = currTile % ed->tilesets[name].width;
         u16 y = ed->tilesets[name].height - currTile / ed->tilesets[name].width - 1;
-        DrawRectangleLinesEx( { (float)x * 8 * 2, (float)(y - selectionHeight + 1) * 8 * 2, (float)8 * 2 * selectionWidth, (float)8 * 2 * selectionHeight }, 1, ColorAlpha(YELLOW, .5f));
+        DrawRectangleLinesEx( { (float)x * 8 * 2, (float)(y - selectionHeight + 1) * 8 * 2, (float)8 * 2 * selectionWidth, (float)8 * 2 * selectionHeight }, 2, WHITE);
     }
     EndTextureMode();
 
@@ -101,7 +101,10 @@ void TilesetEditor::DrawUI()
     imgPos = ImGui::GetCursorScreenPos();
     imgSizeX = w;
     imgSizeY = h;
+    ImVec2 tmp = ImGui::GetCursorPos();
     RLImGuiImageSize(&target.texture, (int)h, (int)w);
+    ImGui::SetCursorPos(tmp);
+    ImGui::InvisibleButton("NoDrag", ImVec2((int)w, (int)h));
     ImGui::End();
     
 }
@@ -134,7 +137,7 @@ void TilesetEditor::Update()
         mouseX < imgPos.x + imgSizeX && \
         mouseY > imgPos.y && \
         mouseY < imgPos.y + imgSizeY && \
-        IsMouseButtonPressed(MOUSE_RIGHT_BUTTON)
+        IsMouseButtonPressed(MOUSE_LEFT_BUTTON)
     )
     {
         startMouseX = mouseX;
@@ -142,7 +145,7 @@ void TilesetEditor::Update()
         CalcTiles();
         selectingTiles = true;
     }
-    else if (IsMouseButtonReleased(MOUSE_RIGHT_BUTTON) && selectingTiles)
+    else if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON) && selectingTiles)
     {
         selectingTiles = false;
         CalcTiles();
