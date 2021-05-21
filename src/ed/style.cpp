@@ -10,10 +10,10 @@ void EditorStyle::Load(string name)
     this->name = name;
     if (strcmp(name.c_str(), "default") == 0)
     {
-        ImGui::StyleColorsDark();
+        ImGui::StyleColorsClassic(&style);
         return;
     }
-    IniFile t = IniFile("object_data/themes/" + name);
+    IniFile t = IniFile("object_data/themes/" + name + ".ini");
     style.Alpha = t["Theme"]["Alpha"].as<float>();
     style.AntiAliasedFill = t["Theme"]["AntiAliasedFill"].as<bool>();
     style.AntiAliasedLines = t["Theme"]["AntiAliasedLines"].as<bool>();
@@ -72,11 +72,12 @@ void EditorStyle::Load(string name)
     style.WindowRounding = t["Theme"]["WindowRounding"].as<float>();
     style.WindowTitleAlign.x = t["Theme"]["WindowTitleAlignX"].as<float>();
     style.WindowTitleAlign.y = t["Theme"]["WindowTitleAlignY"].as<float>();
+    ImGui::GetStyle() = style;
 }
 
 void EditorStyle::Save()
 {
-    if (strcmp(name.c_str(), "default"))
+    if (strcmp(name.c_str(), "default") == 0)
     {
         return;
     }
@@ -139,5 +140,5 @@ void EditorStyle::Save()
     t["Theme"]["WindowRounding"] = style.WindowRounding;
     t["Theme"]["WindowTitleAlignX"] = style.WindowTitleAlign.x;
     t["Theme"]["WindowTitleAlignY"] = style.WindowTitleAlign.y;
-    t.save("object_data/themes/" + name);
+    t.save("object_data/themes/" + name + ".ini");
 }

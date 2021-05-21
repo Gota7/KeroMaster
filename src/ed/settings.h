@@ -21,7 +21,6 @@ struct Settings
     EditorTool rightClick = (EditorTool)0;
     EditorTool middleClick = (EditorTool)3;
     EditorStyle style;
-    ImVector<char> styles;
     bool show = false;
 
     void Load();

@@ -23,6 +23,10 @@ void Settings::Load()
         usePalette = f["Settings"]["UsePalette"].as<bool>();
         style.Load(f["Settings"]["Style"].as<string>());
     }
+    else
+    {
+        style.Load("Cat & Frog");
+    }
 }
 
 void Settings::Save()
