@@ -1055,9 +1055,9 @@ void Editor::DrawPalette()
             p.x + 16 * (currentTile % 16), 
             p.y + 16 * (currentTile / 16)
         );
-        if (currentTile != -1) drawList->AddRect(cursorPos, ImVec2(cursorPos.x + 16, cursorPos.y + 16), ImColor(255, 255, 255), 0, 0, 2);
+        if (currentTile != -1) drawList->AddRect(cursorPos, ImVec2(cursorPos.x + 16 * selectionWidth, cursorPos.y + 16 * selectionHeight), ImColor(255, 255, 255), 0, 0, 2);
 
-        if ((currentTool == EditorTool::TileBrush && settings.ButtonClicked(EditorTool::CurrentTool)) || settings.ButtonClicked(EditorTool::TileBrush)) {
+        if (currentTool == EditorTool::TileBrush && ImGui::IsMouseClicked(MOUSE_LEFT_BUTTON)) {
             const ImVec2 mousePos = ImGui::GetMousePos();
             const ImVec2 mousePosRel = ImVec2(mousePos.x - p.x, mousePos.y - p.y);
 
@@ -1066,6 +1066,8 @@ void Editor::DrawPalette()
             {
                 int tileX = mousePosRel.x / 16;
                 int tileY = mousePosRel.y / 16;
+                selectionWidth = 1;
+                selectionHeight = 1;
                 RemoveAllOtherTilesetViewerSelections(nullptr);
                 currentTile = tileY * 16 + tileX;
             }

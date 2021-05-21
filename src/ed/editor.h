@@ -59,6 +59,8 @@ struct Editor
     bool showPaletteAttributes = false;;
     u8 currentLayer = 0;
     int currentTile = -1;
+    int selectionWidth = 1;
+    int selectionHeight = 1;
     EditorTool currentTool = EditorTool::Hand;
     FocusData focus;
     Entity* editingEntity = NULL;

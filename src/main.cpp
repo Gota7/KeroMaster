@@ -5,6 +5,7 @@
 #include "px/tileset.h"
 #include "px/pxmap.h"
 #include "ed/editor.h"
+#include "bgm/bgm.h"
 
 constexpr int SCREEN_WIDTH = 1240;
 constexpr int SCREEN_HEIGHT = 720;
@@ -32,7 +33,8 @@ static int EditorLoop() {
             }
         }
         e.LoadEnemies("all");
-        e.LoadFixedTilesets();  
+        e.LoadFixedTilesets();
+        BgmPlayer::Init(e.settings.rscPath);
     } catch (string &e) {
         TraceLog(LOG_ERROR, "Failed to load game data: %s\n", e.c_str());
         return 1;
@@ -75,6 +77,7 @@ static int EditorLoop() {
                 e.doFullscreen = false;
             }
         }
+        BgmPlayer::Update();
     }
 
     return 0;

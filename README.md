@@ -5,6 +5,7 @@ An editor for Kero Blaster
 The editor source composes of multiple subdirectories for various purposes:
 
 * root - Main bootstrapping code along with shortcuts for types.
+* bgm - Background music playback utilizing Pixel's pxtone.
 * conv - Shift-JIS character conversion code.
 * ed - Editor and UI related code.
 * gbin - Gota's binary file library.
