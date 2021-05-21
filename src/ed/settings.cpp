@@ -104,11 +104,19 @@ void Settings::ShowWindow(Editor* ed)
             }
             if (ImGui::Button("Update Object Data Folder"))
             {
+                system("curl https://raw.githubusercontent.com/Gota7/KeroMaster/main/object_data/all.xml -o object_data/all.xml");
+                system("curl https://raw.githubusercontent.com/Gota7/KeroMaster/main/object_data/alwaysLoaded.txt -o object_data/alwaysLoaded.txt");
+                system("curl https://raw.githubusercontent.com/Gota7/KeroMaster/main/object_data/attribute.png -o object_data/attribute.png");
+                system("curl https://raw.githubusercontent.com/Gota7/KeroMaster/main/object_data/default.pxeve -o object_data/default.pxeve");
+                system("curl https://raw.githubusercontent.com/Gota7/KeroMaster/main/object_data/scriptInfo.xml -o object_data/scriptInfo.xml");
+                system("curl https://raw.githubusercontent.com/Gota7/KeroMaster/main/object_data/unittype.png -o object_data/unittype.png");
+                system("curl https://raw.githubusercontent.com/Gota7/KeroMaster/main/object_data/unittype.txt -o object_data/unittype.txt");
                 ImGui::OpenPopup("Notice");
             }
+            ImGuiTooltip("System must have curl command available for this to work!");
             if (ImGui::BeginPopupModal("Notice", NULL, ImGuiWindowFlags_AlwaysAutoResize))
             {
-                ImGui::Text("Go to https://github.com/Gota7/KeroMaster and download the object_data folder.\nReplace it with the current one, then restart the editor for changes to take effect!");
+                ImGui::Text("Restart the editor for changes to take effect!");
                 if (ImGui::Button("Ok"))
                 {
                     ImGui::CloseCurrentPopup();
