@@ -9,7 +9,6 @@ bool BgmPlayer::playing = false;
 bool BgmPlayer::audioInitialized = false;
 std::mutex BgmPlayer::audioMutex;
 ma_device BgmPlayer::device;
-u8 BgmPlayer::buffer[BUFFER_SIZE];
 float BgmPlayer::volume = 1;
 float BgmPlayer::prevVolume = 1;
 ImVector<char *> BgmPlayer::songList;
@@ -147,9 +146,12 @@ int32_t BgmPlayer::GetEnd()
 void BgmPlayer::AudioCallback(ma_device *pDevice, void *pOutput, const void *pInput, ma_uint32 frameCount)
 {
     bool lock = audioMutex.try_lock();
-    if (!playing || !lock)
+    if (!lock) return;
+
+    if (!playing)
     {
         memset(pOutput, 0, frameCount * NUM_CHANNELS * sizeof(s16));
+        audioMutex.unlock();
         return;
     }
 
