@@ -2,6 +2,7 @@
 #include <fstream>
 #include <imgui.h>
 #include "editor.h"
+#include "../bgm/bgm.h"
 #include "../rlImGui/fileBrowser.h"
 #include "../rlImGui/utils.h"
 
@@ -307,6 +308,9 @@ void Editor::DrawUI()
     // Style.
     DrawStyleEditor();
 
+    // Music.
+    DrawMusicPlayer();
+
     // Safety.
     if (!enabled)
     {
@@ -393,6 +397,11 @@ void Editor::DrawMainMenu(bool startup)
             if (ImGui::MenuItem("Style"))
             {
                 showStyleEditor = true;
+            }
+
+            if (ImGui::MenuItem("Music"))
+            {
+                showMusicPlayer = true;
             }
 
             if (ImGui::MenuItem("Settings"))
@@ -1377,6 +1386,41 @@ void Editor::DrawStyleEditor()
     }
 
     ImGui::PopItemWidth();
+    ImGui::End();
+}
+
+void Editor::DrawMusicPlayer()
+{
+    if (!showMusicPlayer)
+    {
+        return;
+    }
+    ImGui::Begin("Music Player", &showMusicPlayer, ImGuiWindowFlags_AlwaysAutoResize);
+    focus.ObserveFocus();
+    ImGui::Combo("Song", &BgmPlayer::currSongInd, BgmPlayer::songList.begin(), BgmPlayer::numSongs);
+    ImGui::ProgressBar(BgmPlayer::GetPos() / (float)max(BgmPlayer::GetEnd(), 1));
+    ImGui::SliderFloat("Volume", &BgmPlayer::volume, 0, 1, "%f", 1);
+    if (ImGui::Button("Play"))
+    {
+        BgmPlayer::Play(BgmPlayer::songList[BgmPlayer::currSongInd]);
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Pause/Resume"))
+    {
+        if (BgmPlayer::playing)
+        {
+            BgmPlayer::Pause();
+        }
+        else
+        {
+            BgmPlayer::Resume();
+        }
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Stop"))
+    {
+        BgmPlayer::Stop();
+    }
     ImGui::End();
 }
 

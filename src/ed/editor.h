@@ -75,6 +75,7 @@ struct Editor
     bool isPlacingEntity = false;
     TilesetEditor* editingTileset = nullptr;
     bool showStyleEditor = false;
+    bool showMusicPlayer = false;
 
     void SetPath(std::string rsc);
     void LoadEnemies(std::string xml);
@@ -95,6 +96,7 @@ struct Editor
     void DrawToolbar();
     void DrawProfileEditor();
     void DrawStyleEditor();
+    void DrawMusicPlayer();
     void OpenTileset(std::string name);
     void OpenAttrEditor(std::string name);
     void OpenScript(std::string name);

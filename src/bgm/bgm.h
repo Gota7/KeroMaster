@@ -2,6 +2,7 @@
 
 #include <string>
 #include "raylib.h"
+#include "imgui.h"
 #include "pxtone/pxtn.h"
 #include "pxtone/pxtnService.h"
 #include "../gbin/gfile.h"
@@ -23,9 +24,15 @@ struct BgmPlayer
     static u8 buffer[BUFFER_SIZE];
     static float prevVolume;
     
+    static ImVector<char*> songList;
+    static char** songNameBuf;
+    static int numSongs;
     static float volume;
+    static std::string currSong;
+    static int currSongInd;
 
     static void Init(std::string rsc_k);
+    static void LoadSongList();
     static void Play(std::string bgmName);
     static void Pause();
     static void Resume();
@@ -34,3 +41,5 @@ struct BgmPlayer
     static int32_t GetEnd();
     static void Update();
 };
+
+int cmpstr2(const void* a, const void* b);
