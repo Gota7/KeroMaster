@@ -4,6 +4,7 @@
 #include "../gbin/gfile.h"
 #include "../rlImGui/fileBrowser.h"
 #include "../rlImGui/utils.h"
+#include "../bgm/bgm.h"
 
 using namespace std;
 using namespace ini;
@@ -170,6 +171,9 @@ void Settings::ShowWindow(Editor* ed)
                     {
                         ed->LoadLevel(lastLevel);
                     }
+                    BgmPlayer::rsc = rscPath;
+                    BgmPlayer::LoadSongList();
+                    ed->LoadFixedTilesets();
                     show = false;
                     ImGui::CloseCurrentPopup();
                 }

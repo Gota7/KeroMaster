@@ -232,8 +232,8 @@ void Editor::Draw()
 
     int tileDraw = currentTile;
     int layerDraw = currentLayer;
-    int numTilesX = 1;
-    int numTilesY = 1;
+    int numTilesX = selectionWidth;
+    int numTilesY = selectionHeight;
     if (tileDraw == -1 && editingTileset != nullptr)
     {
         tileDraw = editingTileset->currTile;
@@ -1066,9 +1066,9 @@ void Editor::DrawPalette()
         );
         if (currentTile != -1) drawList->AddRect(cursorPos, ImVec2(cursorPos.x + 16 * selectionWidth, cursorPos.y + 16 * selectionHeight), ImColor(255, 255, 255), 0, 0, 2);
 
+        const ImVec2 mousePos = ImGui::GetMousePos();
+        const ImVec2 mousePosRel = ImVec2(mousePos.x - p.x, mousePos.y - p.y);
         if (currentTool == EditorTool::TileBrush && ImGui::IsMouseClicked(MOUSE_LEFT_BUTTON)) {
-            const ImVec2 mousePos = ImGui::GetMousePos();
-            const ImVec2 mousePosRel = ImVec2(mousePos.x - p.x, mousePos.y - p.y);
 
             if (mousePosRel.x >= 0 && mousePosRel.x < te->second.width * 16 &&
                 mousePosRel.y >= 0 && mousePosRel.y < te->second.height * 16) 
@@ -1078,8 +1078,53 @@ void Editor::DrawPalette()
                 selectionWidth = 1;
                 selectionHeight = 1;
                 RemoveAllOtherTilesetViewerSelections(nullptr);
-                currentTile = tileY * 16 + tileX;
+                currentTile = tileY * te->second.width + tileX;
             }
+        }
+        else if (currentTool == EditorTool::TileBrush && ImGui::IsMouseDown(MOUSE_RIGHT_BUTTON) && !isSelecting && mousePosRel.x >= 0 && mousePosRel.x < te->second.width * 16 &&
+                mousePosRel.y >= 0 && mousePosRel.y < te->second.height * 16)
+        {
+            isSelecting = true;
+            int tileX = selectionStartX = mousePosRel.x / 16;
+            int tileY = selectionStartY = mousePosRel.y / 16;
+            selectionWidth = 1;
+            selectionHeight = 1;
+            RemoveAllOtherTilesetViewerSelections(nullptr);
+            currentTile = tileY * te->second.width + tileX;
+        }
+        else if (isSelecting && currentTool == EditorTool::TileBrush && ImGui::IsMouseReleased(MOUSE_RIGHT_BUTTON))
+        {
+            isSelecting = false;
+        }
+        else if (isSelecting)
+        {
+            int startTileX = selectionStartX;
+            int startTileY = selectionStartY;
+            int endTileX = mousePosRel.x / 16;
+            int endTileY = mousePosRel.y / 16;
+            if (endTileX >= te->second.width)
+            {
+                endTileX = te->second.width - 1;
+            }
+            else if (endTileX < 0)
+            {
+                endTileX = 0;
+            }
+            if (endTileY >= te->second.height)
+            {
+                endTileY = te->second.height - 1;
+            }
+            else if (endTileY < 0)
+            {
+                endTileY = 0;
+            }
+            int currTileX;
+            int currTileY;
+            currTileX = min(startTileX, endTileX);
+            currTileY = min(startTileY, endTileY);
+            selectionWidth = abs(endTileX - startTileX) + 1;
+            selectionHeight = abs(endTileY - startTileY) + 1;
+            currentTile = currTileX + currTileY * te->second.width;
         }
     }
 
@@ -1679,8 +1724,8 @@ void Editor::CheckEdit()
     int tileX = ((mouseX - cam.offset.x) / (MAP_SIZE * 8) / cam.zoom);
     int tileY = ((mouseY - cam.offset.y) / (MAP_SIZE * 8) / cam.zoom);
     int placeTile = currentTile;
-    int placeW = 1;
-    int placeH = 1;
+    int placeW = selectionWidth;
+    int placeH = selectionHeight;
     if (placeTile == -1 && editingTileset != nullptr)
     {
         placeTile = editingTileset->currTile;

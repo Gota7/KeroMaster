@@ -58,7 +58,10 @@ struct Editor
     bool openTilesetsOnLoad = false;
     bool showPaletteAttributes = false;;
     u8 currentLayer = 0;
+    bool isSelecting = false;
     int currentTile = -1;
+    int selectionStartX;
+    int selectionStartY;
     int selectionWidth = 1;
     int selectionHeight = 1;
     EditorTool currentTool = EditorTool::Hand;
