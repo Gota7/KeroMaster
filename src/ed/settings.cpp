@@ -56,13 +56,13 @@ void Settings::ShowWindow(Editor* ed)
     static int numFiles;
     static char** files;
     static int actionMouse = 0;
-    if (ImGui::BeginPopupModal("Editor Settings", nullptr, ImGuiWindowFlags_AlwaysAutoResize | (show ? ImGuiWindowFlags_MenuBar : 0)))
+    if (ImGui::BeginPopupModal("Editor Settings", nullptr, ImGuiWindowFlags_AlwaysAutoResize | (show ? 0/*ImGuiWindowFlags_MenuBar*/ : 0)))
     {
         ed->focus.ObserveFocus();
         ed->focus.isModal |= true;
         if (show)
         {
-            ed->DrawMainMenu(true);
+            //ed->DrawMainMenu(true);
         }
         if (ImGuiStringEdit("Resource Path", &rscPath))
         {
@@ -134,6 +134,7 @@ void Settings::ShowWindow(Editor* ed)
                     if (middleClick == (EditorTool)4) { middleClick = (EditorTool)0; }
                     leftClick = (EditorTool)4;
                 }
+                ImGuiTooltip("The mouse button that will do the current tool's action.");
                 ImGui::SameLine();
                 if (ImGui::RadioButton("Right Click", &actionMouse, 1))
                 {
@@ -162,6 +163,7 @@ void Settings::ShowWindow(Editor* ed)
                 }
                 ImGui::Separator();
                 ImGui::Checkbox("Use Tile Palette", &usePalette);
+                ImGuiTooltip("Use the current layer's palette to draw in addition to from tilesets.");
                 ImGui::Separator();
                 if (ImGui::Button("Save And Close"))
                 {

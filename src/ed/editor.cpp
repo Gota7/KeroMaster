@@ -1733,6 +1733,7 @@ void Editor::CheckZoom()
         // I solved for the offAfter variable here.
         cam.offset.x = -(mouseX - cam.offset.x) * cam.zoom / beforeZoom + mouseX;
         cam.offset.y = -(mouseY - cam.offset.y) * cam.zoom / beforeZoom + mouseY;
+        
     }
     
 }
