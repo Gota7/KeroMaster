@@ -1770,7 +1770,7 @@ void Editor::CheckEdit()
         placeH = editingTileset->selectionHeight;
     }
     PxMap& layer = map.maps[placeLayer];
-    if (placeTile != -1 && tileX >= 0 && tileX < layer.width && tileY >= 0 && tileY < layer.height) {
+    if (placeTile != -1 && tileX >= 0 && tileX < layer.width && tileY >= 0 && tileY < layer.height && !isSelecting) {
         if ((currentTool == EditorTool::TileBrush && settings.ButtonDown(EditorTool::CurrentTool)) || settings.ButtonDown(EditorTool::TileBrush)) {
             for (int x = 0; x < placeW; x++)
             {
