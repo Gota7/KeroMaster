@@ -77,8 +77,12 @@ struct Editor
     int placeEntityId = 0;
     bool isPlacingEntity = false;
     TilesetEditor* editingTileset = nullptr;
+    bool showLevelEditor = true;
+    bool showProfileEditor = false;
     bool showStyleEditor = false;
     bool showMusicPlayer = false;
+    bool showHelp = false;
+    bool helpModal = false;
 
     void SetPath(std::string rsc);
     void LoadEnemies(std::string xml);

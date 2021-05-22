@@ -2,6 +2,7 @@
 #include <fstream>
 #include <imgui.h>
 #include "editor.h"
+#include "help.h"
 #include "../bgm/bgm.h"
 #include "../rlImGui/fileBrowser.h"
 #include "../rlImGui/utils.h"
@@ -311,6 +312,12 @@ void Editor::DrawUI()
     // Music.
     DrawMusicPlayer();
 
+    // Help.
+    if (showHelp)
+    {
+        ShowHelp(&focus, &showHelp, helpModal);
+    }
+
     // Safety.
     if (!enabled)
     {
@@ -349,6 +356,10 @@ void Editor::DrawMainMenu(bool startup)
     bool doSaveAs = !startup && (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) && IsKeyDown(KEY_S);
     bool doClose = !startup && (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) && IsKeyDown(KEY_C);
     bool doQuit = !startup && (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) && IsKeyDown(KEY_Q);
+    if (!startup && (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && IsKeyDown(KEY_Q)) { currentTool = EditorTool::Hand; }
+    if (!startup && (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && IsKeyDown(KEY_W)) { currentTool = EditorTool::TileBrush; }
+    if (!startup && (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && IsKeyDown(KEY_E)) { currentTool = EditorTool::Eraser; }
+    if (!startup && (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && IsKeyDown(KEY_R)) { currentTool = EditorTool::EntityHand; }
     bool isFullscreening = false;
     bool openNewLevelPopup = false;
     bool openAboutPopup = false;
@@ -394,16 +405,6 @@ void Editor::DrawMainMenu(bool startup)
             {
             }
 
-            if (ImGui::MenuItem("Style"))
-            {
-                showStyleEditor = true;
-            }
-
-            if (ImGui::MenuItem("Music"))
-            {
-                showMusicPlayer = true;
-            }
-
             if (ImGui::MenuItem("Settings"))
             {
                 openSettings = true;
@@ -411,14 +412,49 @@ void Editor::DrawMainMenu(bool startup)
 
             ImGui::EndMenu();
         }
+        if (!startup && ImGui::BeginMenu("Window"))
+        {
+            if (ImGui::MenuItem("Level Editor"))
+            {
+                showLevelEditor = true;
+            }
+
+            if (ImGui::MenuItem("Profile Editor"))
+            {
+                showProfileEditor = true;
+            }
+
+            if (ImGui::MenuItem("Style Editor"))
+            {
+                showStyleEditor = true;
+            }
+
+            if (ImGui::MenuItem("Music Player"))
+            {
+                showMusicPlayer = true;
+            }
+            ImGui::EndMenu();
+        }
+        if (!startup && ImGui::BeginMenu("Tool"))
+        {
+            ImGui::RadioButton("Hand (Ctrl+Q)", (int*)&currentTool, (int)EditorTool::Hand);
+            ImGuiTooltip("Pan the camera.");
+            ImGui::RadioButton("Tile Brush (Ctrl+W)", (int*)&currentTool, (int)EditorTool::TileBrush);
+            ImGuiTooltip("Paint tiles.");
+            ImGui::RadioButton("Eraser (Ctrl+E)", (int*)&currentTool, (int)EditorTool::Eraser);
+            ImGuiTooltip("Erase tiles.");
+            ImGui::RadioButton("Entity Hand (Ctrl+R)", (int*)&currentTool, (int)EditorTool::EntityHand);
+            ImGuiTooltip("Move, edit, place, and delete entities.");
+            ImGui::EndMenu();
+        }
         if (!startup && ImGui::BeginMenu("View"))
         {
             ImGui::Checkbox("Play Area", &showPlayArea);
             ImGui::Checkbox("Show Grid", &showGrid);
             ImGui::Separator();
-            ImGui::Checkbox("Show Foreground layer", &viewLayers[2]);
-            ImGui::Checkbox("Show Middleground layer", &viewLayers[1]);
-            ImGui::Checkbox("Show Background layer", &viewLayers[0]);
+            ImGui::Checkbox("Show Foreground Layer", &viewLayers[0]);
+            ImGui::Checkbox("Show Middleground Layer", &viewLayers[1]);
+            ImGui::Checkbox("Show Background Layer", &viewLayers[2]);
             ImGui::Separator();
             ImGui::Checkbox("Entity Boxes", &viewEntityBoxes);
             ImGui::Checkbox("Entities", &viewEntities);
@@ -430,10 +466,11 @@ void Editor::DrawMainMenu(bool startup)
             }
             ImGui::EndMenu();
         }
-        if (ImGui::BeginMenu("Help"))
+        /*if (ImGui::MenuItem("Help")) // Help may not be needed.
         {
-            ImGui::EndMenu();
-        }
+            helpModal = startup;
+            showHelp = true;
+        }*/
         if (ImGui::MenuItem("About"))
         {
             openAboutPopup = true;
@@ -687,10 +724,15 @@ const char* tileScales[] = {
 
 void Editor::DrawLevelEditor()
 {
+    if (!showLevelEditor)
+    {
+        return;
+    }
+
     // Editor.
     auto& io = ImGui::GetIO();
 
-    ImGui::Begin(("Level Editor - " + mapName + "###EditorDialog").c_str());
+    ImGui::Begin(("Level Editor - " + mapName + "###EditorDialog").c_str(), &showLevelEditor);
     ImGui::SetWindowPos(ImVec2(io.DisplaySize.x - 330.0f, 30.0f), ImGuiCond_FirstUseEver);
 
     focus.ObserveFocus();
@@ -1183,19 +1225,19 @@ void Editor::DrawToolbar()
         currentLayer = 0;
         viewLayers[0] = true;
     }
-    Tooltip("Foreground layer\nRight click to toggle visibility.");
+    Tooltip("Foreground Layer\nRight click to toggle visibility.");
 
     if (ToggleButton("MG", currentLayer == 1, &viewLayers[1])) {
         currentLayer = 1;
         viewLayers[1] = true;
     }
-    Tooltip("Middleground layer\nRight click to toggle visibility.");
+    Tooltip("Middleground Layer\nRight click to toggle visibility.");
 
     if (ToggleButton("BG", currentLayer == 2, &viewLayers[2])) {
         currentLayer = 2;
         viewLayers[2] = true;
     }
-    Tooltip("Background layer\nRight click to toggle visibility.");
+    Tooltip("Background Layer\nRight click to toggle visibility.");
     if (currentTool == EditorTool::EntityHand)
     {
         ImGui::SameLine();
@@ -1205,7 +1247,7 @@ void Editor::DrawToolbar()
         {
             isPlacingEntity = !isPlacingEntity;
         }
-        Tooltip("Click after hitting to place an entity. Holding shift while placing will allow you to press multiple.");
+        Tooltip("Click after hitting to place an entity or again to cancel.\nHolding shift while placing will allow you to place multiple.\nPressing the delete key will delete the selected entity.");
     }
 
     ImGui::End();
@@ -1213,7 +1255,11 @@ void Editor::DrawToolbar()
 
 void Editor::DrawProfileEditor()
 {
-    ImGui::Begin("Profile Editor");
+    if (!showProfileEditor)
+    {
+        return;
+    }
+    ImGui::Begin("Profile Editor", &showProfileEditor);
     focus.ObserveFocus();
     if (ImGui::BeginTabBar("Profile Tabs"))
     {
