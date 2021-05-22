@@ -1718,9 +1718,9 @@ void Editor::CheckZoom()
     float zoom = GetMouseWheelMove();
     if (zoom != 0)
     {
-        float beforeMouseX = (mouseX - cam.offset.x) / MAP_SIZE / cam.zoom;
-        float beforeMouseY = (mouseY - cam.offset.y) / MAP_SIZE / cam.zoom;
-
+        float beforeMouseX = (mouseX - cam.offset.x) / cam.zoom;
+        float beforeMouseY = (mouseY - cam.offset.y) / cam.zoom;
+        float beforeZoom = cam.zoom;
         if (cam.zoom < 1.0f) {
             zoomSpeed = 0.125f;
         } else if (cam.zoom < 3.0f) {
@@ -1740,11 +1740,11 @@ void Editor::CheckZoom()
         {
             cam.zoom = 5.0f;
         }
-        float afterMouseX = (mouseX - cam.offset.x) / MAP_SIZE / cam.zoom;
-        float afterMouseY = (mouseY - cam.offset.y) / MAP_SIZE / cam.zoom;
-        //printf("%f, %f\n", beforeMouseX, afterMouseX);
-        //cam.offset.x += (afterMouseX - beforeMouseX);
-        //cam.offset.y += (afterMouseY - beforeMouseY); TODO!!!
+        float afterMouseX = (mouseX - cam.offset.x) / cam.zoom;
+        float afterMouseY = (mouseY - cam.offset.y) / cam.zoom;
+        cam.offset.x += (afterMouseX - beforeMouseX) / 4;
+        cam.offset.y += (afterMouseY - beforeMouseY) / 4;
+        printf("%f\n", (mouseX - cam.offset.x) / cam.zoom - beforeMouseX); //This needs to be 0!
     }
     
 }
