@@ -1085,7 +1085,7 @@ void Editor::DrawPalette()
 
         const ImVec2 p = ImGui::GetCursorScreenPos();
         ImVec2 tmp = ImGui::GetCursorPos();
-        ImGui::Image(&te->second.tex, ImVec2(te->second.width * 16, te->second.height * 16), ImVec2(0, 0), ImVec2(scale, scale));
+        ImGui::Image(&te->second.tex, ImVec2(te->second.width * 16, te->second.height * 16), ImVec2(0, 0), ImVec2((float)te->second.width * 8 / te->second.tex.width, (float)te->second.height * 8 / te->second.tex.height));
         ImGui::SetCursorPos(tmp);
         ImGui::InvisibleButton("NoDrag", ImVec2(te->second.width * 16, te->second.height * 16));
         if (showPaletteAttributes) {
