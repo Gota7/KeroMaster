@@ -96,6 +96,7 @@ void Editor::LoadLevel(string name)
     }
     settings.lastLevel = name;
     settings.Save();
+    undoStack->Reset();
 }
 
 void Editor::UnloadLevel()
@@ -356,6 +357,8 @@ void Editor::DrawMainMenu(bool startup)
     bool doSaveAs = !startup && (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) && IsKeyDown(KEY_S);
     bool doClose = !startup && (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) && IsKeyDown(KEY_C);
     bool doQuit = !startup && (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) && IsKeyDown(KEY_Q);
+    bool doUndo = !startup && undoStack->CanUndo() && (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && IsKeyPressed(KEY_Z);
+    bool doRedo = !startup && undoStack->CanRedo() && (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && (((IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) && IsKeyPressed(KEY_Z)) || IsKeyPressed(KEY_Y));
     if (!startup && (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && IsKeyDown(KEY_Q)) { currentTool = EditorTool::Hand; }
     if (!startup && (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && IsKeyDown(KEY_W)) { currentTool = EditorTool::TileBrush; }
     if (!startup && (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && IsKeyDown(KEY_E)) { currentTool = EditorTool::Eraser; }
@@ -401,8 +404,14 @@ void Editor::DrawMainMenu(bool startup)
         }
         if (!startup && ImGui::BeginMenu("Edit"))
         {
-            if (ImGui::MenuItem("Undo", "Ctrl+Z"))
+            if (undoStack->CanUndo() && ImGui::MenuItem("Undo", "Ctrl+Z"))
             {
+                doUndo = true;
+            }
+
+            if (undoStack->CanRedo() && ImGui::MenuItem("Redo", "Ctrl+Y"))
+            {
+                doRedo = true;
             }
 
             if (ImGui::MenuItem("Settings"))
@@ -516,6 +525,14 @@ void Editor::DrawMainMenu(bool startup)
     else if (doQuit)
     {
         exit(0);
+    }
+    else if (doRedo)
+    {
+        undoStack->Redo(this);
+    }
+    else if (doUndo)
+    {
+        undoStack->Undo(this);
     }
     else if (isFullscreening || doFullscreen)
     {
@@ -1807,6 +1824,11 @@ void Editor::CheckEntity()
     }
     else if (!isPlacingEntity && editingEntity != nullptr && ((settings.ButtonDown(EditorTool::CurrentTool) && currentTool == EditorTool::EntityHand) || settings.ButtonDown(EditorTool::EntityHand)) && !focus.mouseInWindow)
     {
+        if (!doingEntityMove)
+        {
+            backupEntityX = editingEntity->xPos;
+            backupEntityY = editingEntity->yPos;
+        }
         int tileX = GetTileX();
         int tileY = GetTileY();
         if (tileX < 0) { tileX = 0; }
@@ -1815,6 +1837,7 @@ void Editor::CheckEntity()
         if (tileY > 0xFFFF) { tileY = 0xFFFF; }
         editingEntity->xPos = tileX;
         editingEntity->yPos = tileY;
+        doingEntityMove = true;
     }
     else if (isPlacingEntity && ((settings.ButtonPressed(EditorTool::CurrentTool) && currentTool == EditorTool::EntityHand) || settings.ButtonPressed(EditorTool::EntityHand)))
     {
@@ -1839,6 +1862,18 @@ void Editor::CheckEntity()
         {
             isPlacingEntity = false;
         }
+        undoStack->PushEntityPlaced(this, map.entities.size() - 1, e.id, e.xPos, e.yPos);
+    }
+    else if (!isPlacingEntity && doingEntityMove && editingEntity != NULL)
+    {
+        doingEntityMove = false;
+        for (int i = 0; i < map.entities.size(); i++)
+        {
+            if (editingEntity == &map.entities[i] && (backupEntityX != editingEntity->xPos || backupEntityY != editingEntity->yPos))
+            {
+                undoStack->PushEntityMoved(this, i, backupEntityX, backupEntityY, editingEntity->xPos, editingEntity->yPos);
+            }
+        }
     }
     if (editingEntity != nullptr && IsKeyPressed(KEY_DELETE))
     {
@@ -1849,6 +1884,7 @@ void Editor::CheckEntity()
         {
             if (&map.entities[i] == e)
             {
+                undoStack->PushEntityDeleted(this, i, map.entities[i]);
                 map.entities.erase(map.entities.begin() + i);
             }
         }

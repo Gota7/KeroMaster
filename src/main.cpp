@@ -5,6 +5,7 @@
 #include "px/tileset.h"
 #include "px/pxmap.h"
 #include "ed/editor.h"
+#include "ed/undoStack.h"
 #include "bgm/bgm.h"
 
 constexpr int SCREEN_WIDTH = 1240;
@@ -15,6 +16,7 @@ static int EditorLoop() {
     Editor e;
 
     try {
+        e.undoStack = new UndoStack();
         e.settings.Load();
         if (strcmp(e.settings.rscPath.c_str(), "") == 0 || strcmp(e.settings.lastLevel.c_str(), "") == 0)
         {
@@ -79,6 +81,7 @@ static int EditorLoop() {
             }
         }
     }
+    delete e.undoStack;
 
     return 0;
 }

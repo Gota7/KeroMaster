@@ -7,6 +7,7 @@
 #include "settings.h"
 #include "attributeEditor.h"
 #include "scriptEditor.h"
+#include "undoStack.h"
 #include "rlImGui/focusData.h"
 
 constexpr float MAP_SIZE = 2.0f;
@@ -15,6 +16,7 @@ struct AttributeEditor;
 struct TilesetEditor;
 struct ScriptEditor;
 struct Settings;
+struct UndoStack;
 
 enum class EditorTool : int {
     Hand,
@@ -76,6 +78,9 @@ struct Editor
     u8 resizeMapLayer = 0;
     int placeEntityId = 0;
     bool isPlacingEntity = false;
+    bool doingEntityMove = false;
+    u16 backupEntityX;
+    u16 backupEntityY;
     TilesetEditor* editingTileset = nullptr;
     bool showLevelEditor = true;
     bool showProfileEditor = false;
@@ -83,6 +88,7 @@ struct Editor
     bool showMusicPlayer = false;
     bool showHelp = false;
     bool helpModal = false;
+    UndoStack* undoStack;
 
     void SetPath(std::string rsc);
     void LoadEnemies(std::string xml);
