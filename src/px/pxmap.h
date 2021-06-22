@@ -48,10 +48,10 @@ struct PxMap : GReadable, GWriteable
 
 enum ReferenceType
 {
-    RT_SCRIPT,
-    RT_NEXT_LEVEL,
-    RT_PREV_LEVEL,
-    RT_LINK_LEVEL,
+    RT_LEFT_LEVEL,
+    RT_RIGHT_LEVEL,
+    RT_UP_LEVEL,
+    RT_DOWN_LEVEL,
     RT_NPC_PALETTE
 };
 

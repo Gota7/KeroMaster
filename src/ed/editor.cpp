@@ -758,17 +758,17 @@ void Editor::DrawLevelEditor()
     ImGuiStringEdit("Level Title", &map.comment.dat);
     ImGuiTooltip("Internal name for the level.\nThis does not seem important?");
     ImGui::PushItemWidth(itemWidth);
-    ImGuiStringEdit("Level Script", &map.references[RT_SCRIPT].dat);
-    ImGuiTooltip("Name of the .pxeve file in the text directory to use for level scripting.");
+    ImGuiStringEdit("Left Level", &map.references[RT_LEFT_LEVEL].dat);
+    ImGuiTooltip("Name of the .pxpack in the field folder that appears to the left of this level.");
     ImGui::PushItemWidth(itemWidth);
-    ImGuiStringEdit("Next Level", &map.references[RT_NEXT_LEVEL].dat);
-    ImGuiTooltip("Name of the .pxpack in the field folder that appears after this level.");
+    ImGuiStringEdit("Right Level", &map.references[RT_RIGHT_LEVEL].dat);
+    ImGuiTooltip("Name of the .pxpack in the field folder that appears to the right of this level.");
     ImGui::PushItemWidth(itemWidth);
-    ImGuiStringEdit("Previous Level", &map.references[RT_PREV_LEVEL].dat);
-    ImGuiTooltip("Name of the .pxpack in the field folder that appears before this level.");
+    ImGuiStringEdit("Upper Level", &map.references[RT_UP_LEVEL].dat);
+    ImGuiTooltip("Name of the .pxpack in the field folder that appears above this level.");
     ImGui::PushItemWidth(itemWidth);
-    ImGuiStringEdit("Link Level", &map.references[RT_LINK_LEVEL].dat);
-    ImGuiTooltip("Name of the .pxpack in the field folder for debug linking.");
+    ImGuiStringEdit("Lower Level", &map.references[RT_DOWN_LEVEL].dat);
+    ImGuiTooltip("Name of the .pxpack in the field folder that appears below this level.");
     ImGui::PushItemWidth(itemWidth);
     ImGuiStringEdit("NPC Palette", &map.references[RT_NPC_PALETTE].dat);
     ImGuiTooltip("Name of the .png in the img folder for NPCs to use (that depend on the NPC palette).");
@@ -917,11 +917,11 @@ void Editor::DrawLevelEditor()
 
     int numButtons = 0;
     ImGui::Separator();
-    if (strcmp(map.references[RT_SCRIPT].dat.c_str(), "") != 0)
+    if (strcmp(mapName.c_str(), "") != 0)
     {
         if (ImGui::Button("Edit Script"))
         {
-            OpenScript(map.references[RT_SCRIPT].dat);
+            OpenScript(mapName);
         }
         numButtons++;
         if (numButtons < 2)
@@ -932,11 +932,11 @@ void Editor::DrawLevelEditor()
         }
     }
 
-    if (strcmp(map.references[RT_NEXT_LEVEL].dat.c_str(), "") != 0)
+    if (strcmp(map.references[RT_LEFT_LEVEL].dat.c_str(), "") != 0)
     {
-        if (ImGui::Button("Edit Next Level"))
+        if (ImGui::Button("Edit Left Level"))
         {
-            LoadLevel(map.references[RT_NEXT_LEVEL].dat);
+            LoadLevel(map.references[RT_LEFT_LEVEL].dat);
         }
         numButtons++;
         if (numButtons < 2)
@@ -947,11 +947,11 @@ void Editor::DrawLevelEditor()
         }
     }
 
-    if (strcmp(map.references[RT_PREV_LEVEL].dat.c_str(), "") != 0)
+    if (strcmp(map.references[RT_RIGHT_LEVEL].dat.c_str(), "") != 0)
     {
-        if (ImGui::Button("Edit Previous Level"))
+        if (ImGui::Button("Edit Right Level"))
         {
-            LoadLevel(map.references[RT_PREV_LEVEL].dat);
+            LoadLevel(map.references[RT_RIGHT_LEVEL].dat);
         }
         numButtons++;
         if (numButtons < 2)
@@ -962,11 +962,26 @@ void Editor::DrawLevelEditor()
         }
     }
 
-    if (strcmp(map.references[RT_LINK_LEVEL].dat.c_str(), "") != 0)
+    if (strcmp(map.references[RT_UP_LEVEL].dat.c_str(), "") != 0)
     {
-        if (ImGui::Button("Edit Link Level"))
+        if (ImGui::Button("Edit Above Level"))
         {
-            LoadLevel(map.references[RT_LINK_LEVEL].dat);
+            LoadLevel(map.references[RT_UP_LEVEL].dat);
+        }
+        numButtons++;
+        if (numButtons < 2)
+        {
+            ImGui::SameLine();
+        } else {
+            numButtons = 0;
+        }
+    }
+
+    if (strcmp(map.references[RT_DOWN_LEVEL].dat.c_str(), "") != 0)
+    {
+        if (ImGui::Button("Edit Below Level"))
+        {
+            LoadLevel(map.references[RT_DOWN_LEVEL].dat);
         }
         numButtons++;
         if (numButtons < 2)
