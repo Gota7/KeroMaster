@@ -23,6 +23,7 @@ struct Tileset
     // All tiles will be displayed as this in game.
     constexpr static float MAP_TILE_SIZE = 8;
     constexpr static float ENTITY_TILE_SIZE = 4;
+    constexpr static float EDITOR_TILE_SIZE = 16;
     constexpr static float ATTR_TILE_SIZE = 16;
 
     // Load a tileset from the tileset section of the resource folder.
@@ -47,10 +48,10 @@ struct Tileset
     u16 TilesPerRow(u32 tileSize, bool useTrueImageSize);
 
     // Get the source rectangle of a tile to draw. There is also an option to use the true image size for determining tiles per row.
-    Rectangle GetSrcRect(u8 index, f32 tileSize, u32 tilesPerRow);
+    static Rectangle GetSrcRect(u8 index, f32 tileSize, u32 tilesPerRow);
 
     // Get the destination rectangle of where to draw a tile.
-    Rectangle GetDestRect(s32 tileX, s32 tileY, f32 tileSize, Vector2 offset = { 0, 0 });
+    static Rectangle GetDestRect(s32 tileX, s32 tileY, f32 tileSize, Vector2 offset = { 0, 0 });
 
     // Draw a tile attribute.
     void DrawTileAttr(u8 attr, s32 tileX, s32 tileY, f32 destTileSize, Color tint = WHITE);

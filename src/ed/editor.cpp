@@ -260,9 +260,7 @@ void Editor::Draw()
             {
                 if (x >= 0 && y >= 0 & tileX + x < m.width && tileY + y < m.height)
                 {
-                    //t.Draw(tileDraw + x + y * t.width, origin, tileX + x, tileY + y, MAP_SIZE, false, false, false, 0, 0, alphaTint);
-                    //float tileSize = m.tilesetSettings1[layerNum] == 0 ? Tileset::MAP_TILE_SIZE : ((float)16 / tilesetSettings1[layerNum]);
-                    t.Draw(tileDraw + x + y * t.width, tileX + x, tileY + y, map.TileSize(layerDraw), Tileset::MAP_TILE_SIZE, false, false, false, { 0, 0 }, alphaTint);
+                    t.Draw(tileDraw + x + y * t.width, tileX + x, tileY + y, map.TileSize(layerDraw), Tileset::EDITOR_TILE_SIZE, false, false, false, { 0, 0 }, alphaTint);
                 }
             }
         }

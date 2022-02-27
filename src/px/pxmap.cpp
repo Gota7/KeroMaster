@@ -385,7 +385,7 @@ void Map::DrawLayer(u8 layerNum, map<string, Tileset>& tilesets, Vector2 origin,
     {
         for (u16 x = 0; x < m.width; x++)
         {
-            t.Draw(m.GetTile(x, y), x, y, TileSize(layerNum), Tileset::MAP_TILE_SIZE, showAttr, false, false, origin);
+            t.Draw(m.GetTile(x, y), x, y, TileSize(layerNum), Tileset::EDITOR_TILE_SIZE, showAttr, false, false, origin);
         }
     }
 }

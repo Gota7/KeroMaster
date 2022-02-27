@@ -3,6 +3,20 @@
 map<string, EntityTile> EntityDisplay::rollYourOwnSprite;
 float EntityDisplay::transparency = .3f;
 
+void EntityDisplay::DrawEntityIdBox(u8 id, s32 tileX, s32 tileY, bool beingEdited, Vector2 offset)
+{
+    Rectangle destRec = Tileset::GetDestRect(tileX, tileY, Tileset::EDITOR_TILE_SIZE, offset);
+    if (!beingEdited)
+    {
+        DrawRectangleRec(destRec, ColorAlpha(BLUE, transparency));
+    }
+    else
+    {
+        DrawRectangleRec(destRec, ColorAlpha(RED, transparency + .2f));
+    }
+    DrawText(to_string(id).c_str(), (int)(destRec.x + 1), (int)(destRec.y + 1), 1, ColorAlpha(YELLOW, .8f));
+}
+
 void EntityDisplay::Draw(u8 id, Str strParam, u8 flags, bool beingEdited, string spritesheetName, string tilesetNames[3], map<string, Tileset>& tilesets, Vector2 origin, s32 xOff, s32 yOff, f32 mapScale, bool debug)
 {
     Vector2 off = { origin.x + xOff * 8 * mapScale, origin.y + yOff * 8 * mapScale };
@@ -95,15 +109,7 @@ void EntityDisplay::Draw(u8 id, Str strParam, u8 flags, bool beingEdited, string
     }
     if (debug || !doneSomething)
     {
-        if (!beingEdited)
-        {
-            DrawRectangleV(off, size, ColorAlpha(BLUE, transparency));
-        }
-        else
-        {
-            DrawRectangleV(off, size, ColorAlpha(RED, transparency + .2f));
-        }
-        DrawText(to_string(id).c_str(), (int)(off.x + 1 * mapScale), (int)(off.y + 1 * mapScale), (int)(5 * mapScale), ColorAlpha(YELLOW, .8f));
+        DrawEntityIdBox(id, xOff, yOff, beingEdited, origin);
     }
 }
 
