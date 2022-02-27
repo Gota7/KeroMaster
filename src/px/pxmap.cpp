@@ -370,18 +370,13 @@ void Map::DrawLayer(u8 layerNum, map<string, Tileset>& tilesets, Vector2 origin,
 
     PxMap& m = maps[layerNum];
     Tileset& t = tilesets[this->tilesets[layerNum].dat];
-    t.textureScale = tilesetSettings1[layerNum];
-
-    if (t.textureScale == 0) 
-    {
-        t.textureScale = 2;
-    }
 
     for (u16 y = 0; y < m.height; y++)
     {
         for (u16 x = 0; x < m.width; x++)
         {
-            t.Draw(m.GetTile(x, y), origin, x, y, mapScale, showAttr);
+            float tileSize = tilesetSettings1[layerNum] == 0 ? Tileset::MAP_TILE_SIZE : ((float)16 / tilesetSettings1[layerNum]);
+            t.Draw(m.GetTile(x, y), x, y, tileSize, Tileset::MAP_TILE_SIZE, showAttr, false, false, origin);
         }
     }
 }

@@ -10,7 +10,7 @@
 #include "undoStack.h"
 #include "rlImGui/focusData.h"
 
-constexpr float MAP_SIZE = 2.0f;
+constexpr float MAP_SIZE = 1.0f;
 
 struct AttributeEditor;
 struct TilesetEditor;

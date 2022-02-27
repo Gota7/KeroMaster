@@ -136,7 +136,81 @@ u8 Tileset::GetTilesetAttr(u8 x, u8 y)
     return GetTilesetAttr(x + y * width);
 }
 
-void Tileset::Draw(u8 index, Vector2 origin, s32 xOff, s32 yOff, f32 mapScale, bool showAttr, bool allowDrawIndex0, bool overrideWidth, s8 xOffPixels, s8 yOffPixels, Color tint)
+u16 Tileset::TilesPerRow(u32 tileSize, bool useTrueImageSize)
+{
+    return useTrueImageSize ? (u16)(tex.width / tileSize) : width;
+}
+
+Rectangle Tileset::GetSrcRect(u8 index, f32 tileSize, u32 tilesPerRow)
+{
+    return
+    {
+        index % tilesPerRow * tileSize,
+        index / tilesPerRow * tileSize,
+        tileSize,
+        tileSize
+    };
+}
+
+Rectangle Tileset::GetDestRect(s32 tileX, s32 tileY, f32 tileSize, Vector2 offset)
+{
+    return
+    {
+        (float)tileX * tileSize + offset.x,
+        (float)tileY * tileSize + offset.y,
+        tileSize,
+        tileSize
+    };
+}
+
+void Tileset::DrawTileAttr(u8 attr, s32 tileX, s32 tileY, f32 destTileSize, Color tint)
+{
+    if (attr != 0)
+    {
+        DrawTexturePro(
+            attrTex,
+            GetSrcRect(attr, ATTR_TILE_SIZE, attrTex.width / ATTR_TILE_SIZE),
+            GetDestRect(tileX, tileY, destTileSize),
+            { 0, 0 },
+            0,
+            tint
+        );
+    }
+}
+
+void Tileset::Draw(u8 index, s32 tileX, s32 tileY, f32 tileSize, f32 destTileSize, bool showAttr, bool allowIndex0, bool useTrueImageSize, Vector2 offset, Color tint)
+{
+
+    // Check for valid index.
+    if ((index == 0 && !allowIndex0) || width == 0)
+    {
+        return;
+    }
+
+    // Draw the actual texture.
+    DrawTexturePro(
+        tex,
+        GetSrcRect(index, tileSize, TilesPerRow(tileSize, useTrueImageSize)),
+        GetDestRect(tileX, tileY, destTileSize, offset),
+        { 0, 0 },
+        0,
+        tint
+    );
+
+    // Attribute drawing.
+    if (showAttr) DrawTileAttr(GetTilesetAttr(index), tileX, tileY, destTileSize, tint);
+
+}
+
+void Tileset::Draw(u8 xIndex, u8 yIndex, s32 tileX, s32 tileY, f32 tileSize, f32 destTileSize, bool showAttr, bool allowIndex0, bool useTrueImageSize, Vector2 offset, Color tint)
+{
+    u8 index = xIndex * TilesPerRow(tileSize, useTrueImageSize) + yIndex;
+    Draw(index, tileX, tileY, tileSize, destTileSize, showAttr, allowIndex0, useTrueImageSize, offset, tint);
+}
+
+// THIS CODE BELOW IS OBSOLETE AND WILL BE DELETED!!!
+
+void Tileset::Draw(u8 index, Vector2 origin, s32 xOff, s32 yOff, f32 mapScale, bool showAttr, bool allowDrawIndex0, bool overrideWidth, s8 xOffPixels, s8 yOffPixels, Color tint, u8 textureScale)
 {
     if ((index == 0 && !allowDrawIndex0) || width == 0)
     {
@@ -158,16 +232,20 @@ void Tileset::Draw(u8 index, Vector2 origin, s32 xOff, s32 yOff, f32 mapScale, b
         if (attr != 0)
         {
             //DrawText(to_string(attr).c_str(), (int)(off.x + 1 * mapScale), (int)(off.y + 1 * mapScale), (int)(5 * mapScale), YELLOW);
-            DrawTextureTiled(attrTex, { (float)(attr % 16 * 16), (float)(attr / 16 * 16), 16, 16 }, { off.x, off.y, 8 * mapScale, 8 * mapScale }, { 0, 0 }, 0, mapScale / 2, tint);
+            //DrawTextureTiled(attrTex, { (float)(attr % 16 * 16), (float)(attr / 16 * 16), 16, 16 }, { off.x, off.y, 8 * mapScale, 8 * mapScale }, { 0, 0 }, 0, mapScale / 2, tint);
+            DrawTileAttr(attr, xOff, yOff, 8);
         }
     }
 }
 
-void Tileset::Draw(u16 x, u16 y, Vector2 origin, s32 xOff, s32 yOff, f32 mapScale, bool showAttr, bool overrideWidth, s8 xOffPixels, s8 yOffPixels, Color tint)
+void Tileset::Draw(u16 x, u16 y, Vector2 origin, s32 xOff, s32 yOff, f32 mapScale, bool showAttr, bool overrideWidth, s8 xOffPixels, s8 yOffPixels, Color tint, u8 textureScale)
 {
+    if (textureScale == 0) textureScale = 2;
+    const float tileWidth = (float) (16 / textureScale);
+
     Vector2 off = { origin.x + xOff * 8 * mapScale + xOffPixels * mapScale, origin.y + yOff * 8 * mapScale + yOffPixels * mapScale };
     u16 w = overrideWidth ? (tex.width / 8) : width;
-    DrawTextureTiled(tex, { (float)x * 8, (float)y * 8, 8, 8 }, { off.x, off.y, 8 * mapScale, 8 * mapScale }, { 0, 0 }, 0, mapScale, tint);
+    DrawTextureTiled(tex, { (float)x * tileWidth, (float)y * tileWidth, tileWidth, tileWidth }, { off.x, off.y, 8 * mapScale, 8 * mapScale }, { 0, 0 }, 0, mapScale, tint);
 
     if (showAttr && tiles != NULL)
     {
@@ -175,7 +253,8 @@ void Tileset::Draw(u16 x, u16 y, Vector2 origin, s32 xOff, s32 yOff, f32 mapScal
         if (attr != 0)
         {
             //DrawText(to_string(attr).c_str(), (int)(off.x + 1 * mapScale), (int)(off.y + 1 * mapScale), (int)(5 * mapScale), YELLOW);
-            DrawTextureTiled(attrTex, { (float)(attr % 16 * 16), (float)(attr / 16 * 16), 16, 16 }, { off.x, off.y, 8 * mapScale, 8 * mapScale }, { 0, 0 }, 0, mapScale / 2, tint);
+            //DrawTextureTiled(attrTex, { (float)(attr % 16 * 16), (float)(attr / 16 * 16), 16, 16 }, { off.x, off.y, 8 * mapScale, 8 * mapScale }, { 0, 0 }, 0, mapScale / 2, tint);
+            DrawTileAttr(attr, xOff, yOff, 8);
         }
     }
 }
