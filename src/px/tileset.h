@@ -7,6 +7,7 @@
 
 using namespace std;
 
+// Tilesets used for levels.
 struct Tileset
 {
     Texture2D tex; // Loaded internal texture.

@@ -92,6 +92,8 @@ int main(int argc, char *argv[])
 
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Kero Master");
+    Image icon = LoadImage("icon.png");
+    SetWindowIcon(icon);
 
     SetTargetFPS(60);
     SetupRLImGui(true);

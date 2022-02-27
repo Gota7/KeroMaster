@@ -7,12 +7,15 @@ Texture2D Tileset::unitType;
 
 void Tileset::Load(string rsc_k, string tilesetName)
 {
+
+    // Where to search for tilesets.
     static std::vector<string> lookupPaths = {
         "/img/",
         "/localize/en.lproj/",
         "/localize/ja.lproj/",
     };
 
+    // Load the tileset.
     for (auto& path : lookupPaths) {
         string imagePath = rsc_k + path + tilesetName + ".png";
 
@@ -20,7 +23,8 @@ void Tileset::Load(string rsc_k, string tilesetName)
         {
             Image image = LoadImage(imagePath.c_str());
 
-            if (image.data != nullptr) {
+            if (image.data != nullptr)
+            {
                 tex = LoadTextureFromImage(image);
                 UnloadImage(image);
                 break;
@@ -28,8 +32,11 @@ void Tileset::Load(string rsc_k, string tilesetName)
         }
     }
 
+    // The default width and heights are 16 for some reason.
     width = oldWidth = 16;
     height = oldHeight = 16;
+
+    // Read tileset attributes if they exist.
     if (GFile::FileExists((rsc_k + "/img/" + tilesetName + ".pxattr").c_str()))
     {
         GFile f = GFile((rsc_k + "/img/" + tilesetName + ".pxattr").c_str());
@@ -42,16 +49,19 @@ void Tileset::Load(string rsc_k, string tilesetName)
         {
             width = oldWidth = f.ReadU16();
             height = oldHeight = f.ReadU16();
-            if (width * height > 0) {
+            if (width * height > 0)
+            {
                 flags = f.ReadU8();
                 tiles = new u8[width * height];
-                for (int i = 0; i < width * height; i++) {
+                for (int i = 0; i < width * height; i++)
+                {
                     tiles[i] = f.ReadU8();
                 }
             }
         }
         f.Close();
     }
+    
 }
 
 void Tileset::Unload()
@@ -126,7 +136,8 @@ u8 Tileset::GetTilesetAttr(u8 index)
     {
         return 0;
     }
-    else {
+    else
+    {
         return tiles[index];
     }
 }

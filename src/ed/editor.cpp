@@ -183,10 +183,10 @@ void Editor::Draw()
     BeginMode2D(cam);
 
     // Draw map.
-    if (viewLayers[2]) map.DrawLayer(2, tilesets, origin, MAP_SIZE, viewTileAttributes);
-    if (viewLayers[1]) map.DrawLayer(1, tilesets, origin, MAP_SIZE, viewTileAttributes);
-    if (viewLayers[0]) map.DrawLayer(0, tilesets, origin, MAP_SIZE, viewTileAttributes);
-    if (viewEntities) map.DrawEntities(entities, tilesets, origin, MAP_SIZE, viewEntityBoxes);
+    if (viewLayers[2]) map.DrawLayer(2, tilesets, origin, viewTileAttributes);
+    if (viewLayers[1]) map.DrawLayer(1, tilesets, origin, viewTileAttributes);
+    if (viewLayers[0]) map.DrawLayer(0, tilesets, origin, viewTileAttributes);
+    if (viewEntities) map.DrawEntities(entities, tilesets, origin, viewEntityBoxes);
 
     // Play area.
     if (showPlayArea)
@@ -260,7 +260,9 @@ void Editor::Draw()
             {
                 if (x >= 0 && y >= 0 & tileX + x < m.width && tileY + y < m.height)
                 {
-                    t.Draw(tileDraw + x + y * t.width, origin, tileX + x, tileY + y, MAP_SIZE, false, false, false, 0, 0, alphaTint);
+                    //t.Draw(tileDraw + x + y * t.width, origin, tileX + x, tileY + y, MAP_SIZE, false, false, false, 0, 0, alphaTint);
+                    //float tileSize = m.tilesetSettings1[layerNum] == 0 ? Tileset::MAP_TILE_SIZE : ((float)16 / tilesetSettings1[layerNum]);
+                    t.Draw(tileDraw + x + y * t.width, tileX + x, tileY + y, map.TileSize(layerDraw), Tileset::MAP_TILE_SIZE, false, false, false, { 0, 0 }, alphaTint);
                 }
             }
         }
@@ -757,7 +759,7 @@ void Editor::DrawLevelEditor()
     focus.ObserveFocus();
     const int itemWidth = 150;
     ImGui::PushItemWidth(itemWidth);
-    ImGuiStringEdit("Level Title", &map.comment.dat);
+    ImGuiStringEdit("Level Title", &map.levelTitle.dat);
     ImGuiTooltip("Internal name for the level.\nThis does not seem important?");
     ImGui::PushItemWidth(itemWidth);
     ImGuiStringEdit("Left Level", &map.references[RT_LEFT_LEVEL].dat);
