@@ -398,13 +398,24 @@ void Map::DrawEntities(map<u8, EntityDisplay>& entities, map<string, Tileset>& t
     tilesetNames[2] = this->tilesets[2].dat;
     for (u16 i = 0; i < this->entities.size(); i++)
     {
-        if (entities.find(this->entities[i].id) != entities.end())
+        /*if (entities.find(this->entities[i].id) != entities.end())
         {
             entities[this->entities[i].id].Draw(this->entities[i].id, this->entities[i].parametersStr[0], this->entities[i].flags, this->entities[i].beingEdited, this->references[RT_NPC_PALETTE].dat, tilesetNames, tilesets, origin, this->entities[i].xPos, this->entities[i].yPos, 1, debug);
         }
         else
         {
             entities[0].Draw(this->entities[i].id, this->entities[i].parametersStr[0], this->entities[i].flags, this->entities[i].beingEdited, this->references[RT_NPC_PALETTE].dat, tilesetNames, tilesets, origin, this->entities[i].xPos, this->entities[i].yPos, 1, debug);
+        }*/
+
+        // Draw ID if found, else draw nothing which will show the box.
+        if (entities.find(this->entities[i].id) != entities.end())
+        {
+            entities[this->entities[i].id].Draw(&this->entities[i], tilesets, this->references[RT_NPC_PALETTE].dat, tilesetNames, debug, origin);
         }
+        else
+        {
+            entities[0].Draw(&this->entities[i], tilesets, this->references[RT_NPC_PALETTE].dat, tilesetNames, debug, origin);
+        }
+
     }
 }

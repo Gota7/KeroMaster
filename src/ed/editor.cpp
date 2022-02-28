@@ -279,9 +279,27 @@ void Editor::Draw()
         tilesetNames[0] = map.tilesets[0].dat;
         tilesetNames[1] = map.tilesets[1].dat;
         tilesetNames[2] = map.tilesets[2].dat;
-        Str tmp;
-        tmp.dat = "";
-        if (draw) entities[placeEntityId].Draw(placeEntityId, tmp, 0, true, map.references[RT_NPC_PALETTE].dat, tilesetNames, tilesets, origin, tileX, tileY, MAP_SIZE, viewEntityBoxes);
+        if (draw)
+        {
+            Entity e;
+            e.beingEdited = false;
+            e.flags = 0;
+            e.id = placeEntityId;
+            e.parametersByte[0] = 0;
+            e.parametersByte[1] = 0;
+            e.parametersStr[0].dat = "";
+            e.unk = 0;
+            e.xPos = tileX;
+            e.yPos = tileY;
+            entities[placeEntityId].Draw(
+                &e,
+                tilesets,
+                map.references[RT_NPC_PALETTE].dat,
+                tilesetNames,
+                false,
+                origin
+            );
+        }
     }
 
     // Pop.

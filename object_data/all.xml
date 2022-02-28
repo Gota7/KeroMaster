@@ -70,7 +70,7 @@
             <tile tileset="/1" x="14" y="6" yOff="-1" xOffPixels="-3" yOffPixels="3" numXTiles="2" numYTiles="2" />
         </entity>
         <entity id="115" name="Frog Plant" description="Will attack you if you shoot it.">
-            <tile tileset="" yOff="-1" xOffPixels="-4" numXTiles="2" numYTiles="2" />
+            <tile tileset="" yOff="-1" xOffPixels="-2" numXTiles="4" numYTiles="4" />
         </entity>
         <entity id="116" name="Weak Weed" description="Breaks with 1 hit of damage.">
             <tile tileset="/0" y="16" xOffPixels="-4" yOffPixels="-4" numXTiles="2" numYTiles="2" />

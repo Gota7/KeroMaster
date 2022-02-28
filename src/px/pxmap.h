@@ -14,8 +14,6 @@
 const int NUM_REFERENCES = 5;
 const int NUM_SETTINGS = 8;
 const int NUM_TILESETS = 3;
-const int NUM_PARAMETERS = 3;
-const int NUM_BYTE_PARAMETERS = 2;
 
 // How to shift blocks in a map. A resize shift direction will resize the map instead.
 enum class ShiftDirection
@@ -77,19 +75,6 @@ enum ReferenceType
     RT_UP_LEVEL,
     RT_DOWN_LEVEL,
     RT_NPC_PALETTE
-};
-
-// Information on how to spawn entities.
-struct Entity
-{
-    u8 flags; // Entity flags.
-    u8 id; // Id to spawn.
-    u8 unk; // Unknown value.
-    u16 xPos; // X position.
-    u16 yPos; // Y position.
-    u8 parametersByte[NUM_BYTE_PARAMETERS]; // Number parameters.
-    Str parametersStr[NUM_PARAMETERS - NUM_BYTE_PARAMETERS]; // String parameters.
-    bool beingEdited = false; // Editor param.
 };
 
 // PxPack which is a level that contains various map data.

@@ -25,6 +25,7 @@ struct Tileset
     constexpr static float ENTITY_TILE_SIZE = 4;
     constexpr static float EDITOR_TILE_SIZE = 16;
     constexpr static float ATTR_TILE_SIZE = 16;
+    constexpr static float UNIT_TYPE_TILE_SIZE = 16;
 
     // Load a tileset from the tileset section of the resource folder.
     void Load(string rsc_k, string tilesetName);
@@ -50,6 +51,9 @@ struct Tileset
     // Get the source rectangle of a tile to draw. There is also an option to use the true image size for determining tiles per row.
     static Rectangle GetSrcRect(u8 index, f32 tileSize, u32 tilesPerRow);
 
+    // Get the source rectangle of a tile to draw. Dummy is for overloading convenience.
+    static Rectangle GetSrcRect(u16 xIndex, u16 yIndex, f32 tileSize, bool dummy);
+
     // Get the destination rectangle of where to draw a tile.
     static Rectangle GetDestRect(s32 tileX, s32 tileY, f32 tileSize, Vector2 offset = { 0, 0 });
 
@@ -60,11 +64,6 @@ struct Tileset
     void Draw(u8 index, s32 tileX, s32 tileY, f32 tileSize, f32 destTileSize, bool showAttr = false, bool allowIndex0 = false, bool useTrueImageSize = false, Vector2 offset = { 0, 0 }, Color tint = WHITE);
 
     // Draw a tile from x and y to a destination tile position with a destination tile size.
-    void Draw(u8 xIndex, u8 yIndex, s32 tileX, s32 tileY, f32 tileSize, f32 destTileSize, bool showAttr = false, bool allowIndex0 = false, bool useTrueImageSize = false, Vector2 offset = { 0, 0 }, Color tint = WHITE);
-
-    // THIS CODE BELOW IS OBSOLETE AND WILL BE DELETED!!!
-
-    void Draw(u8 index, Vector2 origin, s32 xOff, s32 yOff, f32 mapScale, bool showAttr, bool allowDrawIndex0 = false, bool overrideWidth = false, s8 xOffPixels = 0, s8 yOffPixels = 0, Color tint = WHITE, u8 textureScale = 2);
-    void Draw(u16 x, u16 y, Vector2 origin, s32 xOff, s32 yOff, f32 mapScale, bool showAttr, bool overrideWidth = false, s8 xOffPixels = 0, s8 yOffPixels = 0, Color tint = WHITE, u8 textureScale = 2);
+    void Draw(u8 xIndex, u8 yIndex, s32 tileX, s32 tileY, f32 tileSize, f32 destTileSize, bool showAttr = false, bool allowIndex0 = true, bool useTrueImageSize = false, Vector2 offset = { 0, 0 }, Color tint = WHITE);
 
 };
