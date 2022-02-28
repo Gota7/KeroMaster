@@ -111,17 +111,17 @@
         </entity>
     </entities>
     <rollYourOwnSprites>
-        <rollYourOwnSprite name="Cake" tileset="mptTitle_bk" x="2" y="12" numXTiles="2" numYTiles="1"/>
+        <rollYourOwnSprite name="Cake" tileset="mptTitle_bk" x="4" y="24" numXTiles="4" numYTiles="2"/>
         <rollYourOwnSprite name="hanaE" tileset="fuFixNPC" x="60" y="62" xOff="-1" yOff="-1" xOffPixels="-1" numXTiles="3" numYTiles="2"/>
         <rollYourOwnSprite name="hanaH" tileset="fuFixNPC" x="60" y="62" xOff="-1" yOff="-1" xOffPixels="-1" numXTiles="3" numYTiles="2"/>
-        <rollYourOwnSprite name="Phone" tileset="fuFixNPC" x="36" y="37" xOff="-1" yOffPixels="-2" numXTiles="2" numYTiles="1"/>
-        <rollYourOwnSprite name="Phone1" tileset="fuFixNPC" x="36" y="37" xOff="-1" yOffPixels="-2" numXTiles="2" numYTiles="1"/>
+        <rollYourOwnSprite name="Phone" tileset="fuFixNPC" x="72" y="74" xOff="-1" yOffPixels="-1" numXTiles="4" numYTiles="2"/>
+        <rollYourOwnSprite name="Phone1" tileset="fuFixNPC" x="72" y="74" xOff="-1" yOffPixels="-1" numXTiles="4" numYTiles="2"/>
         <rollYourOwnSprite name="PinkHourLogo" tileset="" x="0" xOff="-11" yOff="-1" xOffPixels="-4" yOffPixels="-2" numXTiles="24" numYTiles="4"/>
         <rollYourOwnSprite name="Sasuke05" tileset="fuFixNPC" x="48" y="0" xOff="-3" yOff="-2" yOffPixels="3" numXTiles="3" numYTiles="4"/>
         <rollYourOwnSprite name="Sister05" tileset="fuFixNPC" x="40" y="0" yOff="-1" numXTiles="2" numYTiles="2"/>
         <rollYourOwnSprite name="Sister06" tileset="fuFixNPC" x="42" y="0" yOff="-1" numXTiles="2" numYTiles="2"/>
-        <rollYourOwnSprite name="PixelLogo" tileset="localize" xOff="-4" xOffPixels="-4" yOffPixels="-4" numXTiles="10" numYTiles="2"/>
+        <rollYourOwnSprite name="PixelLogo" tileset="localize" xOff="-4" xOffPixels="-2" yOffPixels="-2" numXTiles="20" numYTiles="4"/>
         <rollYourOwnSprite name="PopItem" tileset="fuFixChar" x="60" y="38" xOffPixels="-4" yOffPixels="-4" numXTiles="2" numYTiles="2"/>
-        <rollYourOwnSprite name="TitleLogo" tileset="" x="2" xOff="-10" yOff="-3" xOffPixels="4" numXTiles="20" numYTiles="7"/>
+        <rollYourOwnSprite name="TitleLogo" tileset="" x="4" xOff="-10" yOff="-3" xOffPixels="2" numXTiles="40" numYTiles="14"/>
     </rollYourOwnSprites>
 </data>
