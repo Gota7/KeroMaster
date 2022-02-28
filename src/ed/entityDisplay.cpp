@@ -93,8 +93,8 @@ void EntityDisplay::DrawEntityTile(EntityTile* tile, map<string, Tileset>& loade
         tileX,
         tileY,
         {
-            (tile->xOff * Tileset::ENTITY_TILE_SIZE + tile->xOffPixels) * entityToEditorRatio + offset.x,
-            (tile->yOff * Tileset::ENTITY_TILE_SIZE + tile->yOffPixels) * entityToEditorRatio + offset.y
+            tile->xOff * Tileset::ENTITY_TILE_SIZE * entityToEditorRatio + tile->xOffPixels * (Tileset::EDITOR_TILE_SIZE / Tileset::MAP_TILE_SIZE) + offset.x,
+            tile->yOff * Tileset::ENTITY_TILE_SIZE * entityToEditorRatio + tile->yOffPixels * (Tileset::EDITOR_TILE_SIZE / Tileset::MAP_TILE_SIZE) + offset.y
         }
     );
 

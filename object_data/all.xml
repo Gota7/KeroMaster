@@ -37,9 +37,7 @@
         <entity id="43" name="Chibi Uzo" description="Harmless decorative black thing.">
             <tile tileset="fuFixNPC" x="4" y="47" xOffPixels="-4" yOffPixels="-1" numXTiles="2" numYTiles="2"/>
         </entity>
-        <entity id="53" name="Phone" description="The magic device.">
-            <tile tileset="fuFixNPC" x="36" y="37" xOff="-1" yOffPixels="-2" numXTiles="2" numYTiles="1"/>
-        </entity>
+        <entity id="53" name="Phone" description="The magic device." />
         <entity id="56" name="Mole" description="Will throw rocks at you if you get too close or shoot it.">
             <tile tileset="" x="12" y="8" yOff="-1" xOffPixels="-4" numXTiles="2" numYTiles="2"/>
         </entity>
@@ -100,9 +98,9 @@
         <entity id="152" name="Echinus" description="Blue sea creature that shoots electric shocks went shot.">
             <tile tileset="" y="24" xOffPixels="-5" yOffPixels="-3" numXTiles="2" numYTiles="2" />
         </entity>
-        <entity id="159" name="Intro" description="Introduction controller.">
-            <tile tileset="fuFixChar" x="2" y="32" xOffPixels="-3" yOff="-1" yOffPixels="2" numXTiles="2" numYTiles="2" />
-            <tile tileset="fuFixChar" x="2" xOffPixels="-4" yOff="-1" numXTiles="2" numYTiles="2" />
+        <entity id="159" name="Intro" description="Sets where the player spawns.">
+            <tile tileset="fuFixChar" x="4" y="64" xOffPixels="-3" yOff="-1" yOffPixels="1" numXTiles="4" numYTiles="4" />
+            <tile tileset="fuFixChar" x="4" xOffPixels="-4" yOff="-1" numXTiles="4" numYTiles="4" />
         </entity>
         <entity id="162" name="Sister" description="Pink co-worker that is cheery." />
         <entity id="163" name="Sasuke" description="Cat co-worker that wears a lab coat." />
@@ -114,14 +112,14 @@
         <rollYourOwnSprite name="Cake" tileset="mptTitle_bk" x="4" y="24" numXTiles="4" numYTiles="2"/>
         <rollYourOwnSprite name="hanaE" tileset="fuFixNPC" x="60" y="62" xOff="-1" yOff="-1" xOffPixels="-1" numXTiles="3" numYTiles="2"/>
         <rollYourOwnSprite name="hanaH" tileset="fuFixNPC" x="60" y="62" xOff="-1" yOff="-1" xOffPixels="-1" numXTiles="3" numYTiles="2"/>
-        <rollYourOwnSprite name="Phone" tileset="fuFixNPC" x="72" y="74" xOff="-1" yOffPixels="-1" numXTiles="4" numYTiles="2"/>
-        <rollYourOwnSprite name="Phone1" tileset="fuFixNPC" x="72" y="74" xOff="-1" yOffPixels="-1" numXTiles="4" numYTiles="2"/>
+        <rollYourOwnSprite name="Phone" tileset="fuFixNPC" x="72" y="72" xOff="-1" yOff="-1" yOffPixels="-2" numXTiles="4" numYTiles="4"/>
+        <rollYourOwnSprite name="Phone1" tileset="fuFixNPC" x="72" y="72" xOff="-1" yOff="-1" yOffPixels="-2" numXTiles="4" numYTiles="4"/>
         <rollYourOwnSprite name="PinkHourLogo" tileset="" x="0" xOff="-11" yOff="-1" xOffPixels="-4" yOffPixels="-2" numXTiles="24" numYTiles="4"/>
         <rollYourOwnSprite name="Sasuke05" tileset="fuFixNPC" x="48" y="0" xOff="-3" yOff="-2" yOffPixels="3" numXTiles="3" numYTiles="4"/>
         <rollYourOwnSprite name="Sister05" tileset="fuFixNPC" x="40" y="0" yOff="-1" numXTiles="2" numYTiles="2"/>
         <rollYourOwnSprite name="Sister06" tileset="fuFixNPC" x="42" y="0" yOff="-1" numXTiles="2" numYTiles="2"/>
-        <rollYourOwnSprite name="PixelLogo" tileset="localize" xOff="-4" xOffPixels="-2" yOffPixels="-2" numXTiles="20" numYTiles="4"/>
+        <rollYourOwnSprite name="PixelLogo" tileset="localize" xOff="-4" xOffPixels="-4" yOffPixels="-4" numXTiles="20" numYTiles="4"/>
         <rollYourOwnSprite name="PopItem" tileset="fuFixChar" x="60" y="38" xOffPixels="-4" yOffPixels="-4" numXTiles="2" numYTiles="2"/>
-        <rollYourOwnSprite name="TitleLogo" tileset="" x="4" xOff="-10" yOff="-3" xOffPixels="2" numXTiles="40" numYTiles="14"/>
+        <rollYourOwnSprite name="TitleLogo" tileset="" x="4" xOff="-10" yOff="-3" xOffPixels="4" numXTiles="40" numYTiles="14"/>
     </rollYourOwnSprites>
 </data>
