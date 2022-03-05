@@ -3,123 +3,182 @@
     <entities>
         <entity id="0" name="Nothing" description="It does absolutely nothing." />
         <entity id="1" name="Empty" description="Usually used to roll your own sprites." />
-        <entity id="4" name="Anchor" description="Prevents the screen from moving." />
-        <entity id="6" name="Long Weed" description="Tall grass that is shot with 1 hit.">
-            <tile tileset="/0" x="8" y="16" yOff="-2" xOffPixels="-4" yOffPixels="2" numXTiles="2" numYTiles="4" />
+        <entity id="6" name="Long Weed" description="">
+            <tile tileset="/0" x="16" y="32" xOffPixels="-4" yOff="-1" yOffPixels="-6" numXTiles="4" numYTiles="6" flagBit="5" flagMode="false"/>
+            <tile tileset="/0" x="20" y="32" xOffPixels="-4" yOff="-1" yOffPixels="-6" numXTiles="4" numYTiles="6" flagBit="5" flagMode="true"/>
         </entity>
-        <entity id="8" name="Trunk" description="Floating tree trunk that sinks a bit when you land on it.">
-            <tile tileset="" x="8" y="25" xOff="-1" xOffPixels="-4" yOffPixels="-1" numXTiles="4" numYTiles="1" flagBit="5" flagMode="false" />
-            <tile tileset="" x="8" y="24" xOff="-1" xOffPixels="-4" yOffPixels="-1" numXTiles="4" numYTiles="1" flagBit="5" flagMode="true" />
+        <entity id="8" name="Trunk" description="">
+            <tile tileset="" x="16" y="48" xOff="-1" yOffPixels="-1" numXTiles="8" numYTiles="2" flagBit="5" flagMode="true"/>
+            <tile tileset="" x="16" y="50" xOff="-1" yOffPixels="-1" numXTiles="8" numYTiles="2" flagBit="5" flagMode="false"/>
         </entity>
-        <entity id="13" name="Cat And Frog Step" description="Teleporter platform." >
-            <tile tileset="fuFixNPC" x="45" y="46" xOff="-1" numXTiles="3" numYTiles="1" />
+        <entity id="13" name="Cat &#38; Frog Step" description="">
+            <tile tileset="fuFixNPC" x="90" y="92" xOff="-1" numXTiles="6" numYTiles="2"/>
         </entity>
-        <entity id="14" name="Gearshift" description="Lever NPCs can pull.">
-            <tile tileset="fuFixNPC" x="32" y="36" xOffPixels="1" yOffPixels="-4" numXTiles="1" numYTiles="2" />
+        <entity id="14" name="Gearshift" description="">
+            <tile tileset="fuFixNPC" x="64" y="72" xOffPixels="1" yOffPixels="-4" numXTiles="2" numYTiles="4"/>
         </entity>
-        <entity id="18" name="Mini Spiral" description="An angry snail that will slowly crawl towards you." >
-            <tile tileset="" x="6" y="27" yOff="-1" yOffPixels="4" numXTiles="2" numYTiles="2" />
+        <entity id="15" name="Timer Kun" description="">
+            <tile tileset="fuFixNPC" x="88" y="120" xOffPixels="-4" yOff="-1" numXTiles="4" numYTiles="4"/>
         </entity>
-        <entity id="22" name="Drop" description="Falling water droplet for decoration." >
-            <tile tileset="fuFixPtcle" x="13" y="10" yOffPixels="-3" numXTiles="1" numYTiles="1" />
+        <entity id="16" name="Kajiya" description="">
+            <tile tileset="fuFixNPC" x="64" y="56" yOff="-1" yOffPixels="-1" numXTiles="4" numYTiles="4"/>
         </entity>
-        <entity id="25" name="Kani Mini" description="Small crab." >
-            <tile tileset="" x="9" y="27" yOffPixels="-3" numXTiles="2" numYTiles="2" />
+        <entity id="18" name="MiniSpiral" description="">
+            <tile tileset="" x="12" y="54" xOffPixels="-2" yOffPixels="-4" numXTiles="3" numYTiles="3" flagBit="5" flagMode="false"/>
+            <tile tileset="" x="15" y="54" xOffPixels="-2" yOffPixels="-4" numXTiles="3" numYTiles="3" flagBit="5" flagMode="true"/>
         </entity>
-        <entity id="27" name="Relay" description="Probably player spawn or save point."/>
-        <entity id="28" name="Left portal" description="Go to the level on left side."/>
-        <entity id="29" name="Up portal" description="Go to the level on upper side."/>
-        <entity id="30" name="Right portal" description="Go to the level on right side."/>
-        <entity id="31" name="Bottom portal" description="Go to the level on bottom side."/>
-        <entity id="36" name="Tire" description="Tire that can fall and roll from events.">
-            <tile tileset="fuFixNPC" x="32" y="48" xOff="-2" yOff="-2" numXTiles="5" numYTiles="5" />
+        <entity id="31" name="FirePlant" description="">
+            <tile tileset="" x="16" y="16" xOff="-1" yOffPixels="-4" numXTiles="4" numYTiles="4"/>
         </entity>
-        <entity id="43" name="Chibi Uzo" description="Harmless decorative black thing.">
-            <tile tileset="fuFixNPC" x="4" y="47" xOffPixels="-4" yOffPixels="-1" numXTiles="2" numYTiles="2"/>
+        <entity id="35" name="Kinko" description="">
+            <tile tileset="fuFixNPC" x="0" y="120" xOff="-1" yOff="-1" numXTiles="6" numYTiles="4" flagBit="5" flagMode="false"/>
+            <tile tileset="fuFixNPC" x="6" y="120" xOff="-1" yOff="-1" numXTiles="6" numYTiles="4" flagBit="5" flagMode="true"/>
         </entity>
-        <entity id="53" name="Phone" description="The magic device." />
-        <entity id="56" name="Mole" description="Will throw rocks at you if you get too close or shoot it.">
-            <tile tileset="" x="12" y="8" yOff="-1" xOffPixels="-4" numXTiles="2" numYTiles="2"/>
+        <entity id="42" name="Camp Gate" description="">
+            <tile tileset="fuFixChar" x="116" y="84" xOff="-1" yOff="-1" numXTiles="6" numYTiles="6"/>
         </entity>
-        <entity id="64" name="Walking Black" description="An enemy that throws black things at you.">
-            <tile tileset="fuFixNPC" y="24" xOff="-1" yOff="-1" xOffPixels="-4" numXTiles="4" numYTiles="4"/>
+        <entity id="43" name="Chibi Uzo" description="">
+            <tile tileset="fuFixNPC" x="8" y="94" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" flagBit="5" flagMode="false"/>
+            <tile tileset="fuFixNPC" x="12" y="94" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" flagBit="5" flagMode="true"/>
         </entity>
-        <entity id="72" name="Barricade" description="Can be destroyed to pass.">
-            <tile tileset="fuFixNPC" x="6" y="54" xOffPixels="-4" yOffPixels="-6" numXTiles="2" numYTiles="2" />
+        <entity id="53" name="Phone" description="">
+            <tile tileset="fuFixNPC" x="72" y="72" xOff="-1" yOff="-1" yOffPixels="-2" numXTiles="4" numYTiles="4"/>
         </entity>
-        <entity id="75" name="Kani=" description="Crab. TODO!!!" >
-            <tile tileset="" x="4" y="18" yOff="-1" numXTiles="2" numYTiles="2" />
+        <entity id="54" name="Nurse" description="">
+            <tile tileset="fuFixNPC" x="64" y="64" yOff="-1" yOffPixels="-4" numXTiles="4" numYTiles="4"/>
         </entity>
-        <entity id="77" name="Anemone" description="Sea creature that shoots dead fish at you.">
-            <tile tileset="" x="8" y="8" xOff="-1" numXTiles="3" numYTiles="2" flagBit="5" flagMode="false" />
-            <tile tileset="" x="5" y="8" xOff="-1" yOff="-1" numXTiles="3" numYTiles="2" flagBit="5" flagMode="true" />
+        <entity id="56" name="Mole" description="">
+            <tile tileset="" x="24" y="16" xOffPixels="-4" yOff="-1" numXTiles="4" numYTiles="4" flagBit="5" flagMode="false"/>
+            <tile tileset="" x="28" y="16" xOffPixels="-6" yOff="-1" numXTiles="4" numYTiles="4" flagBit="5" flagMode="true"/>
         </entity>
-        <entity id="79" name="Position Half Up" description="I have no idea what this does." />
-        <entity id="81" name="Line Censor" description="A line that activates a path when crossed.">
-            <tile tileset="fuFixChar" x="50" y="61" numXTiles="1" numYTiles="1" />
+        <entity id="71" name="Boss Desk" description="">
+            <tile tileset="" x="56" y="52" xOff="-1" yOff="-1" xOffPixels="-1" numXTiles="8" numYTiles="4"/>
         </entity>
-        <entity id="85" name="Alter" description="Teleporter to go back to work.">
-            <tile tileset="/1" x="12" xOffPixels="-4" yOffPixels="-6" numXTiles="2" numYTiles="1" />
+        <entity id="72" name="Barricade" description="">
+            <tile tileset="fuFixNPC" x="12" y="108" xOffPixels="-4" yOffPixels="-6" numXTiles="4" numYTiles="4"/>
         </entity>
-        <entity id="88" name="Icicle" description="Icicle that will fall if you get too close to it.">
-            <tile tileset="" x="12" y="24" yOff="-1" xOffPixels="-4" numXTiles="2" numYTiles="2" />
+        <entity id="73" name="Uzo Tank" description="">
+            <tile tileset="fuFixNPC" x="64" y="116" xOff="-1" xOffPixels="1" yOff="-1" numXTiles="6" numYTiles="6" unkDraw="1"/>
+            <tile tileset="fuFixNPC" x="70" y="116" xOff="-1" xOffPixels="1" yOff="-1" numXTiles="6" numYTiles="6" unkDraw="2"/>
+            <tile tileset="fuFixNPC" x="76" y="116" xOff="-1" xOffPixels="1" yOff="-1" numXTiles="6" numYTiles="6" unkDraw="3"/>
         </entity>
-        <entity id="106" name="Digesty" description="Orange goop that will drip down and hurt you.">
-            <tile tileset="/1" x="14" y="6" yOff="-1" xOffPixels="-3" yOffPixels="3" numXTiles="2" numYTiles="2" />
+        <entity id="80" name="Door Vertical" description="">
+            <tile tileset="/0" x="32" y="16" xOff="-2" yOff="-2" numXTiles="6" numYTiles="8"/>
         </entity>
-        <entity id="115" name="Frog Plant" description="Will attack you if you shoot it.">
-            <tile tileset="" yOff="-1" xOffPixels="-2" numXTiles="4" numYTiles="4" />
+        <entity id="85" name="Altar" description="">
+            <tile tileset="/1" x="8" y="0" xOff="-3" yOff="-1" numXTiles="16" numYTiles="4"/>
         </entity>
-        <entity id="116" name="Weak Weed" description="Breaks with 1 hit of damage.">
-            <tile tileset="/0" y="16" xOffPixels="-4" yOffPixels="-4" numXTiles="2" numYTiles="2" />
+        <entity id="97" name="Uzo Red" description="">
+            <tile tileset="fuFixNPC" x="16" y="82" xOffPixels="-2" yOff="-1" yOffPixels="-4" numXTiles="4" numYTiles="6" flagBit="5" flagMode="false" />
+            <tile tileset="fuFixNPC" x="20" y="82" xOffPixels="-4" yOff="-1" yOffPixels="-6" numXTiles="4" numYTiles="6" flagBit="5" flagMode="true" />
         </entity>
-        <entity id="122" name="Flower Vase" description="Decorative flower vase that can't be destroyed." />
-        <entity id="131" name="Spike Plant" description="Spiky plant that hurts you if you touch it. Can be destroyed.">
-            <tile tileset="/0" x="4" y="16" xOffPixels="-4" yOffPixels="-4" numXTiles="2" numYTiles="2" />
+        <entity id="115" name="Frog Plant" description="">
+            <tile tileset="" x="0" y="0" xOffPixels="-4" yOff="-1" numXTiles="4" numYTiles="4"/>
         </entity>
-        <entity id="132" name="Sidewinder" description="Hidden snake that will jump up and attack you.">
-            <tile tileset="" x="8" y="6" yOff="-1" xOffPixels="-4" yOffPixels="1" numXTiles="2" numYTiles="2" />
+        <entity id="116" name="Weak Weed" description="">
+            <tile tileset="/0" x="0" y="32" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4"/>
         </entity>
-        <entity id="136" name="Blue Fish" description="Blue fish that will jump up if you get close.">
-            <tile tileset="" y="10" xOffPixels="-4" yOffPixels="-4" numXTiles="2" numYTiles="2" />
+        <entity id="117" name="Ebi Floser" description="">
+            <tile tileset="" x="8" y="0" xOffPixels="-4" yOffPixels="-5" numXTiles="4" numYTiles="4"/>
         </entity>
-        <entity id="142" name="Tumbleweed" description="Rolling tumbleweed that will hurt you, but is fairly weak.">
-            <tile tileset="" x="12" xOffPixels="-4" yOffPixels="-4" numXTiles="2" numYTiles="2" />
+        <entity id="131" name="Spike Plant" description="">
+            <tile tileset="/0" x="8" y="32" xOffPixels="-4" yOffPixels="-6" numXTiles="4" numYTiles="4" flagBit="5" flagMode="false" />
+            <tile tileset="/0" x="12" y="32" xOffPixels="-4" yOffPixels="-6" numXTiles="4" numYTiles="4" flagBit="5" flagMode="true" />
         </entity>
-        <entity id="147" name="Bubble Lift" description="Spawns bubbles that lift you to the top of the water.">
-            <tile tileset="fuFixChar" x="56" y="48" xOff="-1" yOff="-1" xOffPixels="-1" numXTiles="3" numYTiles="2" />
+        <entity id="132" name="Sidewinder" description="">
+            <tile tileset="" x="16" y="12" xOffPixels="-4" yOffPixels="-7" numXTiles="4" numYTiles="4" flagBit="5" flagMode="false" />
+            <tile tileset="" x="20" y="12" xOffPixels="-4" yOffPixels="-7" numXTiles="4" numYTiles="4" flagBit="5" flagMode="true" />
         </entity>
-        <entity id="150" name="Bat Passing" description="A bat will come out of nowhere to attack you if close to this.">
-            <tile tileset="" x="4" xOffPixels="-4" yOffPixels="-4" numXTiles="2" numYTiles="2" />
+        <entity id="134" name="Chest2" description="">
+            <tile tileset="fuFixNPC" x="26" y="56" xOff="-1" yOffPixels="-4" numXTiles="6" numYTiles="3"/>
         </entity>
-        <entity id="151" name="Orange Fish" description="Orange fish that swims back and forth.">
-            <tile tileset="" x="4" y="10" xOffPixels="-4" yOffPixels="-4" numXTiles="2" numYTiles="2" />
+        <entity id="135" name="Walk Plant" description="">
+            <tile tileset="" x="0" y="20" xOffPixels="-4" yOff="-1" yOffPixels="-5" numXTiles="4" numYTiles="6" flagBit="5" flagMode="false"/>
+            <tile tileset="" x="4" y="20" xOffPixels="-4" yOff="-1" yOffPixels="-5" numXTiles="4" numYTiles="6" flagBit="5" flagMode="true"/>
         </entity>
-        <entity id="152" name="Echinus" description="Blue sea creature that shoots electric shocks went shot.">
-            <tile tileset="" y="24" xOffPixels="-5" yOffPixels="-3" numXTiles="2" numYTiles="2" />
+        <entity id="136" name="Blue Fish" description="">
+            <tile tileset="" x="0" y="20" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" flagBit="5" flagMode="false"/>
+            <tile tileset="" x="4" y="20" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" flagBit="5" flagMode="true"/>
+        </entity>
+        <entity id="137" name="Dragon Flower" description="">
+            <tile tileset="" x="0" y="0" xOffPixels="-4" yOff="-1" numXTiles="4" numYTiles="4"/>
+        </entity>
+        <entity id="138" name="Set Birds" description="( 0:room 1:tree 2:two birds )">
+            <tile tileset="/0" x="16" y="44" xOff="-1" yOff="-1" numXTiles="6" numYTiles="6"/>
+        </entity>
+        <entity id="139" name="Fly Evade" description="">
+            <tile tileset="" x="12" y="12" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4"/>
+        </entity>
+        <entity id="141" name="Doronko" description="">
+            <tile tileset="" x="16" y="28" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" flagBit="5" flagMode="false"/>
+            <tile tileset="" x="20" y="28" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" flagBit="5" flagMode="true"/>
+        </entity>
+        <entity id="142" name="Tumbleweed" description="">
+            <tile tileset="" x="24" y="0" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4"/>
+        </entity>
+        <entity id="144" name="Bat ceiling" description="">
+            <tile tileset="" x="0" y="12" xOffPixels="-4" yOffPixels="-1" numXTiles="4" numYTiles="4" flagBit="5" flagMode="false"/>
+            <tile tileset="" x="4" y="12" xOffPixels="-4" yOffPixels="-1" numXTiles="4" numYTiles="4" flagBit="5" flagMode="true"/>
+        </entity>
+        <entity id="146" name="Chandelier" description="">
+            <tile tileset="fuFixNPC" x="16" y="70" xOff="-1" xOffPixels="-4" yOffPixels="2" numXTiles="8" numYTiles="4"/>
+        </entity>
+        <entity id="148" name="Call Bats" description="">
+            <tile tileset="" x="16" y="16" xOffPixels="-4" yOff="-5" yOffPixels="-2" numXTiles="4" numYTiles="4"/>
+        </entity>
+        <entity id="151" name="Orange Fish" description="">
+            <tile tileset="" x="8" y="20" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" flagBit="5" flagMode="false"/>
+            <tile tileset="" x="12" y="20" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" flagBit="5" flagMode="true"/>
         </entity>
         <entity id="159" name="Intro" description="Sets where the player spawns.">
             <tile tileset="fuFixChar" x="4" y="64" xOffPixels="-3" yOff="-1" yOffPixels="1" numXTiles="4" numYTiles="4" />
             <tile tileset="fuFixChar" x="4" xOffPixels="-4" yOff="-1" numXTiles="4" numYTiles="4" />
         </entity>
-        <entity id="162" name="Sister" description="Pink co-worker that is cheery." />
-        <entity id="163" name="Sasuke" description="Cat co-worker that wears a lab coat." />
-        <entity id="171" name="Animal Bone" description="Decorative skull.">
-            <tile tileset="fuFixNPC" x="8" y="51" xOffPixels="-4" numXTiles="2" numYTiles="1" />
+        <entity id="160" name="Uzouzo" description="">
+            <tile tileset="fuFixNPC" x="0" y="82" yOff="-1" xOffPixels="-4" yOffPixels="-6" numXTiles="4" numYTiles="6" flagBit="5" flagMode="false" unkDraw="1"/>
+            <tile tileset="fuFixNPC" x="4" y="82" yOff="-1" xOffPixels="-6" yOffPixels="-6" numXTiles="4" numYTiles="6" flagBit="5" flagMode="true" unkDraw="1"/>
+            <tile tileset="fuFixNPC" x="8" y="82" xOffPixels="-4" yOffPixels="-2" numXTiles="4" numYTiles="6" flagBit="5" flagMode="false" unkDraw="2"/>
+        </entity>
+        <entity id="161" name="Office Fly" description="">
+            <tile tileset="" x="60" y="48" numXTiles="2" numYTiles="2" flagBit="5" flagMode="false"/>
+            <tile tileset="" x="62" y="48" numXTiles="2" numYTiles="2" flagBit="5" flagMode="true"/>
+        </entity>
+        <entity id="162" name="Sister" description="">
+            <tile tileset="fuFixNPC" x="80" y="0" yOff="-1" yOffPixels="-5" numXTiles="4" numYTiles="4"/>
+        </entity>
+        <entity id="163" name="Sasuke" description="">
+            <tile tileset="fuFixNPC" x="96" y="0" xOff="-1" yOff="-1" xOffPixels="2" yOffPixels="-5" numXTiles="6" numYTiles="8"/>
+        </entity>
+        <entity id="164" name="Hanger" description="">
+            <tile tileset="fuFixNPC" x="80" y="72" xOffPixels="-4" yOff="-1" numXTiles="4" numYTiles="6"/>
+        </entity>
+        <entity id="171" name="Animal Bone" description="">
+            <tile tileset="fuFixNPC" x="16" y="102" xOffPixels="-4" numXTiles="4" numYTiles="2"/>
+        </entity>
+        <entity id="181" name="Doroman" description="">
+            <tile tileset="" x="24" y="8" xOffPixels="-4" numXTiles="4" numYTiles="4"/>
         </entity>
     </entities>
     <rollYourOwnSprites>
         <rollYourOwnSprite name="Cake" tileset="mptTitle_bk" x="4" y="24" numXTiles="4" numYTiles="2"/>
-        <rollYourOwnSprite name="hanaE" tileset="fuFixNPC" x="60" y="62" xOff="-1" yOff="-1" xOffPixels="-1" numXTiles="3" numYTiles="2"/>
-        <rollYourOwnSprite name="hanaH" tileset="fuFixNPC" x="60" y="62" xOff="-1" yOff="-1" xOffPixels="-1" numXTiles="3" numYTiles="2"/>
-        <rollYourOwnSprite name="Phone" tileset="fuFixNPC" x="72" y="72" xOff="-1" yOff="-1" yOffPixels="-2" numXTiles="4" numYTiles="4"/>
-        <rollYourOwnSprite name="Phone1" tileset="fuFixNPC" x="72" y="72" xOff="-1" yOff="-1" yOffPixels="-2" numXTiles="4" numYTiles="4"/>
-        <rollYourOwnSprite name="PinkHourLogo" tileset="" x="0" xOff="-11" yOff="-1" xOffPixels="-4" yOffPixels="-2" numXTiles="24" numYTiles="4"/>
-        <rollYourOwnSprite name="Sasuke05" tileset="fuFixNPC" x="48" y="0" xOff="-3" yOff="-2" yOffPixels="3" numXTiles="3" numYTiles="4"/>
-        <rollYourOwnSprite name="Sister05" tileset="fuFixNPC" x="40" y="0" yOff="-1" numXTiles="2" numYTiles="2"/>
-        <rollYourOwnSprite name="Sister06" tileset="fuFixNPC" x="42" y="0" yOff="-1" numXTiles="2" numYTiles="2"/>
+        <rollYourOwnSprite name="ChestDoro" tileset="" x="24" y="0" xOffPixels="-4" numXTiles="4" numYTiles="4"/>
+        <rollYourOwnSprite name="FallBridge" tileset="/1" x="0" y="26" xOff="-5" xOffPixels="-2" numXTiles="24" numYTiles="2" flagBit="5" flagMode="false"/>
+        <rollYourOwnSprite name="FallBridge" tileset="/1" x="0" y="28" xOff="-5" xOffPixels="-6" numXTiles="24" numYTiles="2" flagBit="5" flagMode="true"/>
+        <rollYourOwnSprite name="FocusTarget" tileset="fuFixChar" x="110" y="126" xOffPixels="2" yOffPixels="2" numXTiles="1" numYTiles="1"/>
+        <rollYourOwnSprite name="GiantMole" tileset="" x="0" y="0" xOff="-1" xOffPixels="-4" yOffPixels="-6" numXTiles="8" numYTiles="8"/>
+        <rollYourOwnSprite name="Gorgon" tileset="" x="0" y="0" xOff="-2" yOff="-3" yOffPixels="1" numXTiles="10" numYTiles="6"/>
+        <rollYourOwnSprite name="OfficeBoss" tileset="" x="0" y="0" xOff="-1" xOffPixels="-4" yOff="-2" numXTiles="8" numYTiles="8"/>
+        <rollYourOwnSprite name="OfficeBoss2" tileset="" x="0" y="28" xOff="-1" xOffPixels="-4" yOff="-2" numXTiles="8" numYTiles="10"/>
+        <rollYourOwnSprite name="OfficeBoss3" tileset="" x="52" y="0" xOff="-2" xOffPixels="-4" yOff="-3" numXTiles="12" numYTiles="12"/>
         <rollYourOwnSprite name="PixelLogo" tileset="localize" xOff="-4" xOffPixels="-4" yOffPixels="-4" numXTiles="20" numYTiles="4"/>
-        <rollYourOwnSprite name="PopItem" tileset="fuFixChar" x="60" y="38" xOffPixels="-4" yOffPixels="-4" numXTiles="2" numYTiles="2"/>
-        <rollYourOwnSprite name="TitleLogo" tileset="" x="4" xOff="-10" yOff="-3" xOffPixels="4" numXTiles="40" numYTiles="14"/>
+        <rollYourOwnSprite name="PopItem" tileset="fuFixChar" x="96" y="76" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" unkDraw="1" />
+        <rollYourOwnSprite name="PopItem" tileset="fuFixChar" x="100" y="76" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" unkDraw="2" />
+        <rollYourOwnSprite name="PopItem" tileset="fuFixChar" x="104" y="76" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" unkDraw="3" />
+        <rollYourOwnSprite name="Reception" tileset="" x="24" y="0" xOff="-1" xOffPixels="-3" yOff="-1" yOffPixels="-4" numXTiles="8" numYTiles="6"/>
+        <rollYourOwnSprite name="ShieldPlant" tileset="" x="0" y="0" xOff="-3" xOffPixels="-5" yOff="-3" yOffPixels="-1" numXTiles="16" numYTiles="10"/>
+        <rollYourOwnSprite name="TitleLogo" tileset="" x="0" y="0" xOff="-12" yOff="-3" xOffPixels="4" numXTiles="48" numYTiles="14"/>
+        <rollYourOwnSprite name="Tumbleweed" tileset="" x="24" y="0" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4"/>
+        <rollYourOwnSprite name="Untier" tileset="" x="24" y="0" xOffPixels="-4" numXTiles="4" numYTiles="4"/>
+        <rollYourOwnSprite name="VomitCoins" tileset="fuFixChar" x="107" y="126" xOffPixels="2" yOffPixels="2" numXTiles="1" numYTiles="1"/>
     </rollYourOwnSprites>
 </data>

@@ -1,6 +1,6 @@
 #include "entityDisplay.h"
 
-map<string, EntityTile> EntityDisplay::rollYourOwnSprite;
+map<string, vector<EntityTile>> EntityDisplay::rollYourOwnSprite;
 float EntityDisplay::transparency = .3f;
 
 void EntityDisplay::DrawEntityIdBox(u8 id, s32 tileX, s32 tileY, bool beingEdited, Vector2 offset)
@@ -121,10 +121,16 @@ void EntityDisplay::Draw(Entity* entity, map<string, Tileset>& loadedTilesets, s
             if (t->flagBit)
             {
                 u8 val = entity->flags & (1 << (t->flagBit - 1));
-                if ((val > 0) == t->flagMode)
+                if ((val > 0) != t->flagMode)
                 {
                     continue;
                 }
+            }
+
+            // Check to see if we don't draw on this unknown parameter.
+            if (t->unkDraw && t->unkDraw - 1 != entity->unk)
+            {
+                continue;
             }
 
             // Draw the tile.
@@ -145,34 +151,42 @@ void EntityDisplay::Draw(Entity* entity, map<string, Tileset>& loadedTilesets, s
     // Roll your own sprite.
     if (allowRollYourOwnSprite && !blankSpriteParam && spriteExistsInRollList)
     {
-
-        // Get tile to draw, and exit if it isn't supposed to be drawn for this flag.
-        EntityTile* t = &rollYourOwnSprite[strParam];
-        if (t->flagBit != 0)
+        for (int i = 0; i < rollYourOwnSprite[strParam].size(); i++)
         {
-            u8 val = entity->flags & (1 << (t->flagBit - 1));
-            if ((val > 0) == t->flagMode)
+
+            // Get tile to draw, and exit if it isn't supposed to be drawn for this flag.
+            EntityTile* t = &rollYourOwnSprite[strParam][i];
+            if (t->flagBit != 0)
             {
-                goto skip;
+                u8 val = entity->flags & (1 << (t->flagBit - 1));
+                if ((val > 0) != t->flagMode)
+                {
+                    continue;
+                }
             }
+
+            // Check to see if we don't draw on this unknown parameter.
+            if (t->unkDraw && t->unkDraw - 1 != entity->unk)
+            {
+                continue;
+            }
+
+            // Draw the tile.
+            DrawEntityTile(
+                t,
+                loadedTilesets,
+                spriteSheet,
+                tilesetNames,
+                entity->xPos,
+                entity->yPos,
+                offset
+            );
+            drewSomething = true;
+
         }
-
-        // Draw the tile.
-        DrawEntityTile(
-            t,
-            loadedTilesets,
-            spriteSheet,
-            tilesetNames,
-            entity->xPos,
-            entity->yPos,
-            offset
-        );
-        drewSomething = true;
-
     }
 
     // Draw unit type and/or boxes if appropriate:
-    skip:
     if (!drewSomething)
     {
         DrawEntityUnitType(entity->id, entity->xPos, entity->yPos, offset);
@@ -230,6 +244,7 @@ map<u8, EntityDisplay> LoadXML(string game)
             dt.numTilesY = (u16)t->IntAttribute("numYTiles");
             dt.flagMode = t->BoolAttribute("flagMode");
             dt.flagBit = (u8)t->IntAttribute("flagBit");
+            dt.unkDraw = (u16)t->IntAttribute("unkDraw");
             d.tiles[num] = dt;
             num++;
             t = t->NextSiblingElement();
@@ -253,7 +268,10 @@ map<u8, EntityDisplay> LoadXML(string game)
         d.yOffPixels = (s8)r->IntAttribute("yOffPixels");
         d.numTilesX = (u16)r->IntAttribute("numXTiles");
         d.numTilesY = (u16)r->IntAttribute("numYTiles");
-        EntityDisplay::rollYourOwnSprite[r->Attribute("name")] = d;
+        d.flagMode = r->BoolAttribute("flagMode");
+        d.flagBit = (u8)r->IntAttribute("flagBit");
+        d.unkDraw = (u16)r->IntAttribute("unkDraw");
+        EntityDisplay::rollYourOwnSprite[r->Attribute("name")].push_back(d);
         r = r->NextSiblingElement();
     }
     

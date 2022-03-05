@@ -42,7 +42,8 @@ struct EntityTile
     s8 yOffPixels = 0; // Destination y offset in pixels.
     string tileset = ""; // Tileset to use. It can be a fixed one, blank for the NPC sheet, or /0, /1, or /2 for corresponding map tilesets.
     u8 flagMode = true; // If this tile only appears if a bit in flags is set.
-    u8 flagBit = 0; // The bit in flags to be set to show this tile if in flag mode.
+    u8 flagBit = 0; // The bit in flags to be set to show this tile if in flag mode. 1 is added, as 0 means disabled.
+    u16 unkDraw = 0; // Draw using the unknown parameter. 1 is added to this as 0 means disabled.
 };
 
 // Entity display information.
@@ -55,7 +56,7 @@ struct EntityDisplay
     int numTiles = 0; // Number of entity tiles.
     EntityTile* tiles; // Entity tiles to display.
     bool allowRollYourOwnSprite = true; // Allow for custom sprites to show specified by a parameter.
-    static map<string, EntityTile> rollYourOwnSprite; // Maps strings to sprites that can be shown in game.
+    static map<string, vector<EntityTile>> rollYourOwnSprite; // Maps strings to sprites that can be shown in game.
     static float transparency; // Transparency of the entity to display.
 
     // Draw a box with the entity ID.
