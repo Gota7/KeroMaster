@@ -115,6 +115,12 @@
         <entity id="49" name="Call Missile Bird 7" description="">
             <tile tileset="/0" x="16" y="44" xOff="-1" yOff="-1" numXTiles="6" numYTiles="6"/>
         </entity>
+        <entity id="51" name="Kani 7" description="">
+            <tile tileset="" x="0" y="28" xOffPixels="-4" yOff="-1" numXTiles="4" numYTiles="4"/>
+        </entity>
+        <entity id="52" name="Kani Chibi 7" description="">
+            <tile tileset="" x="16" y="54" xOffPixels="-2" yOffPixels="-4" numXTiles="3" numYTiles="3"/>
+        </entity>
         <entity id="53" name="Phone" description="">
             <tile tileset="fuFixNPC" x="72" y="72" xOff="-1" yOff="-1" yOffPixels="-2" numXTiles="4" numYTiles="4"/>
         </entity>
@@ -347,7 +353,8 @@
             <tile tileset="" x="18" y="0" xOff="-1" yOff="-1" numXTiles="6" numYTiles="6"/>
         </entity>
         <entity id="168" name="Refrigerator" description="">
-            <tile tileset="" x="8" y="0" xOffPixels="-4" yOff="-1" yOffPixels="-6" numXTiles="4" numYTiles="6"/>
+            <tile tileset="" x="8" y="0" xOffPixels="-4" yOff="-1" yOffPixels="-6" numXTiles="4" numYTiles="6" flagBit="5" flagMode="false"/>
+            <tile tileset="" x="12" y="0" xOffPixels="-4" yOff="-1" yOffPixels="-6" numXTiles="4" numYTiles="6" flagBit="5" flagMode="true"/>
         </entity>
         <entity id="169" name="Ice Hillock" description="">
             <tile tileset="" x="8" y="36" xOffPixels="-4" yOffPixels="-6" numXTiles="4" numYTiles="4" unkDraw="1"/>
@@ -358,6 +365,12 @@
         </entity>
         <entity id="171" name="Animal Bone" description="">
             <tile tileset="fuFixNPC" x="16" y="102" xOffPixels="-4" numXTiles="4" numYTiles="2"/>
+        </entity>
+        <entity id="173" name="Carton Box L" description="">
+            <tile tileset="/0" x="32" y="48" xOff="-1" yOff="-1" numXTiles="6" numYTiles="4"/>
+        </entity>
+        <entity id="174" name="Carton Box s" description="">
+            <tile tileset="/0" x="38" y="48" xOff="-1" yOff="-1" numXTiles="4" numYTiles="4"/>
         </entity>
         <entity id="181" name="Doroman" description="">
             <tile tileset="" x="24" y="8" xOffPixels="-4" numXTiles="4" numYTiles="4" flagBit="5" flagMode="false"/>
