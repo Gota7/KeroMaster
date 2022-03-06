@@ -10,7 +10,8 @@
 #include "undoStack.h"
 #include "rlImGui/focusData.h"
 
-constexpr float MAP_SIZE = 2.0f;
+// Scale the map properly.
+constexpr float MAP_SIZE = Tileset::EDITOR_TILE_SIZE / Tileset::MAP_TILE_SIZE;
 
 struct AttributeEditor;
 struct TilesetEditor;

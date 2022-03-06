@@ -1,3 +1,3 @@
-cmake -build .
+cmake --build .
 make
 bin/KeroMaster

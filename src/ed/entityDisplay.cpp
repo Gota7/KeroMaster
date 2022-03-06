@@ -1,110 +1,202 @@
 #include "entityDisplay.h"
 
-map<string, EntityTile> EntityDisplay::rollYourOwnSprite;
+map<string, vector<EntityTile>> EntityDisplay::rollYourOwnSprite;
 float EntityDisplay::transparency = .3f;
 
-void EntityDisplay::Draw(u8 id, Str strParam, u8 flags, bool beingEdited, string spritesheetName, string tilesetNames[3], map<string, Tileset>& tilesets, Vector2 origin, s32 xOff, s32 yOff, f32 mapScale, bool debug)
+void EntityDisplay::DrawEntityIdBox(u8 id, s32 tileX, s32 tileY, bool beingEdited, Vector2 offset)
 {
-    Vector2 off = { origin.x + xOff * 8 * mapScale, origin.y + yOff * 8 * mapScale };
-    Vector2 size = { 8 * mapScale, 8 * mapScale };
-    bool noTiles = numTiles == 0;
-    bool blankSpriteParam = strcmp(strParam.dat.c_str(), "") == 0;
-    bool spriteExistsInRollList = rollYourOwnSprite.find(strParam.dat) != rollYourOwnSprite.end();
-    bool doneSomething = false;
+    Rectangle destRec = Tileset::GetDestRect(tileX, tileY, Tileset::EDITOR_TILE_SIZE, offset);
+    if (!beingEdited)
+    {
+        DrawRectangleRec(destRec, ColorAlpha(BLUE, transparency));
+    }
+    else
+    {
+        DrawRectangleRec(destRec, ColorAlpha(RED, transparency + .2f));
+    }
+    DrawText(to_string(id).c_str(), (int)(destRec.x + 1), (int)(destRec.y + 1), 1, ColorAlpha(YELLOW, .8f));
+}
 
-    if(!noTiles)
+void EntityDisplay::DrawEntityUnitType(u8 id, s32 tileX, s32 tileY, Vector2 offset)
+{
+    DrawTexturePro(
+        Tileset::unitType,
+        Tileset::GetSrcRect(id, (f32)Tileset::UNIT_TYPE_TILE_SIZE, Tileset::unitType.width / Tileset::UNIT_TYPE_TILE_SIZE),
+        Tileset::GetDestRect(tileX, tileY, Tileset::EDITOR_TILE_SIZE, offset),
+        { 0, 0 },
+        0,
+        WHITE
+    );
+}
+
+void EntityDisplay::DrawEntityTiles(Tileset& ts, u16 x, u16 y, u16 width, u16 height, s32 tileX, s32 tileY, Vector2 offset)
+{
+
+    // Entity tiles may be smaller than map tiles.
+    tileX *= Tileset::MAP_TILE_SIZE / Tileset::ENTITY_TILE_SIZE;
+    tileY *= Tileset::MAP_TILE_SIZE / Tileset::ENTITY_TILE_SIZE;
+
+    // Go ahead and draw all the tiles.
+    for (int i = 0; i < width; i++) {
+        for (int j = 0; j < height; j++) {
+            ts.Draw(
+                x + i,
+                y + j,
+                tileX + i,
+                tileY + j,
+                Tileset::ENTITY_TILE_SIZE,
+                Tileset::EDITOR_TILE_SIZE / (Tileset::MAP_TILE_SIZE / Tileset::ENTITY_TILE_SIZE),
+                false,
+                true,
+                true,
+                offset
+            );
+        }
+    }
+
+}
+
+void EntityDisplay::DrawEntityTile(EntityTile* tile, map<string, Tileset>& loadedTilesets, string spriteSheet, string tilesetNames[3], s32 tileX, s32 tileY, Vector2 offset)
+{
+
+    // Get the tileset name.
+    string tsName = tile->tileset == "" ? spriteSheet : tile->tileset;
+    if (tile->tileset == "")
+    {
+        tsName = spriteSheet;
+    }
+    else if (tile->tileset == "/0")
+    {
+        tsName = tilesetNames[0];
+    }
+    else if (tile->tileset == "/1")
+    {
+        tsName = tilesetNames[1];
+    }
+    else if (tile->tileset == "/2")
+    {
+        tsName = tilesetNames[2];
+    }
+    else
+    {
+        tsName = tile->tileset;
+    }
+
+    // Then draw the correct entity tiles.
+    float entityToEditorRatio = Tileset::EDITOR_TILE_SIZE / (float)Tileset::ENTITY_TILE_SIZE;
+    DrawEntityTiles(
+        loadedTilesets[tsName],
+        tile->x,
+        tile->y,
+        tile->numTilesX,
+        tile->numTilesY,
+        tileX,
+        tileY,
+        {
+            tile->xOff * Tileset::ENTITY_TILE_SIZE * entityToEditorRatio + tile->xOffPixels * (Tileset::EDITOR_TILE_SIZE / Tileset::MAP_TILE_SIZE) + offset.x,
+            tile->yOff * Tileset::ENTITY_TILE_SIZE * entityToEditorRatio + tile->yOffPixels * (Tileset::EDITOR_TILE_SIZE / Tileset::MAP_TILE_SIZE) + offset.y
+        }
+    );
+
+}
+
+void EntityDisplay::Draw(Entity* entity, map<string, Tileset>& loadedTilesets, string spriteSheet, string tilesetNames[3], bool debug, Vector2 offset)
+{
+
+    // Get entity info.
+    string& strParam = entity->parametersStr[0].dat;
+    bool noTiles = numTiles == 0;
+    bool blankSpriteParam = strParam == "";
+    bool spriteExistsInRollList = rollYourOwnSprite.find(strParam) != rollYourOwnSprite.end();
+    bool drewSomething = false;
+
+    // Draw tiles if they exist.
+    if (!noTiles)
     {
         for (int i = 0; i < numTiles; i++)
         {
+
+            // Get tile, and check to see if we don't draw on this flag.
             EntityTile* t = &tiles[i];
-            if (t->flagBit != 0)
+            if (t->flagBit)
             {
-                u8 val = flags & (1 << (t->flagBit - 1));
-                if ((val > 0) == t->flagMode)
+                u8 val = entity->flags & (1 << (t->flagBit - 1));
+                if ((val > 0) != t->flagMode)
                 {
                     continue;
                 }
             }
 
-            string tsName = strcmp(t->tileset.c_str(), "") == 0 ? spritesheetName : t->tileset;
-            if (strcmp(t->tileset.c_str(), "/0") == 0)
+            // Check to see if we don't draw on this unknown parameter.
+            if (t->unkDraw && t->unkDraw - 1 != entity->unk)
             {
-                tsName = tilesetNames[0];
+                continue;
             }
-            if (strcmp(t->tileset.c_str(), "/1") == 0)
-            {
-                tsName = tilesetNames[1];
-            }
-            if (strcmp(t->tileset.c_str(), "/2") == 0)
-            {
-                tsName = tilesetNames[2];
-            }
-            Tileset* ts = &tilesets[tsName];
-            for (s16 y = 0; y < t->numTilesY; y++)
-            {
-                for (s16 x = 0; x < t->numTilesX; x++)
-                {
-                    ts->Draw(t->x + x, t->y + y, origin, xOff + x + t->xOff, yOff + y + t->yOff, mapScale, false, true, t->xOffPixels, t->yOffPixels);
-                }
-            }
+
+            // Draw the tile.
+            DrawEntityTile(
+                t,
+                loadedTilesets,
+                spriteSheet,
+                tilesetNames,
+                entity->xPos,
+                entity->yPos,
+                offset
+            );
+            drewSomething = true;
+            
         }
-        doneSomething = true;
     }
-    if (allowRollYourOwnSprite && !blankSpriteParam)
+
+    // Roll your own sprite.
+    if (allowRollYourOwnSprite && !blankSpriteParam && spriteExistsInRollList)
     {
-        if (spriteExistsInRollList)
+        for (int i = 0; i < rollYourOwnSprite[strParam].size(); i++)
         {
-            EntityTile* t = &rollYourOwnSprite[strParam.dat];
+
+            // Get tile to draw, and exit if it isn't supposed to be drawn for this flag.
+            EntityTile* t = &rollYourOwnSprite[strParam][i];
             if (t->flagBit != 0)
             {
-                u8 val = flags & (1 << (t->flagBit - 1));
-                if ((val > 0) == t->flagMode)
+                u8 val = entity->flags & (1 << (t->flagBit - 1));
+                if ((val > 0) != t->flagMode)
                 {
-                    goto skip;
+                    continue;
                 }
             }
-            string tsName = strcmp(t->tileset.c_str(), "") == 0 ? spritesheetName : t->tileset;
-            if (strcmp(t->tileset.c_str(), "/0") == 0)
+
+            // Check to see if we don't draw on this unknown parameter.
+            if (t->unkDraw && t->unkDraw - 1 != entity->unk)
             {
-                tsName = tilesetNames[0];
+                continue;
             }
-            if (strcmp(t->tileset.c_str(), "/1") == 0)
-            {
-                tsName = tilesetNames[1];
-            }
-            if (strcmp(t->tileset.c_str(), "/2") == 0)
-            {
-                tsName = tilesetNames[2];
-            }
-            Tileset* ts = &tilesets[tsName];
-            for (s16 y = 0; y < t->numTilesY; y++)
-            {
-                for (s16 x = 0; x < t->numTilesX; x++)
-                {
-                    ts->Draw(t->x + x, t->y + y, origin, xOff + x + t->xOff, yOff + y + t->yOff, mapScale, false, true, t->xOffPixels, t->yOffPixels);
-                }
-            }
-            doneSomething = true;
+
+            // Draw the tile.
+            DrawEntityTile(
+                t,
+                loadedTilesets,
+                spriteSheet,
+                tilesetNames,
+                entity->xPos,
+                entity->yPos,
+                offset
+            );
+            drewSomething = true;
+
         }
     }
-    skip:
-    if (!doneSomething)
+
+    // Draw unit type and/or boxes if appropriate:
+    if (!drewSomething)
     {
-        DrawTextureTiled(Tileset::unitType, { (float)(id % 16 * 16), (float)(id / 16 * 16), 16, 16 }, { off.x - 8, off.y - 8, 16 * mapScale, 16 * mapScale }, { 0, 0 }, 0, mapScale, WHITE);
-        doneSomething = true;
+        DrawEntityUnitType(entity->id, entity->xPos, entity->yPos, offset);
+        drewSomething = true;
     }
-    if (debug || !doneSomething)
+    if (debug || !drewSomething)
     {
-        if (!beingEdited)
-        {
-            DrawRectangleV(off, size, ColorAlpha(BLUE, transparency));
-        }
-        else
-        {
-            DrawRectangleV(off, size, ColorAlpha(RED, transparency + .2f));
-        }
-        DrawText(to_string(id).c_str(), (int)(off.x + 1 * mapScale), (int)(off.y + 1 * mapScale), (int)(5 * mapScale), ColorAlpha(YELLOW, .8f));
+        DrawEntityIdBox(entity->id, entity->xPos, entity->yPos, entity->beingEdited, offset);
     }
+
 }
 
 map<u8, EntityDisplay> LoadXML(string game)
@@ -152,6 +244,7 @@ map<u8, EntityDisplay> LoadXML(string game)
             dt.numTilesY = (u16)t->IntAttribute("numYTiles");
             dt.flagMode = t->BoolAttribute("flagMode");
             dt.flagBit = (u8)t->IntAttribute("flagBit");
+            dt.unkDraw = (u16)t->IntAttribute("unkDraw");
             d.tiles[num] = dt;
             num++;
             t = t->NextSiblingElement();
@@ -175,7 +268,10 @@ map<u8, EntityDisplay> LoadXML(string game)
         d.yOffPixels = (s8)r->IntAttribute("yOffPixels");
         d.numTilesX = (u16)r->IntAttribute("numXTiles");
         d.numTilesY = (u16)r->IntAttribute("numYTiles");
-        EntityDisplay::rollYourOwnSprite[r->Attribute("name")] = d;
+        d.flagMode = r->BoolAttribute("flagMode");
+        d.flagBit = (u8)r->IntAttribute("flagBit");
+        d.unkDraw = (u16)r->IntAttribute("unkDraw");
+        EntityDisplay::rollYourOwnSprite[r->Attribute("name")].push_back(d);
         r = r->NextSiblingElement();
     }
     

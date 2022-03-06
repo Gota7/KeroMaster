@@ -2,10 +2,14 @@
 
 void PxMap::Read(GFile* f)
 {
-    if (tiles != nullptr) {
+    
+    // Unload map if it has been loaded.
+    if (tiles != nullptr)
+    {
         Unload();
     }
 
+    // Check for valid data, then read.
     if (strcmp(f->ReadStr().c_str(), "pxMAP01"))
     {
         throw string("Invalid map attribute magic.");
@@ -23,6 +27,7 @@ void PxMap::Read(GFile* f)
             tiles[i] = f->ReadU8();
         }
     }
+
 }
 
 void PxMap::Write(GFile* f)
@@ -223,8 +228,8 @@ void Map::Load(string rsc_k, string mapName, map<string, Tileset>& tilesets)
     }
     else
     {
-        comment.Read(&f);
-        comment.dat = fromShiftJIS(comment.dat);
+        levelTitle.Read(&f);
+        levelTitle.dat = fromShiftJIS(levelTitle.dat);
         
         for (int i = 0; i < NUM_REFERENCES; i++)
         {
@@ -312,7 +317,7 @@ void Map::Write(string rsc_k, string mapName)
     f.WriteNullTerminated("PXPACK121127a**");
 
     Str sjisComment;
-    sjisComment.dat = toShiftJIS(comment.dat);
+    sjisComment.dat = toShiftJIS(levelTitle.dat);
     sjisComment.Write(&f);
 
     for (int i = 0; i < NUM_REFERENCES; i++)
@@ -361,7 +366,12 @@ void Map::Clear()
     ClearBackground(GetPixelColor(&levelSettings[5], PIXELFORMAT_UNCOMPRESSED_R8G8B8));
 }
 
-void Map::DrawLayer(u8 layerNum, map<string, Tileset>& tilesets, Vector2 origin, f32 mapScale, bool showAttr)
+float Map::TileSize(int layerNum)
+{
+    return tilesetSettings1[layerNum] == 0 ? Tileset::MAP_TILE_SIZE : ((float)16 / tilesetSettings1[layerNum]);
+}
+
+void Map::DrawLayer(u8 layerNum, map<string, Tileset>& tilesets, Vector2 origin, bool showAttr)
 {
     if (layerNum >= NUM_TILESETS)
     {
@@ -370,23 +380,17 @@ void Map::DrawLayer(u8 layerNum, map<string, Tileset>& tilesets, Vector2 origin,
 
     PxMap& m = maps[layerNum];
     Tileset& t = tilesets[this->tilesets[layerNum].dat];
-    t.textureScale = tilesetSettings1[layerNum];
-
-    if (t.textureScale == 0) 
-    {
-        t.textureScale = 2;
-    }
 
     for (u16 y = 0; y < m.height; y++)
     {
         for (u16 x = 0; x < m.width; x++)
         {
-            t.Draw(m.GetTile(x, y), origin, x, y, mapScale, showAttr);
+            t.Draw(m.GetTile(x, y), x, y, TileSize(layerNum), Tileset::EDITOR_TILE_SIZE, showAttr, false, false, origin);
         }
     }
 }
 
-void Map::DrawEntities(map<u8, EntityDisplay>& entities, map<string, Tileset>& tilesets, Vector2 origin, f32 mapScale, bool debug)
+void Map::DrawEntities(map<u8, EntityDisplay>& entities, map<string, Tileset>& tilesets, Vector2 origin, bool debug)
 {
     string tilesetNames[3];
     tilesetNames[0] = this->tilesets[0].dat;
@@ -394,13 +398,24 @@ void Map::DrawEntities(map<u8, EntityDisplay>& entities, map<string, Tileset>& t
     tilesetNames[2] = this->tilesets[2].dat;
     for (u16 i = 0; i < this->entities.size(); i++)
     {
-        if (entities.find(this->entities[i].id) != entities.end())
+        /*if (entities.find(this->entities[i].id) != entities.end())
         {
-            entities[this->entities[i].id].Draw(this->entities[i].id, this->entities[i].parametersStr[0], this->entities[i].flags, this->entities[i].beingEdited, this->references[RT_NPC_PALETTE].dat, tilesetNames, tilesets, origin, this->entities[i].xPos, this->entities[i].yPos, mapScale, debug);
+            entities[this->entities[i].id].Draw(this->entities[i].id, this->entities[i].parametersStr[0], this->entities[i].flags, this->entities[i].beingEdited, this->references[RT_NPC_PALETTE].dat, tilesetNames, tilesets, origin, this->entities[i].xPos, this->entities[i].yPos, 1, debug);
         }
         else
         {
-            entities[0].Draw(this->entities[i].id, this->entities[i].parametersStr[0], this->entities[i].flags, this->entities[i].beingEdited, this->references[RT_NPC_PALETTE].dat, tilesetNames, tilesets, origin, this->entities[i].xPos, this->entities[i].yPos, mapScale, debug);
+            entities[0].Draw(this->entities[i].id, this->entities[i].parametersStr[0], this->entities[i].flags, this->entities[i].beingEdited, this->references[RT_NPC_PALETTE].dat, tilesetNames, tilesets, origin, this->entities[i].xPos, this->entities[i].yPos, 1, debug);
+        }*/
+
+        // Draw ID if found, else draw nothing which will show the box.
+        if (entities.find(this->entities[i].id) != entities.end())
+        {
+            entities[this->entities[i].id].Draw(&this->entities[i], tilesets, this->references[RT_NPC_PALETTE].dat, tilesetNames, debug, origin);
         }
+        else
+        {
+            entities[0].Draw(&this->entities[i], tilesets, this->references[RT_NPC_PALETTE].dat, tilesetNames, debug, origin);
+        }
+
     }
 }

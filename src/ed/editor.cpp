@@ -13,6 +13,8 @@ Settings Editor::settings;
 Color Editor::fadeColor = { 255, 0, 0, 255 };
 double Editor::timer;
 bool Editor::doFullscreen = false;
+const float MIN_ZOOM = 0.25;
+const float MAX_ZOOM = 10.0;
 
 using namespace imgui_addons;
 
@@ -83,7 +85,7 @@ void Editor::LoadLevel(string name)
     cam.offset = { 0, 0 };
     cam.rotation = 0;
     cam.target = { 0, 0 };
-    cam.zoom = 1;
+    cam.zoom = 2;
     origin = { 0, 0 };
     map.Load(rsc, name, tilesets);
     enabled = true;
@@ -181,17 +183,17 @@ void Editor::Draw()
     BeginMode2D(cam);
 
     // Draw map.
-    if (viewLayers[2]) map.DrawLayer(2, tilesets, origin, MAP_SIZE, viewTileAttributes);
-    if (viewLayers[1]) map.DrawLayer(1, tilesets, origin, MAP_SIZE, viewTileAttributes);
-    if (viewLayers[0]) map.DrawLayer(0, tilesets, origin, MAP_SIZE, viewTileAttributes);
-    if (viewEntities) map.DrawEntities(entities, tilesets, origin, MAP_SIZE, viewEntityBoxes);
+    if (viewLayers[2]) map.DrawLayer(2, tilesets, origin, viewTileAttributes);
+    if (viewLayers[1]) map.DrawLayer(1, tilesets, origin, viewTileAttributes);
+    if (viewLayers[0]) map.DrawLayer(0, tilesets, origin, viewTileAttributes);
+    if (viewEntities) map.DrawEntities(entities, tilesets, origin, viewEntityBoxes);
 
     // Play area.
     if (showPlayArea)
     {
-        if (viewLayers[2]) DrawRectangleLinesEx({ 0, 0, map.maps[2].width * MAP_SIZE * 8, map.maps[2].height * MAP_SIZE * 8 }, 3, RED);
-        if (viewLayers[1]) DrawRectangleLinesEx({ 0, 0, map.maps[1].width * MAP_SIZE * 8, map.maps[1].height * MAP_SIZE * 8 }, 3, RED);
-        if (viewLayers[0]) DrawRectangleLinesEx({ 0, 0, map.maps[0].width * MAP_SIZE * 8, map.maps[0].height * MAP_SIZE * 8 }, 3, RED);
+        if (viewLayers[2]) DrawRectangleLinesEx({ 0, 0, map.maps[2].width * MAP_SIZE * 8, map.maps[2].height * MAP_SIZE * 8 }, 1, RED);
+        if (viewLayers[1]) DrawRectangleLinesEx({ 0, 0, map.maps[1].width * MAP_SIZE * 8, map.maps[1].height * MAP_SIZE * 8 }, 1, RED);
+        if (viewLayers[0]) DrawRectangleLinesEx({ 0, 0, map.maps[0].width * MAP_SIZE * 8, map.maps[0].height * MAP_SIZE * 8 }, 1, RED);
     }
 
     // Grid.
@@ -258,7 +260,7 @@ void Editor::Draw()
             {
                 if (x >= 0 && y >= 0 & tileX + x < m.width && tileY + y < m.height)
                 {
-                    t.Draw(tileDraw + x + y * t.width, origin, tileX + x, tileY + y, MAP_SIZE, false, false, false, 0, 0, alphaTint);
+                    t.Draw(tileDraw + x + y * t.width, tileX + x, tileY + y, map.TileSize(layerDraw), Tileset::EDITOR_TILE_SIZE, false, false, false, { 0, 0 }, alphaTint);
                 }
             }
         }
@@ -277,9 +279,27 @@ void Editor::Draw()
         tilesetNames[0] = map.tilesets[0].dat;
         tilesetNames[1] = map.tilesets[1].dat;
         tilesetNames[2] = map.tilesets[2].dat;
-        Str tmp;
-        tmp.dat = "";
-        if (draw) entities[placeEntityId].Draw(placeEntityId, tmp, 0, true, map.references[RT_NPC_PALETTE].dat, tilesetNames, tilesets, origin, tileX, tileY, MAP_SIZE, viewEntityBoxes);
+        if (draw)
+        {
+            Entity e;
+            e.beingEdited = false;
+            e.flags = 0;
+            e.id = placeEntityId;
+            e.parametersByte[0] = 0;
+            e.parametersByte[1] = 0;
+            e.parametersStr[0].dat = "";
+            e.unk = 0;
+            e.xPos = tileX;
+            e.yPos = tileY;
+            entities[placeEntityId].Draw(
+                &e,
+                tilesets,
+                map.references[RT_NPC_PALETTE].dat,
+                tilesetNames,
+                false,
+                origin
+            );
+        }
     }
 
     // Pop.
@@ -755,7 +775,7 @@ void Editor::DrawLevelEditor()
     focus.ObserveFocus();
     const int itemWidth = 150;
     ImGui::PushItemWidth(itemWidth);
-    ImGuiStringEdit("Level Title", &map.comment.dat);
+    ImGuiStringEdit("Level Title", &map.levelTitle.dat);
     ImGuiTooltip("Internal name for the level.\nThis does not seem important?");
     ImGui::PushItemWidth(itemWidth);
     ImGuiStringEdit("Left Level", &map.references[RT_LEFT_LEVEL].dat);
@@ -1109,7 +1129,7 @@ void Editor::DrawPalette()
     auto te = tilesets.find(map.tilesets[currentLayer].dat);
     if (te != tilesets.end())
     {
-        float scale = te->second.textureScale;
+        float scale = map.tilesetSettings1[currentLayer];
         if (scale == 0.0f) scale = 2.0f;
         scale = 1 / scale;
 
@@ -1248,7 +1268,13 @@ void Editor::DrawToolbar()
     ToolButton("Entity Hand", EditorTool::EntityHand);
 
     ImGui::SameLine();
-    ImGui::SliderFloat("", &cam.zoom, 0.25f, 5.0f, "Scale: %.2fx", ImGuiSliderFlags_NoRoundToFormat);
+    float bakZoom = cam.zoom;
+    ImGui::SliderFloat("", &cam.zoom, MIN_ZOOM, MAX_ZOOM, "Scale: %.2fx", ImGuiSliderFlags_NoRoundToFormat);
+    if (cam.zoom != bakZoom)
+    {
+        cam.offset.x = -(mouseX - cam.offset.x) * cam.zoom / bakZoom + mouseX;
+        cam.offset.y = -(mouseY - cam.offset.y) * cam.zoom / bakZoom + mouseY;
+    }
     
     ImGui::SameLine();
     ImGui::Checkbox("Grid", &showGrid);
@@ -1752,13 +1778,13 @@ void Editor::CheckZoom()
 
         cam.zoom += zoom * zoomSpeed;
 
-        if (cam.zoom <= .25f)
+        if (cam.zoom <= MIN_ZOOM)
         {
-            cam.zoom = .25f;
+            cam.zoom = MIN_ZOOM;
         }
-        else if (cam.zoom > 5.0f)
+        else if (cam.zoom > MAX_ZOOM)
         {
-            cam.zoom = 5.0f;
+            cam.zoom = MAX_ZOOM;
         }
 
         // So the mouse before zooming must be the mouse after, or: (mouse - offBefore) / zoomBefore = (mouse - offAfter) / zoomAfter.

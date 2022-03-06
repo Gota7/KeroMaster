@@ -10,12 +10,12 @@
 #include "../ed/entityDisplay.h"
 #include "../conv/conv.h"
 
+// Level data constants.
 const int NUM_REFERENCES = 5;
 const int NUM_SETTINGS = 8;
 const int NUM_TILESETS = 3;
-const int NUM_PARAMETERS = 3;
-const int NUM_BYTE_PARAMETERS = 2;
 
+// How to shift blocks in a map. A resize shift direction will resize the map instead.
 enum class ShiftDirection
 {
     Up,
@@ -25,27 +25,49 @@ enum class ShiftDirection
     Resize
 };
 
+// Contains raw tile data.
 struct PxMap : GReadable, GWriteable
 {
-    u16 width = 0;
-    u16 height = 0;
-    u8 flags = 0;
-    u8* tiles = nullptr;
+    u16 width = 0; // Width of the map in tiles.
+    u16 height = 0; // Height of the map in tiles.
+    u8 flags = 0; // Map flags.
+    u8* tiles = nullptr; // Map data.
     u16 oldWidth = 0; // For editor.
     u16 oldHeight = 0; // For editor.
     
+    // Read a map file.
     void Read(GFile* f);
+
+    // Write a map file.
     void Write(GFile* f);
+
+    // Set a new tile at an index, return the old tile ID.
     u8 SetTile(u32 index, u8 newTile);
+
+    // Set a new tile at a position, return the old tile ID.
     u8 SetTile(u16 x, u16 y, u8 newTile);
+
+    // Get a tile ID at an index.
     u8 GetTile(u32 index);
+
+    // Get a tile ID at a position.
     u8 GetTile(u16 x, u16 y);
+
+    // Resize the map.
     void Resize(u16 newWidth, u16 newHeight);
+
+    // If it is possible to shift all the blocks in a particular direction.
     bool CanShift(ShiftDirection dir);
+
+    // Shift all the blocks in a particular direction.
     void Shift(ShiftDirection dir);
+
+    // Unload all the map data.
     void Unload();
+
 };
 
+// Reference data stored.
 enum ReferenceType
 {
     RT_LEFT_LEVEL,
@@ -55,33 +77,37 @@ enum ReferenceType
     RT_NPC_PALETTE
 };
 
-struct Entity
-{
-    u8 flags;
-    u8 id;
-    u8 unk;
-    u16 xPos;
-    u16 yPos;
-    u8 parametersByte[NUM_BYTE_PARAMETERS];
-    Str parametersStr[NUM_PARAMETERS - NUM_BYTE_PARAMETERS];
-    bool beingEdited = false; // Editor param.
-};
-
+// PxPack which is a level that contains various map data.
 struct Map
 {
-    Str comment;
-    Str references[NUM_REFERENCES];
-    u8 levelSettings[NUM_SETTINGS];     // u16; u16; u8; u8 BG Red; u8 BG Green; u8 BG Blue.
-    Str tilesets[NUM_TILESETS];
-    u8 tilesetSettings1[NUM_TILESETS];
-    u8 tilesetSettings2[NUM_TILESETS];
-    PxMap maps[NUM_TILESETS];
-    std::vector<Entity> entities;
+    Str levelTitle; // Name of the level.
+    Str references[NUM_REFERENCES]; // See the references enum.
+    u8 levelSettings[NUM_SETTINGS]; // u16 Area X; u16 Area Y; u8 Area Number; u8 BG Red; u8 BG Green; u8 BG Blue.
+    Str tilesets[NUM_TILESETS]; // Tileset names.
+    u8 tilesetSettings1[NUM_TILESETS]; // 16 / NUM = Tile size.
+    u8 tilesetSettings2[NUM_TILESETS]; // Scroll mode.
+    PxMap maps[NUM_TILESETS]; // Map layers for the level.
+    std::vector<Entity> entities; // Entity placements.
 
+    // Load a level from the resource folder. Requires a reference to loaded tilesets.
     void Load(std::string rsc_k, std::string mapName, std::map<std::string, Tileset>& tilesets);
+
+    // Unload a level from the resource folder. Requires a reference to loaded tilesets.
     void Unload(std::map<std::string, Tileset>& tilesets);
+
+    // Write the map data.
     void Write(string rsc_k, string mapName);
+
+    // Clear the screen with the map's background color.
     void Clear();
-    void DrawLayer(u8 layerNum, std::map<string, Tileset>& tilesets, Vector2 origin, f32 mapScale, bool showAttr);
-    void DrawEntities(std::map<u8, EntityDisplay>& entities, std::map<std::string, Tileset>& tilesets, Vector2 origin, f32 mapScale, bool debug = false);
+
+    // Get the tile size.
+    float TileSize(int layerNum);
+
+    // Draw a map layer using the loaded tilesets.
+    void DrawLayer(u8 layerNum, std::map<string, Tileset>& tilesets, Vector2 origin, bool showAttr);
+
+    // Draw the entities on the map using the loaded tilesets.
+    void DrawEntities(std::map<u8, EntityDisplay>& entities, std::map<std::string, Tileset>& tilesets, Vector2 origin, bool debug = false);
+
 };
