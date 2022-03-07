@@ -14,8 +14,8 @@
             <tile tileset="/0" x="48" y="16" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4"/>
         </entity>
         <entity id="8" name="Trunk" description="">
-            <tile tileset="" x="16" y="48" xOff="-1" yOffPixels="-1" numXTiles="8" numYTiles="2" flagBit="5" flagMode="true"/>
-            <tile tileset="" x="16" y="50" xOff="-1" yOffPixels="-1" numXTiles="8" numYTiles="2" flagBit="5" flagMode="false"/>
+            <tile tileset="" x="16" y="48" xOff="-1" xOffPixels="-4" yOffPixels="-1" numXTiles="8" numYTiles="2" flagBit="5" flagMode="false"/>
+            <tile tileset="" x="16" y="50" xOff="-1" xOffPixels="-4" yOffPixels="-1" numXTiles="8" numYTiles="2" flagBit="5" flagMode="true"/>
         </entity>
         <entity id="11" name="Kurobo-" description="">
             <tile tileset="/0" x="8" y="40" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" flagBit="5" flagMode="false"/>
@@ -115,6 +115,10 @@
         <entity id="49" name="Call Missile Bird 7" description="">
             <tile tileset="/0" x="16" y="44" xOff="-1" yOff="-1" numXTiles="6" numYTiles="6"/>
         </entity>
+        <entity id="50" name="Trunk Mini" description="">
+            <tile tileset="" x="48" y="48" xOff="-1" yOffPixels="-1" numXTiles="6" numYTiles="2" flagBit="5" flagMode="false"/>
+            <tile tileset="" x="48" y="50" xOff="-1" yOffPixels="-1" numXTiles="6" numYTiles="2" flagBit="5" flagMode="true"/>
+        </entity>
         <entity id="51" name="Kani 7" description="">
             <tile tileset="" x="0" y="28" xOffPixels="-4" yOff="-1" numXTiles="4" numYTiles="4"/>
         </entity>
@@ -126,6 +130,9 @@
         </entity>
         <entity id="54" name="Nurse" description="">
             <tile tileset="fuFixNPC" x="64" y="64" yOff="-1" yOffPixels="-4" numXTiles="4" numYTiles="4"/>
+        </entity>
+        <entity id="55" name="Fire Bubble Set" description="">
+            <tile tileset="" x="24" y="55" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4"/>
         </entity>
         <entity id="56" name="Mole" description="">
             <tile tileset="" x="24" y="16" xOffPixels="-4" yOff="-1" numXTiles="4" numYTiles="4" flagBit="5" flagMode="false"/>
@@ -185,6 +192,12 @@
         <entity id="80" name="Door Vertical" description="">
             <tile tileset="/0" x="32" y="16" xOff="-2" yOff="-2" numXTiles="6" numYTiles="8"/>
         </entity>
+        <entity id="83" name="Fly Wave" description="">
+            <tile tileset="" x="12" y="20" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4"/>
+        </entity>
+        <entity id="84" name="Spin" description="">
+            <tile tileset="" x="8" y="20" xOffPixels="-4" yOffPixels="-4" numXTiles="3" numYTiles="3"/>
+        </entity>
         <entity id="85" name="Altar" description="">
             <tile tileset="/1" x="8" y="0" xOff="-3" yOff="-1" numXTiles="16" numYTiles="4"/>
         </entity>
@@ -225,7 +238,8 @@
             <tile tileset="/1" x="28" y="8" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4"/>
         </entity>
         <entity id="119" name="Shacho A" description="">
-            <tile tileset="fuFixNPC" x="32" y="0" xOff="-1" yOff="-2" numXTiles="6" numYTiles="8"/>
+            <tile tileset="fuFixNPC" x="32" y="16" xOff="-1" yOff="-2" numXTiles="6" numYTiles="8" flagBit="5" flagMode="false"/>
+            <tile tileset="fuFixNPC" x="38" y="16" xOff="-1" yOff="-2" numXTiles="6" numYTiles="8" flagBit="5" flagMode="true"/>
         </entity>
         <entity id="113" name="Egg Worm" description="(prm2: 0 = upper left 1 = upper right 2 = lower left 3 = lower right)">
             <tile tileset="" x="24" y="32" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" unkDraw="1"/>
@@ -302,6 +316,9 @@
         </entity>
         <entity id="139" name="Fly Evade" description="">
             <tile tileset="" x="12" y="12" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4"/>
+        </entity>
+        <entity id="140" name="Gravity Block 2" description="">
+            <tile tileset="fuFixChar" x="28" y="96" numXTiles="4" numYTiles="4"/>
         </entity>
         <entity id="141" name="Doronko" description="">
             <tile tileset="" x="16" y="28" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" flagBit="5" flagMode="false"/>
@@ -413,15 +430,75 @@
             <tile tileset="/0" x="56" y="54" xOff="-1" xOffPixels="-4" numXTiles="8" numYTiles="2" unkDraw="1"/>
             <tile tileset="/0" x="56" y="56" xOff="-1" xOffPixels="-4" numXTiles="8" numYTiles="2" unkDraw="2"/>
         </entity>
+        <entity id="178" name="Spike Plant Fly" description="">
+            <tile tileset="/0" x="16" y="32" xOffPixels="-4" yOffPixels="-6" numXTiles="4" numYTiles="4" flagBit="5" flagMode="false"/>
+            <tile tileset="/0" x="20" y="32" xOffPixels="-4" yOffPixels="-2" numXTiles="4" numYTiles="4" flagBit="5" flagMode="true"/>
+        </entity>
+        <entity id="180" name="Spike Plant Side." description="">
+            <tile tileset="/0" x="16" y="32" xOffPixels="-6" yOffPixels="-4" numXTiles="4" numYTiles="4" flagBit="5" flagMode="false"/>
+            <tile tileset="/0" x="20" y="32" xOffPixels="-3" yOffPixels="-3" numXTiles="4" numYTiles="4" flagBit="5" flagMode="true"/>
+        </entity>
         <entity id="181" name="Doroman" description="">
             <tile tileset="" x="24" y="8" xOffPixels="-4" numXTiles="4" numYTiles="4" flagBit="5" flagMode="false"/>
             <tile tileset="" x="28" y="8" xOffPixels="-4" numXTiles="4" numYTiles="4" flagBit="5" flagMode="true"/>
+        </entity>
+        <entity id="182" name="Doronko Turn" description="">
+            <tile tileset="" x="24" y="20" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" flagBit="5" flagMode="false"/>
+            <tile tileset="" x="28" y="20" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" flagBit="5" flagMode="true"/>
+        </entity>
+        <entity id="185" name="Propeller Fish" description="">
+            <tile tileset="" x="24" y="36" xOffPixels="-4" yOffPixels="-6" numXTiles="4" numYTiles="4"/>
+        </entity>
+        <entity id="192" name="Zan Bito Bag" description="1=walk, 2~8=walk(cnt), 9=run, 10=run(swt)">
+            <tile tileset="" x="32" y="0" xOffPixels="-4" yOff="-2" numXTiles="4" numYTiles="8" flagBit="5" flagMode="false"/>
+            <tile tileset="" x="36" y="0" xOffPixels="-4" yOff="-2" numXTiles="4" numYTiles="8" flagBit="5" flagMode="true"/>
+        </entity>
+        <entity id="196" name="Pink Hopper" description="">
+            <tile tileset="" x="16" y="16" xOffPixels="-4" yOff="-1" numXTiles="4" numYTiles="6"/>
+        </entity>
+        <entity id="197" name="Rolling Spark" description="(prm2: 1=slow 3=fast)">
+            <tile tileset="fuFixNPC" x="68" y="84" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4"/>
         </entity>
         <entity id="198" name="Spike Plant2" description="">
             <tile tileset="/0" x="8" y="32" xOffPixels="-4" yOffPixels="-6" numXTiles="4" numYTiles="4" flagBit="5" flagMode="false"/>
             <tile tileset="/0" x="12" y="32" xOffPixels="-4" yOffPixels="-6" numXTiles="4" numYTiles="4" flagBit="5" flagMode="true"/>
         </entity>
-        <entity id="248" name="Uzo(car3)" description="">
+        <entity id="212" name="Tarai" description="">
+            <tile tileset="fuFixNPC" x="8" y="70" xOff="-1" yOff="-1" numXTiles="6" numYTiles="4"/>
+            <tile tileset="fuFixNPC" x="8" y="74" xOff="-1" xOffPixels="-4" yOffPixels="-4" numXTiles="8" numYTiles="4"/>
+        </entity>
+        <entity id="227" name="Spider" description="">
+            <tile tileset="" x="16" y="32" xOffPixels="-4" yOffPixels="-1" numXTiles="4" numYTiles="4"/>
+        </entity>
+        <entity id="228" name="Weak Web" description="">
+            <tile tileset="fuFixNPC" x="8" y="56" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" flagBit="5" flagMode="false"/>
+            <tile tileset="fuFixNPC" x="12" y="56" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" flagBit="5" flagMode="true"/>
+        </entity>
+        <entity id="240" name="Work Books (Color)" description="">
+            <tile tileset="fuFixChar" x="14" y="112" xOffPixels="-4" numXTiles="4" numYTiles="2" unkDraw="2" flagBit="5" flagMode="false"/>
+            <tile tileset="fuFixChar" x="14" y="110" yOff="-1" xOffPixels="-4" numXTiles="4" numYTiles="4" unkDraw="3" flagBit="5" flagMode="false"/>
+            <tile tileset="fuFixChar" x="14" y="108" yOff="-2" xOffPixels="-4" numXTiles="4" numYTiles="6" unkDraw="4" flagBit="5" flagMode="false"/>
+            <tile tileset="fuFixChar" x="14" y="106" yOff="-3" xOffPixels="-4" numXTiles="4" numYTiles="8" unkDraw="5" flagBit="5" flagMode="false"/>
+            <tile tileset="fuFixChar" x="14" y="104" yOff="-4" xOffPixels="-4" numXTiles="4" numYTiles="10" unkDraw="6" flagBit="5" flagMode="false"/>
+            <tile tileset="fuFixChar" x="18" y="112" xOffPixels="-4" numXTiles="4" numYTiles="2" unkDraw="2" flagBit="5" flagMode="true"/>
+            <tile tileset="fuFixChar" x="18" y="110" yOff="-1" xOffPixels="-4" numXTiles="4" numYTiles="4" unkDraw="3" flagBit="5" flagMode="true"/>
+            <tile tileset="fuFixChar" x="18" y="108" yOff="-2" xOffPixels="-4" numXTiles="4" numYTiles="6" unkDraw="4" flagBit="5" flagMode="true"/>
+            <tile tileset="fuFixChar" x="18" y="106" yOff="-3" xOffPixels="-4" numXTiles="4" numYTiles="8" unkDraw="5" flagBit="5" flagMode="true"/>
+            <tile tileset="fuFixChar" x="18" y="104" yOff="-4" xOffPixels="-4" numXTiles="4" numYTiles="10" unkDraw="6" flagBit="5" flagMode="true"/>
+        </entity>
+        <entity id="244" name="Work Books(gray)" description="">
+            <tile tileset="fuFixChar" x="14" y="122" xOffPixels="-4" numXTiles="4" numYTiles="2" unkDraw="2" flagBit="5" flagMode="false"/>
+            <tile tileset="fuFixChar" x="14" y="120" yOff="-1" xOffPixels="-4" numXTiles="4" numYTiles="4" unkDraw="3" flagBit="5" flagMode="false"/>
+            <tile tileset="fuFixChar" x="14" y="118" yOff="-2" xOffPixels="-4" numXTiles="4" numYTiles="6" unkDraw="4" flagBit="5" flagMode="false"/>
+            <tile tileset="fuFixChar" x="14" y="116" yOff="-3" xOffPixels="-4" numXTiles="4" numYTiles="8" unkDraw="5" flagBit="5" flagMode="false"/>
+            <tile tileset="fuFixChar" x="14" y="114" yOff="-4" xOffPixels="-4" numXTiles="4" numYTiles="10" unkDraw="6" flagBit="5" flagMode="false"/>
+            <tile tileset="fuFixChar" x="18" y="122" xOffPixels="-4" numXTiles="4" numYTiles="2" unkDraw="2" flagBit="5" flagMode="true"/>
+            <tile tileset="fuFixChar" x="18" y="120" yOff="-1" xOffPixels="-4" numXTiles="4" numYTiles="4" unkDraw="3" flagBit="5" flagMode="true"/>
+            <tile tileset="fuFixChar" x="18" y="118" yOff="-2" xOffPixels="-4" numXTiles="4" numYTiles="6" unkDraw="4" flagBit="5" flagMode="true"/>
+            <tile tileset="fuFixChar" x="18" y="116" yOff="-3" xOffPixels="-4" numXTiles="4" numYTiles="8" unkDraw="5" flagBit="5" flagMode="true"/>
+            <tile tileset="fuFixChar" x="18" y="114" yOff="-4" xOffPixels="-4" numXTiles="4" numYTiles="10" unkDraw="6" flagBit="5" flagMode="true"/>
+        </entity>
+        <entity id="248" name="Uzo (Car3)" description="">
             <tile tileset="fuFixChar" x="108" y="84" yOff="-1" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="6"/>
         </entity>
     </entities>
@@ -448,6 +525,7 @@
         <rollYourOwnSprite name="Elevator05" tileset="" x="12" y="52" xOff="-2" numXTiles="10" numYTiles="4"/>
         <rollYourOwnSprite name="FallBridge" tileset="/1" x="0" y="26" xOff="-5" xOffPixels="-2" numXTiles="24" numYTiles="2" flagBit="5" flagMode="false"/>
         <rollYourOwnSprite name="FallBridge" tileset="/1" x="0" y="28" xOff="-5" xOffPixels="-6" numXTiles="24" numYTiles="2" flagBit="5" flagMode="true"/>
+        <rollYourOwnSprite name="FallBridge2" tileset="/1" x="0" y="30" xOff="-7" xOffPixels="-2" numXTiles="32" numYTiles="2"/>
         <rollYourOwnSprite name="Fan05" tileset="/2" x="24" y="0" numXTiles="4" numYTiles="4" flagBit="5" flagMode="false"/>
         <rollYourOwnSprite name="Fan05" tileset="/2" x="24" y="4" numXTiles="4" numYTiles="4" flagBit="5" flagMode="true"/>
         <rollYourOwnSprite name="FishInTank" tileset="fuFixNPC" x="98" y="100" xOff="-1" xOffPixels="1" yOff="-1"  numXTiles="6" numYTiles="6"/>
@@ -458,6 +536,7 @@
         <rollYourOwnSprite name="GiantMole2" tileset="" x="8" y="16" xOff="-1" xOffPixels="-4" yOff="-1" yOffPixels="-6" numXTiles="8" numYTiles="8"/>
         <rollYourOwnSprite name="Gorgon" tileset="" x="0" y="0" xOff="-2" yOff="-3" yOffPixels="1" numXTiles="10" numYTiles="6"/>
         <rollYourOwnSprite name="MoleJetpack" tileset="" x="0" y="20" xOffPixels="-4" yOff="-1" yOffPixels="-2" numXTiles="4" numYTiles="6"/>
+        <rollYourOwnSprite name="Nanao" tileset="" x="32" y="40" xOffPixels="-4" yOffPixels="-5" numXTiles="4" numYTiles="8"/>
         <rollYourOwnSprite name="N577" tileset="" x="0" y="0" xOff="-15" yOff="-3" yOffPixels="-6" numXTiles="30" numYTiles="14"/>
         <rollYourOwnSprite name="N577" tileset="" x="30" y="12" xOff="-8" yOffPixels="-6" numXTiles="2" numYTiles="4"/>
         <rollYourOwnSprite name="N577" tileset="" x="24" y="28" xOff="-6" xOffPixels="1" yOff="-3" yOffPixels="-7" numXTiles="8" numYTiles="4"/>
@@ -502,8 +581,12 @@
         <rollYourOwnSprite name="TitleLogo" tileset="" x="0" y="0" xOff="-12" yOff="-3" xOffPixels="4" numXTiles="48" numYTiles="14"/>
         <rollYourOwnSprite name="TrainWheel0" tileset="/0" x="56" y="56" numXTiles="4" numYTiles="4"/>
         <rollYourOwnSprite name="Tumbleweed" tileset="" x="24" y="0" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4"/>
+        <rollYourOwnSprite name="TV1" tileset="/1" x="12" y="20" xOffPixels="-6" yOffPixels="-5" numXTiles="4" numYTiles="4"/>
         <rollYourOwnSprite name="Untier" tileset="" x="24" y="0" xOffPixels="-4" numXTiles="4" numYTiles="4"/>
         <rollYourOwnSprite name="UzoBrain" tileset="fuFixNPC" x="104" y="96" xOff="-3" xOffPixels="-1" yOff="-2" yOffPixels="-6" numXTiles="12" numYTiles="10"/>
         <rollYourOwnSprite name="VomitCoins" tileset="fuFixChar" x="107" y="126" xOffPixels="2" yOffPixels="2" numXTiles="1" numYTiles="1"/>
+        <rollYourOwnSprite name="zaKurono" tileset="" x="48" y="32" xOffPixels="-4" yOff="-1" yOffPixels="-5" numXTiles="4" numYTiles="8"/>
+        <rollYourOwnSprite name="zaKurono" tileset="" x="56" y="32" xOffPixels="-4" yOff="-2" yOffPixels="-2" numXTiles="4" numYTiles="2"/>
+        <rollYourOwnSprite name="zaPrinterBox" tileset="" x="14" y="52" xOff="-4" yOff="-3" numXTiles="18" numYTiles="12"/>
     </rollYourOwnSprites>
 </data>
