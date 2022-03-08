@@ -7,6 +7,7 @@
 #include "settings.h"
 #include "attributeEditor.h"
 #include "scriptEditor.h"
+#include "styleEditor.h"
 #include "undoStack.h"
 #include "rlImGui/focusData.h"
 
@@ -14,9 +15,10 @@
 constexpr float MAP_SIZE = Tileset::EDITOR_TILE_SIZE / Tileset::MAP_TILE_SIZE;
 
 struct AttributeEditor;
-struct TilesetEditor;
 struct ScriptEditor;
 struct Settings;
+struct StyleEditor;
+struct TilesetEditor;
 struct UndoStack;
 
 enum class EditorTool : int {
@@ -83,9 +85,9 @@ struct Editor
     u16 backupEntityX;
     u16 backupEntityY;
     TilesetEditor* editingTileset = nullptr;
+    StyleEditor* styleEditor = nullptr;
     bool showLevelEditor = true;
     bool showProfileEditor = false;
-    bool showStyleEditor = false;
     bool showMusicPlayer = false;
     bool showHelp = false;
     bool helpModal = false;
@@ -109,7 +111,6 @@ struct Editor
     void DrawPalette();
     void DrawToolbar();
     void DrawProfileEditor();
-    void DrawStyleEditor();
     void DrawMusicPlayer();
     void OpenTileset(std::string name);
     void OpenAttrEditor(std::string name);

@@ -3,12 +3,14 @@
 
 using namespace std;
 
+const float TEX_SCALE = 2.0f;
+
 AttributeEditor::AttributeEditor(Editor* ed, string name)
 {
     open = true;
     this->ed = ed;
     this->name = name;
-    if (ed->tilesets.find(name) == ed->tilesets.end())
+    if (ed->tilesets.find(name) == ed->tilesets.end()) // Tileset not loaded, close.
     {
         open = false;
     }

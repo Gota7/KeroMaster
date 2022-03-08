@@ -17,7 +17,8 @@ void Str::Write(GFile* f)
     else
     {
         f->Write((u8)dat.length());
-        for (int i = 0; i < dat.length(); i++) {
+        for (int i = 0; i < dat.length(); i++)
+        {
             f->Write((u8)dat[i]);
         }
     }

@@ -13,10 +13,10 @@ struct Editor;
 
 struct TilesetEditor
 {
-    Editor* ed;
-    bool open = false;
-    string name;
-    RenderTexture2D target;
+    Editor* ed; // Main editor.
+    bool open = false; // Window is open.
+    string name; // Tileset name.
+    RenderTexture2D target; // Where to draw the texture.
     int currTile = -1;
     int selectionWidth;
     int selectionHeight;

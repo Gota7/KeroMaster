@@ -1,4 +1,54 @@
 #include "utils.h"
+#include "raylib.h"
+
+using namespace std;
+
+vector<string> ReadFilesFromDir(string path, bool includeExt)
+{
+    int numFiles;
+    char** files = GetDirectoryFiles(path.c_str(), &numFiles);
+    vector<string> ret;
+    for (int i = 0; i < numFiles; i++) {
+        if (strcmp(files[i], ".") != 0 && strcmp(files[i], "..") != 0)
+        {
+            if (includeExt)
+            {
+                ret.push_back(files[i]);
+            }
+            else
+            {
+                ret.push_back(GetFileNameWithoutExt(files[i]));
+            }
+        }
+    }
+    return ret;
+}
+
+char* ConvertStrRef(const string& s)
+{
+   char* pc = new char[s.size()+1];
+   strcpy(pc, s.c_str());
+   return pc; 
+}
+
+char** GenImGuiStringList(vector<string>& strings, int* outStringCount)
+{
+    char** ret;
+    *outStringCount = strings.size();
+    ret = new char*[*outStringCount];
+    for (int i = 0; i < *outStringCount; i++) {
+        ret[i] = ConvertStrRef(strings[i]);
+    }
+    return ret;
+}
+
+void DelImGuiStringList(char** ptr, int stringCount)
+{
+    for (int i = 0; i < stringCount; i++) {
+        delete[] ptr[i];
+    }
+    delete[] ptr;
+}
 
 void ImGuiNumEdit(string name, s64& data, size_t min, size_t max, string format)
 {
