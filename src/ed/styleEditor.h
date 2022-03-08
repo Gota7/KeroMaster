@@ -10,7 +10,7 @@ struct StyleEditor
 {
     Editor* ed; // Parent editor.
     bool open = false; // Style editor is open.
-    char** themes = NULL; // Themes for ImGui to select.
+    char** themes = nullptr; // Themes for ImGui to select.
     int numThemes; // Number of themes.
     int currTheme = 0; // Current theme.
     bool scanDirs = true; // Scan for directories in the next draw.

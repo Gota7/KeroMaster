@@ -328,11 +328,12 @@ void Editor::DrawUI()
     }
 
     // Style editor.
-    if (styleEditor == nullptr) styleEditor = new StyleEditor(this);
+    if (!styleEditor) styleEditor = new StyleEditor(this);
     styleEditor->DrawUI();
 
     // Music.
-    DrawMusicPlayer();
+    if (!musicPlayer) musicPlayer = new MusicPlayer(this);
+    musicPlayer->DrawUI();
 
     // Help.
     if (showHelp)
@@ -461,7 +462,7 @@ void Editor::DrawMainMenu(bool startup)
 
             if (ImGui::MenuItem("Music Player"))
             {
-                showMusicPlayer = true;
+                musicPlayer->open = true;
             }
             ImGui::EndMenu();
         }
@@ -1327,41 +1328,6 @@ void Editor::DrawProfileEditor()
             ImGui::EndTabItem();
         }
         ImGui::EndTabBar();
-    }
-    ImGui::End();
-}
-
-void Editor::DrawMusicPlayer()
-{
-    if (!showMusicPlayer)
-    {
-        return;
-    }
-    ImGui::Begin("Music Player", &showMusicPlayer, ImGuiWindowFlags_AlwaysAutoResize);
-    focus.ObserveFocus();
-    ImGui::Combo("Song", &BgmPlayer::currSongInd, BgmPlayer::songList.begin(), BgmPlayer::numSongs);
-    ImGui::ProgressBar(BgmPlayer::GetPos() / (float)max(BgmPlayer::GetEnd(), 1));
-    ImGui::SliderFloat("Volume", &BgmPlayer::volume, 0, 1, "%f", 1);
-    if (ImGui::Button("Play"))
-    {
-        BgmPlayer::Play(BgmPlayer::songList[BgmPlayer::currSongInd]);
-    }
-    ImGui::SameLine();
-    if (ImGui::Button("Pause/Resume"))
-    {
-        if (BgmPlayer::playing)
-        {
-            BgmPlayer::Pause();
-        }
-        else
-        {
-            BgmPlayer::Resume();
-        }
-    }
-    ImGui::SameLine();
-    if (ImGui::Button("Stop"))
-    {
-        BgmPlayer::Stop();
     }
     ImGui::End();
 }

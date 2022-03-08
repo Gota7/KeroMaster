@@ -1,3 +1,3 @@
 cmake --build .
-make
+make -j8
 bin/KeroMaster

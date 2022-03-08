@@ -1,8 +1,7 @@
 #include "bgm.h"
+#include "../rlImGui/utils.h"
 
-using namespace std;
-
-string BgmPlayer::rsc;
+std::string BgmPlayer::rsc;
 pxtnService BgmPlayer::pxtn;
 FILE *BgmPlayer::handle = nullptr;
 bool BgmPlayer::playing = false;
@@ -11,14 +10,15 @@ std::mutex BgmPlayer::audioMutex;
 ma_device BgmPlayer::device;
 float BgmPlayer::volume = 1;
 float BgmPlayer::prevVolume = 1;
-ImVector<char *> BgmPlayer::songList;
-char **BgmPlayer::songNameBuf = nullptr;
+char** BgmPlayer::songs = nullptr;
 int BgmPlayer::numSongs = 0;
-string BgmPlayer::currSong;
+std::string BgmPlayer::currSong;
 int BgmPlayer::currSongInd = 0;
 
-void BgmPlayer::Init(string rsc_k)
+void BgmPlayer::Init(std::string rsc_k)
 {
+
+    // Initialize pxtone.
     rsc = rsc_k;
     pxtnERR pxtn_err = pxtnERR_VOID;
     pxtn_err = pxtn.init();
@@ -29,6 +29,7 @@ void BgmPlayer::Init(string rsc_k)
     }
     pxtn.set_destination_quality(NUM_CHANNELS, SAMPLE_RATE);
 
+    // Intialize output audio stream.
     ma_device_config config = ma_device_config_init(ma_device_type_playback);
     config.playback.format = ma_format_s16;
     config.playback.channels = NUM_CHANNELS;
@@ -40,41 +41,45 @@ void BgmPlayer::Init(string rsc_k)
         audioInitialized = true;
         ma_device_start(&device);
     }
+
 }
 
+// Load the song listing.
 void BgmPlayer::LoadSongList()
 {
-    if (songNameBuf != nullptr)
+
+    // Delete if needed.
+    if (!songs) DelImGuiStringList(songs, numSongs);
+
+    // Get a new song listing.
+    std::vector<std::string> songList = ReadFilesFromDir(rsc + "/bgm");
+    std::sort(songList.begin(), songList.end());
+    songs = GenImGuiStringList(songList, &numSongs);
+
+    // Find current song.
+    currSongInd = 0;
+    for (int i = 0; i < songList.size(); i++)
     {
-        free(songNameBuf);
-        songNameBuf = nullptr;
-    }
-    char **tmp = GetDirectoryFiles((rsc + "/bgm").c_str(), &numSongs);
-    songNameBuf = (char **)malloc((numSongs - 2) * sizeof(char *));
-    qsort(tmp, numSongs, sizeof(char *), cmpstr2);
-    songList.clear();
-    for (int i = 2; i < numSongs; i++)
-    {
-        const char *dat = GetFileNameWithoutExt(tmp[i]);
-        songNameBuf[i - 2] = (char *)malloc((strlen(dat) + 1) * sizeof(char));
-        strcpy(songNameBuf[i - 2], dat);
-        songList.push_back(songNameBuf[i - 2]);
-        if (strcmp(songList[i - 2], currSong.c_str()) == 0)
+        if (currSong == songList[i])
         {
-            currSongInd = i - 2;
+            currSongInd = i;
+            break;
         }
     }
-    numSongs -= 2;
+
 }
 
-void BgmPlayer::Play(string bgmName)
+void BgmPlayer::Play(std::string bgmName)
 {
+
+    // Close handle if needed.
     if (handle != nullptr)
     {
         fclose(handle);
         handle = nullptr;
     }
 
+    // Open file and lock data.
     audioMutex.lock();
     currSong = bgmName;
     handle = fopen((rsc + "/bgm/" + bgmName + ".ptcop").c_str(), "r");
@@ -108,6 +113,7 @@ void BgmPlayer::Play(string bgmName)
     playing = true;
 
     audioMutex.unlock();
+    
 }
 
 void BgmPlayer::Pause()
@@ -168,11 +174,4 @@ void BgmPlayer::AudioCallback(ma_device *pDevice, void *pOutput, const void *pIn
     }
 
     audioMutex.unlock();
-}
-
-int cmpstr2(const void *a, const void *b)
-{
-    const char *aa = *(const char **)a;
-    const char *bb = *(const char **)b;
-    return strcmp(aa, bb);
 }

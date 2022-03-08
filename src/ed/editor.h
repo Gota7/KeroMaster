@@ -6,6 +6,7 @@
 #include "tilesetEditor.h"
 #include "settings.h"
 #include "attributeEditor.h"
+#include "musicPlayer.h"
 #include "scriptEditor.h"
 #include "styleEditor.h"
 #include "undoStack.h"
@@ -15,6 +16,7 @@
 constexpr float MAP_SIZE = Tileset::EDITOR_TILE_SIZE / Tileset::MAP_TILE_SIZE;
 
 struct AttributeEditor;
+struct MusicPlayer;
 struct ScriptEditor;
 struct Settings;
 struct StyleEditor;
@@ -86,9 +88,9 @@ struct Editor
     u16 backupEntityY;
     TilesetEditor* editingTileset = nullptr;
     StyleEditor* styleEditor = nullptr;
+    MusicPlayer* musicPlayer = nullptr;
     bool showLevelEditor = true;
     bool showProfileEditor = false;
-    bool showMusicPlayer = false;
     bool showHelp = false;
     bool helpModal = false;
     UndoStack* undoStack;
@@ -111,7 +113,6 @@ struct Editor
     void DrawPalette();
     void DrawToolbar();
     void DrawProfileEditor();
-    void DrawMusicPlayer();
     void OpenTileset(std::string name);
     void OpenAttrEditor(std::string name);
     void OpenScript(std::string name);

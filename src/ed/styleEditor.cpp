@@ -1,8 +1,6 @@
 #include "styleEditor.h"
 #include <algorithm>
 
-using namespace std;
-
 StyleEditor::StyleEditor(Editor* ed)
 {
     this->ed = ed;
@@ -12,17 +10,14 @@ void StyleEditor::ScanForThemes()
 {
 
     // Delete old list.
-    if (themes != NULL)
-    {
-        DelImGuiStringList(themes, numThemes);
-    }
+    if (themes) DelImGuiStringList(themes, numThemes);
 
     // Fix window positioning.
     ImVec2 center = ImGui::GetMainViewport()->GetCenter();
     ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
 
     // Update theme list.
-    vector<string> themeList = ReadFilesFromDir("object_data/themes");
+    std::vector<std::string> themeList = ReadFilesFromDir("object_data/themes");
     sort(themeList.begin(), themeList.end());
     themes = GenImGuiStringList(themeList, &numThemes);
     scanDirs = false;
@@ -31,7 +26,11 @@ void StyleEditor::ScanForThemes()
     currTheme = 0;
     for (int i = 0; i < themeList.size(); i++)
     {
-        if (ed->settings.style.name == themeList[i]) currTheme = i;
+        if (ed->settings.style.name == themeList[i])
+        {
+            currTheme = i;
+            break;
+        }
     }
 
 }
@@ -58,7 +57,7 @@ void StyleEditor::DrawUI()
         ed->settings.style.Load(themes[currTheme]);
         ed->settings.Save();
     }
-    string oldName = ed->settings.style.name;
+    std::string oldName = ed->settings.style.name;
     if (ImGuiStringEdit("Style Name", &ed->settings.style.name))
     {
         ed->settings.style.Save();
