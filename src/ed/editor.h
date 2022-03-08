@@ -6,6 +6,7 @@
 #include "tilesetEditor.h"
 #include "settings.h"
 #include "attributeEditor.h"
+#include "entityEditor.h"
 #include "musicPlayer.h"
 #include "scriptEditor.h"
 #include "styleEditor.h"
@@ -17,6 +18,7 @@
 constexpr float MAP_SIZE = Tileset::EDITOR_TILE_SIZE / Tileset::MAP_TILE_SIZE;
 
 struct AttributeEditor;
+struct EntityEditor;
 struct LevelEditor;
 struct MusicPlayer;
 struct ScriptEditor;
@@ -75,16 +77,15 @@ struct Editor
     int selectionHeight = 1;
     EditorTool currentTool = EditorTool::Hand;
     FocusData focus;
-    Entity* editingEntity = NULL;
     std::vector<TilesetEditor> tilesetEditors = std::vector<TilesetEditor>();
     std::vector<AttributeEditor> attrEditors = std::vector<AttributeEditor>();
     std::vector<ScriptEditor> scriptEditors = std::vector<ScriptEditor>();
-    char* entityListing;
     int placeEntityId = 0;
     bool isPlacingEntity = false;
     bool doingEntityMove = false;
     u16 backupEntityX;
     u16 backupEntityY;
+    EntityEditor* entityEditor = nullptr;
     LevelEditor* levelEditor = nullptr;
     MusicPlayer* musicPlayer = nullptr;
     StyleEditor* styleEditor = nullptr;
@@ -107,7 +108,6 @@ struct Editor
     void Draw();
     void DrawUI();
     void DrawMainMenu(bool startup = false);
-    void DrawEntityEditor();
     void DrawPalette();
     void DrawToolbar();
     void DrawProfileEditor();

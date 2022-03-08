@@ -35,23 +35,8 @@ void Editor::SetPath(string rsc)
 void Editor::LoadEnemies(string xmlName)
 {
     entities = LoadXML(xmlName);
-    entityListing = new char[5000];
-    int pos = 0;
-    vector<string> defaultListing = vector<string>();
-    fstream f;
-    f.open("object_data/unittype.txt", ios::in);
-    string s;
-    while (getline(f, s))
-    {
-        defaultListing.push_back(s);
-    }
-    f.close();
-    for (u16 i = 0; i <= 255; i++)
-    {
-        string toCopy = entities.find(i) != entities.end() ? (to_string(i) + " - " + entities[i].name) : (to_string(i) + " - " + defaultListing[i]);
-        strcpy(entityListing + pos, toCopy.c_str());
-        pos += strlen(toCopy.c_str()) + 1;
-    }
+    if (!entityEditor) entityEditor = new EntityEditor(this);
+    entityEditor->LoadEntityListing();
 }
 
 void Editor::LoadTileset(string tilesetName)
@@ -352,7 +337,8 @@ void Editor::DrawUI()
     levelEditor->DrawUI();
 
     // Entity editor.
-    DrawEntityEditor();
+    if (!entityEditor) entityEditor = new EntityEditor(this);
+    entityEditor->DrawUI();
 
     // Draw palette.
     if (settings.usePalette) DrawPalette();
@@ -727,55 +713,6 @@ void Editor::DrawMainMenu(bool startup)
 
 }
 
-void Editor::DrawEntityEditor()
-{
-    if (editingEntity == nullptr) return;
-    
-    ImGui::Begin("Entity Editor", NULL, ImGuiWindowFlags_AlwaysAutoResize);
-    ImGui::SetWindowPos(ImVec2(10.0f, 80.0f), ImGuiCond_FirstUseEver);
-
-    focus.ObserveFocus();
-    int currId = editingEntity->id;
-    EntityDisplay* d = &entities[currId];
-    const int itemWidth = 150;
-    ImGui::PushItemWidth(itemWidth);
-    if (ImGui::Combo("Entity Id", &currId, entityListing))
-    {
-        editingEntity->id = currId;
-    }
-    if (strcmp(d->description.c_str(), "") != 0)
-    {
-        ImGuiTooltip(d->description);
-    }
-    ImGui::PushItemWidth(itemWidth);
-    ImGui::InputScalar("Flags", ImGuiDataType_U8, &editingEntity->flags);
-    if (strcmp(d->flagDescription.c_str(), "") != 0)
-    {
-        ImGuiTooltip(d->flagDescription);
-    }
-    ImGui::PushItemWidth(itemWidth);
-    ImGui::InputScalar("Unknown", ImGuiDataType_U8, &editingEntity->unk);
-    for (int i = 0; i < NUM_BYTE_PARAMETERS; i++)
-    {
-        ImGui::PushItemWidth(itemWidth);
-        ImGui::InputScalar(("Parameter " + to_string(i)).c_str(), ImGuiDataType_U8, &editingEntity->parametersByte[i]);
-        if (strcmp(d->parameterDescriptions[i].c_str(), "") != 0)
-    {
-        ImGuiTooltip(d->parameterDescriptions[i]);
-    }
-    }
-    for (int i = 0; i < NUM_PARAMETERS - NUM_BYTE_PARAMETERS; i++)
-    {
-        ImGui::PushItemWidth(itemWidth);
-        ImGuiStringEdit(("Parameter " + to_string(i + NUM_BYTE_PARAMETERS)).c_str(), &editingEntity->parametersStr[i].dat);
-        if (strcmp(d->parameterDescriptions[i + NUM_BYTE_PARAMETERS].c_str(), "") != 0)
-        {
-            ImGuiTooltip(d->parameterDescriptions[i + NUM_BYTE_PARAMETERS]);
-        }
-    }
-    ImGui::End();
-}
-
 void Editor::DrawPalette() 
 {
     if (currentTool != EditorTool::TileBrush) return;
@@ -959,7 +896,7 @@ void Editor::DrawToolbar()
     if (currentTool == EditorTool::EntityHand)
     {
         ImGui::SameLine();
-        ImGui::Combo("Place Entity Id", &placeEntityId, entityListing);
+        ImGui::Combo("Place Entity Id", &placeEntityId, entityEditor->entityListing, entityEditor->numEntities);
         ImGui::SameLine();
         if (ToggleButton("+", isPlacingEntity, nullptr))
         {
@@ -1274,28 +1211,28 @@ void Editor::CheckEntity()
         {
             if (tileX == map.entities[i].xPos && tileY == map.entities[i].yPos)
             {
-                if (editingEntity != nullptr)
+                if (entityEditor->editingEntity != nullptr)
                 {
-                    editingEntity->beingEdited = false;
+                    entityEditor->editingEntity->beingEdited = false;
                 }
-                editingEntity = &map.entities[i];
+                entityEditor->editingEntity = &map.entities[i];
                 map.entities[i].beingEdited = true;
                 found = true;
                 break;
             }
         }
-        if (!found && editingEntity != nullptr)
+        if (!found && entityEditor->editingEntity != nullptr)
         {
-            editingEntity->beingEdited = false;
-            editingEntity = nullptr;
+            entityEditor->editingEntity->beingEdited = false;
+            entityEditor->editingEntity = nullptr;
         }
     }
-    else if (!isPlacingEntity && editingEntity != nullptr && ((settings.ButtonDown(EditorTool::CurrentTool) && currentTool == EditorTool::EntityHand) || settings.ButtonDown(EditorTool::EntityHand)) && !focus.mouseInWindow)
+    else if (!isPlacingEntity && entityEditor->editingEntity != nullptr && ((settings.ButtonDown(EditorTool::CurrentTool) && currentTool == EditorTool::EntityHand) || settings.ButtonDown(EditorTool::EntityHand)) && !focus.mouseInWindow)
     {
         if (!doingEntityMove)
         {
-            backupEntityX = editingEntity->xPos;
-            backupEntityY = editingEntity->yPos;
+            backupEntityX = entityEditor->editingEntity->xPos;
+            backupEntityY = entityEditor->editingEntity->yPos;
         }
         int tileX = GetTileX();
         int tileY = GetTileY();
@@ -1303,8 +1240,8 @@ void Editor::CheckEntity()
         if (tileY < 0) { tileY = 0; }
         if (tileX > 0xFFFF) { tileX = 0xFFFF; }
         if (tileY > 0xFFFF) { tileY = 0xFFFF; }
-        editingEntity->xPos = tileX;
-        editingEntity->yPos = tileY;
+        entityEditor->editingEntity->xPos = tileX;
+        entityEditor->editingEntity->yPos = tileY;
         doingEntityMove = true;
     }
     else if (isPlacingEntity && ((settings.ButtonPressed(EditorTool::CurrentTool) && currentTool == EditorTool::EntityHand) || settings.ButtonPressed(EditorTool::EntityHand)))
@@ -1332,22 +1269,22 @@ void Editor::CheckEntity()
         }
         undoStack->PushEntityPlaced(this, map.entities.size() - 1, e.id, e.xPos, e.yPos);
     }
-    else if (!isPlacingEntity && doingEntityMove && editingEntity != NULL)
+    else if (!isPlacingEntity && doingEntityMove && entityEditor->editingEntity != NULL)
     {
         doingEntityMove = false;
         for (int i = 0; i < map.entities.size(); i++)
         {
-            if (editingEntity == &map.entities[i] && (backupEntityX != editingEntity->xPos || backupEntityY != editingEntity->yPos))
+            if (entityEditor->editingEntity == &map.entities[i] && (backupEntityX != entityEditor->editingEntity->xPos || backupEntityY != entityEditor->editingEntity->yPos))
             {
-                undoStack->PushEntityMoved(this, i, backupEntityX, backupEntityY, editingEntity->xPos, editingEntity->yPos);
+                undoStack->PushEntityMoved(this, i, backupEntityX, backupEntityY, entityEditor->editingEntity->xPos, entityEditor->editingEntity->yPos);
             }
         }
     }
-    if (editingEntity != nullptr && IsKeyPressed(KEY_DELETE))
+    if (entityEditor->editingEntity != nullptr && IsKeyPressed(KEY_DELETE))
     {
-        editingEntity->beingEdited = false;
-        Entity* e = editingEntity;
-        editingEntity = nullptr;
+        entityEditor->editingEntity->beingEdited = false;
+        Entity* e = entityEditor->editingEntity;
+        entityEditor->editingEntity = nullptr;
         for (int i = 0; i < map.entities.size(); i++)
         {
             if (&map.entities[i] == e)
