@@ -51,12 +51,11 @@ struct EntityDisplay
 {
     string name = ""; // Entity name.
     string description = ""; // What the entity does.
-    string flagDescription = ""; // How the flag works.
-    string parameterNames[3] = { "Flag", "Unknown", "Data" };
-    string parameterDescriptions[3] = { "Flag for NPC to spawn/not spawn on.\nIt can also just be a flag parameter in general.", "", "Additional entity data.\nCan be used for \"roll your own sprites\" or accessing through a script." }; // How the parameters work.
     int numTiles = 0; // Number of entity tiles.
     EntityTile* tiles; // Entity tiles to display.
     bool allowRollYourOwnSprite = true; // Allow for custom sprites to show specified by a parameter.
+    static string parameterNames[3]; // Names of each parameter.
+    static string parameterDescriptions[3]; // How the parameters work.
     static map<string, vector<EntityTile>> rollYourOwnSprite; // Maps strings to sprites that can be shown in game.
     static float transparency; // Transparency of the entity to display.
 

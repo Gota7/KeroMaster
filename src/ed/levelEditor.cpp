@@ -62,15 +62,19 @@ void LevelEditor::DrawUI()
     ImGui::PushItemWidth(itemWidth);
     ImGuiStringEdit("Left Level", &ed->map.references[RT_LEFT_LEVEL].dat);
     ImGuiTooltip("Name of the .pxpack in the field folder that appears to the left of this level.");
+    EditLevelButton(RT_LEFT_LEVEL);
     ImGui::PushItemWidth(itemWidth);
     ImGuiStringEdit("Right Level", &ed->map.references[RT_RIGHT_LEVEL].dat);
     ImGuiTooltip("Name of the .pxpack in the field folder that appears to the right of this level.");
+    EditLevelButton(RT_RIGHT_LEVEL);
     ImGui::PushItemWidth(itemWidth);
     ImGuiStringEdit("Upper Level", &ed->map.references[RT_UP_LEVEL].dat);
     ImGuiTooltip("Name of the .pxpack in the field folder that appears above this level.");
+    EditLevelButton(RT_UP_LEVEL);
     ImGui::PushItemWidth(itemWidth);
     ImGuiStringEdit("Lower Level", &ed->map.references[RT_DOWN_LEVEL].dat);
     ImGuiTooltip("Name of the .pxpack in the field folder that appears below this level.");
+    EditLevelButton(RT_DOWN_LEVEL);
     ImGui::PushItemWidth(itemWidth);
     ImGuiStringEdit("NPC Palette", &ed->map.references[RT_NPC_PALETTE].dat);
     ImGuiTooltip("Name of the .png in the img folder for NPCs to use (that depend on the NPC palette).");
@@ -179,12 +183,6 @@ void LevelEditor::DrawUI()
             numButtons = 0;
         }
     }
-
-    // Buttons to edit other levels.
-    EditLevelButton(RT_LEFT_LEVEL, "Left", &numButtons);
-    EditLevelButton(RT_RIGHT_LEVEL, "Right", &numButtons);
-    EditLevelButton(RT_UP_LEVEL, "Up", &numButtons);
-    EditLevelButton(RT_DOWN_LEVEL, "Down", &numButtons);
     
     // Reload tilesets.
     if (ImGui::Button("Reload Tilesets"))
@@ -263,22 +261,14 @@ void LevelEditor::CanShiftInDirCheck(ShiftDirection dir, int layer)
     }
 }
 
-void LevelEditor::EditLevelButton(int id, std::string label, int* numButtons)
+void LevelEditor::EditLevelButton(int id)
 {
     if (ed->map.references[id].dat != "")
     {
-        if (ImGui::Button(("Edit " + label + " Level").c_str()))
+        ImGui::SameLine();
+        if (ImGui::Button(("Edit##Lvl" + to_string(id)).c_str()))
         {
             ed->LoadLevel(ed->map.references[id].dat);
-        }
-        *numButtons = *numButtons + 1;
-        if (*numButtons < 2)
-        {
-            ImGui::SameLine();
-        }
-        else
-        {
-            *numButtons = 0;
         }
     }
 }

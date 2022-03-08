@@ -1,5 +1,17 @@
 #include "entityDisplay.h"
 
+string EntityDisplay::parameterNames[3] =
+{
+    "Flag",
+    "Unknown",
+    "Data"
+};
+string EntityDisplay::parameterDescriptions[3] =
+{
+    "Flag for NPC to spawn/not spawn on.\nIt can also just be a flag parameter in general.",
+    "",
+    "Additional entity data.\nCan be used for \"roll your own sprites\" or accessing through a script."
+};
 map<string, vector<EntityTile>> EntityDisplay::rollYourOwnSprite;
 float EntityDisplay::transparency = .3f;
 

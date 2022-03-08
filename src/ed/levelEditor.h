@@ -26,7 +26,7 @@ struct LevelEditor
     void CanShiftInDirCheck(ShiftDirection dir, int layer);
 
     // Edit a level direction button.
-    void EditLevelButton(int id, std::string label, int* numButtons);
+    void EditLevelButton(int id);
 
     // Draw the map shifting/resizing warning when data would be lost. This also resizes if the user accepts.
     void DrawMapShiftResizeWarning(int itemWidth);
