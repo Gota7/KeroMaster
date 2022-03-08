@@ -10,12 +10,14 @@
 #include "scriptEditor.h"
 #include "styleEditor.h"
 #include "undoStack.h"
+#include "levelEditor.h"
 #include "rlImGui/focusData.h"
 
 // Scale the map properly.
 constexpr float MAP_SIZE = Tileset::EDITOR_TILE_SIZE / Tileset::MAP_TILE_SIZE;
 
 struct AttributeEditor;
+struct LevelEditor;
 struct MusicPlayer;
 struct ScriptEditor;
 struct Settings;
@@ -78,18 +80,15 @@ struct Editor
     std::vector<AttributeEditor> attrEditors = std::vector<AttributeEditor>();
     std::vector<ScriptEditor> scriptEditors = std::vector<ScriptEditor>();
     char* entityListing;
-    bool resizeWarning = false;
-    ShiftDirection resizeMode = ShiftDirection::Resize;
-    u8 resizeMapLayer = 0;
     int placeEntityId = 0;
     bool isPlacingEntity = false;
     bool doingEntityMove = false;
     u16 backupEntityX;
     u16 backupEntityY;
-    TilesetEditor* editingTileset = nullptr;
-    StyleEditor* styleEditor = nullptr;
+    LevelEditor* levelEditor = nullptr;
     MusicPlayer* musicPlayer = nullptr;
-    bool showLevelEditor = true;
+    StyleEditor* styleEditor = nullptr;
+    TilesetEditor* editingTileset = nullptr;
     bool showProfileEditor = false;
     bool showHelp = false;
     bool helpModal = false;
@@ -108,7 +107,6 @@ struct Editor
     void Draw();
     void DrawUI();
     void DrawMainMenu(bool startup = false);
-    void DrawLevelEditor();
     void DrawEntityEditor();
     void DrawPalette();
     void DrawToolbar();

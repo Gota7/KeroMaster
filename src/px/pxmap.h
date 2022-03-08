@@ -32,8 +32,8 @@ struct PxMap : GReadable, GWriteable
     u16 height = 0; // Height of the map in tiles.
     u8 flags = 0; // Map flags.
     u8* tiles = nullptr; // Map data.
-    u16 oldWidth = 0; // For editor.
-    u16 oldHeight = 0; // For editor.
+    u16 newWidth = 0; // For editor.
+    u16 newHeight = 0; // For editor.
     
     // Read a map file.
     void Read(GFile* f);

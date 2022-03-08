@@ -8,7 +8,8 @@ vector<string> ReadFilesFromDir(string path, bool includeExt)
     int numFiles;
     char** files = GetDirectoryFiles(path.c_str(), &numFiles);
     vector<string> ret;
-    for (int i = 0; i < numFiles; i++) {
+    for (int i = 0; i < numFiles; i++)
+    {
         if (strcmp(files[i], ".") != 0 && strcmp(files[i], "..") != 0)
         {
             if (includeExt)
@@ -36,7 +37,8 @@ char** GenImGuiStringList(vector<string>& strings, int* outStringCount)
     char** ret;
     *outStringCount = strings.size();
     ret = new char*[*outStringCount];
-    for (int i = 0; i < *outStringCount; i++) {
+    for (int i = 0; i < *outStringCount; i++)
+    {
         ret[i] = ConvertStrRef(strings[i]);
     }
     return ret;
@@ -44,7 +46,8 @@ char** GenImGuiStringList(vector<string>& strings, int* outStringCount)
 
 void DelImGuiStringList(char** ptr, int stringCount)
 {
-    for (int i = 0; i < stringCount; i++) {
+    for (int i = 0; i < stringCount; i++)
+    {
         delete[] ptr[i];
     }
     delete[] ptr;
@@ -89,7 +92,8 @@ void ImGuiColorEdit(const char* label, u8* toEdit)
     tmp[0] = toEdit[0] / (float)255;
     tmp[1] = toEdit[1] / (float)255;
     tmp[2] = toEdit[2] / (float)255;
-    if (ImGui::ColorEdit3(label, tmp)) {
+    if (ImGui::ColorEdit3(label, tmp))
+    {
         toEdit[0] = (u8)(tmp[0] * 255);
         toEdit[1] = (u8)(tmp[1] * 255);
         toEdit[2] = (u8)(tmp[2] * 255);

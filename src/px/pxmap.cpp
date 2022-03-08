@@ -16,8 +16,8 @@ void PxMap::Read(GFile* f)
     }
     else
     {
-        width = oldWidth = f->ReadU16();
-        height = oldHeight = f->ReadU16();
+        width = newWidth = f->ReadU16();
+        height = newHeight = f->ReadU16();
 
         if (width * height > 0) flags = f->ReadU8();
 
@@ -83,8 +83,8 @@ void PxMap::Resize(u16 newWidth, u16 newHeight)
             tiles[x + y * newWidth] = bak[x + y * width];
         }
     }
-    width = oldWidth = newWidth;
-    height = oldHeight = newHeight;
+    width = this->newWidth = newWidth;
+    height = this->newHeight = newHeight;
     delete[] bak;
 }
 
