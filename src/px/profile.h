@@ -16,6 +16,12 @@ struct ProfileSave
 // Kero blaster profile.
 struct Profile
 {
+
+    // Number of saves.
+    static constexpr u8 NUM_SAVES = 3;
+    static constexpr u8 NUM_GAME_FLAGS = 0x20;
+
+    // Params.
     bool fullscreen = false;
     std::string region = "ENGLISH";
     s32 topLeftCorner[2] = { 720, 367 };
@@ -43,18 +49,8 @@ struct Profile
     u8 joystickWeaponSwitchLeft = 3;
     u8 joystickWeaponSwitchRight = 4;
     u8 joystickMenu = 2;
-    u8 profileDataBits = 0;
-    bool zangyouUnlocked = false;
-    u8 filesStarted = 0;
-    u8 achievements0 = 0;
-    u8 achievements1 = 0;
-    u8 viewedAchievements0 = 0;
-    u8 viewedAchievements1 = 0;
-    //u8 gameProfileUnknown[]
+    u8 gameProfile[NUM_GAME_FLAGS];
     std::vector<ProfileSave> saves = std::vector<ProfileSave>();
-
-    // Number of saves.
-    static constexpr u8 NUM_SAVES = 3;
 
     // If a file exists in the profile folder.
     bool FileExists(std::string rsc_k, std::string name);
