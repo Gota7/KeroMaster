@@ -1,22 +1,82 @@
 #include "profile.h"
 
-using namespace std;
+bool Profile::FileExists(std::string rsc_k, std::string name)
+{
+    return GFile::FileExists((rsc_k + "/profile/" + name).c_str());
+}
 
-GFile Profile::GetGFile(std::string rsc_k, string name)
+GFile Profile::GetGFile(std::string rsc_k, std::string name)
 {
     return GFile((rsc_k + "/profile/" + name).c_str());
 }
 
-void Profile::ReadAll(string rsc_k)
+void Profile::ReadAll(std::string rsc_k)
 {
-
+    LoadFullscreen(rsc_k);
+    LoadGameProfile(rsc_k);
+    LoadControlInterfaceMode(rsc_k);
+    LoadRegion(rsc_k);
+    LoadRect(rsc_k);
+    LoadLastIdx(rsc_k);
+    for (int i = 0; i < NUM_SAVES; i++)
+    {
+        LoadProfileSave(rsc_k, i);
+    }
+    LoadSize(rsc_k);
+    LoadLastTime(rsc_k);
+    LoadKeyConfig(rsc_k);
 }
 
-void Profile::SaveFullscreen(string rsc_k)
+void Profile::LoadFullscreen(std::string rsc_k)
+{
+    if (!FileExists(rsc_k, "fullscreen.bin")) return;
+    GFile f = GetGFile(rsc_k, "fullscreen.bin");
+    fullscreen = f.ReadU8();
+    f.Close();
+}
+
+void Profile::SaveFullscreen(std::string rsc_k)
 {
     GFile f = GetGFile(rsc_k, "fullscreen.bin");
     f.Clear();
     f.Write(fullscreen);
+    f.Close();
+}
+
+// TODO: GAME PROFILE CODE!!!
+
+void Profile::LoadGameProfile(std::string rsc_k)
+{
+
+}
+
+void Profile::SaveGameProfile(std::string rsc_k)
+{
+    
+}
+
+void Profile::LoadControlInterfaceMode(std::string rsc_k)
+{
+    if (!FileExists(rsc_k, "interfacemode.bin")) return;
+    GFile f = GetGFile(rsc_k, "interfacemode.bin");
+    useJoystick = f.ReadU32() > 0;
+    f.Close();
+}
+
+void Profile::SaveControlInterfaceMode(std::string rsc_k)
+{
+    GFile f = GetGFile(rsc_k, "interfacemode.bin");
+    f.Clear();
+    f.Write((u32)useJoystick);
+    f.Close();
+}
+
+void Profile::LoadRegion(std::string rsc_k)
+{
+    if (!FileExists(rsc_k, "kero.region")) return;
+    GFile f = GetGFile(rsc_k, "kero.region");
+    u32 len = f.ReadU32();
+    region = f.ReadStrFixed(len);
     f.Close();
 }
 
@@ -26,6 +86,17 @@ void Profile::SaveRegion(std::string rsc_k)
     f.Clear();
     f.Write((u32)region.size());
     f.Write(region);
+    f.Close();
+}
+
+void Profile::LoadRect(std::string rsc_k)
+{
+    if (!FileExists(rsc_k, "main.rect")) return;
+    GFile f = GetGFile(rsc_k, "main.rect");
+    topLeftCorner[0] = f.ReadS32();
+    topLeftCorner[1] = f.ReadS32();
+    bottomRightCorner[0] = f.ReadS32();
+    bottomRightCorner[1] = f.ReadS32();
     f.Close();
 }
 
@@ -41,6 +112,14 @@ void Profile::SaveRect(std::string rsc_k)
     f.Close();
 }
 
+void Profile::LoadLastIdx(std::string rsc_k)
+{
+    if (!FileExists(rsc_k, "profidx")) return;
+    GFile f = GetGFile(rsc_k, "profidx");
+    lastProfileSave = f.ReadU32();
+    f.Close();
+}
+
 void Profile::SaveLastIdx(std::string rsc_k)
 {
     GFile f = GetGFile(rsc_k, "profidx");
@@ -49,11 +128,44 @@ void Profile::SaveLastIdx(std::string rsc_k)
     f.Close();
 }
 
+// TODO: GAME SAVE CODE!!!
+
+void Profile::LoadProfileSave(std::string rsc_k, u8 num)
+{
+
+}
+
+void Profile::SaveProfileSave(std::string rsc_k, u8 num)
+{
+
+}
+
+void Profile::LoadSize(std::string rsc_k)
+{
+    if (!FileExists(rsc_k, "screensize.bin")) return;
+    GFile f = GetGFile(rsc_k, "screensize.bin");
+    screenSize = f.ReadU32();
+    f.Close();
+}
+
 void Profile::SaveSize(std::string rsc_k)
 {
-    GFile f = GetGFile(rsc_k, "profidx");
+    GFile f = GetGFile(rsc_k, "screensize.bin");
     f.Clear();
     f.Write((u32)screenSize);
+    f.Close();
+}
+
+void Profile::LoadLastTime(std::string rsc_k)
+{
+    if (!FileExists(rsc_k, "timelast")) return;
+    GFile f = GetGFile(rsc_k, "timelast");
+    lastYear = f.ReadU16();
+    lastMonth = f.ReadU8();
+    lastDay = f.ReadU8();
+    lastHour = f.ReadU8();
+    lastMinute = f.ReadU8();
+    lastSecond = f.ReadU8();
     f.Close();
 }
 
@@ -61,13 +173,35 @@ void Profile::SaveLastTime(std::string rsc_k)
 {
     GFile f = GetGFile(rsc_k, "timelast");
     f.Clear();
-    f.Write((u16)lastYear);
+    f.Write(lastYear);
     f.Write(lastMonth);
     f.Write(lastDay);
     f.Write(lastHour);
     f.Write(lastMinute);
     f.Write(lastSecond);
     f.Write((u8)0);
+    f.Close();
+}
+
+void Profile::LoadKeyConfig(std::string rsc_k)
+{
+    if (!FileExists(rsc_k, "user.keyconfig")) return;
+    GFile f = GetGFile(rsc_k, "user.keyconfig");
+    f.ReadU64();
+    keyboardLeft = f.ReadU8();
+    keyboardUp = f.ReadU8();
+    keyboardRight = f.ReadU8();
+    keyboardDown = f.ReadU8();
+    keyboardJump = f.ReadU8();
+    keyboardShoot = f.ReadU8();
+    keyboardWeaponSwitchLeft = f.ReadU8();
+    keyboardWeaponSwitchRight = f.ReadU8();
+    keyboardMenu = f.ReadU8();
+    joystickJump = f.ReadU8();
+    joystickShoot = f.ReadU8();
+    joystickWeaponSwitchLeft = f.ReadU8();
+    joystickWeaponSwitchRight = f.ReadU8();
+    joystickMenu = f.ReadU8();
     f.Close();
 }
 
@@ -90,13 +224,5 @@ void Profile::SaveKeyConfig(std::string rsc_k)
     f.Write(joystickWeaponSwitchLeft);
     f.Write(joystickWeaponSwitchRight);
     f.Write(joystickMenu);
-    f.Close();
-}
-
-void Profile::SaveControlInterfaceMode(std::string rsc_k)
-{
-    GFile f = GetGFile(rsc_k, "interfacemode.bin");
-    f.Clear();
-    f.Write((u32)useJoystick);
     f.Close();
 }

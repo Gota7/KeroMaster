@@ -10,8 +10,7 @@ const char* scrollTypes[] = {
     "H 3/4",
     "H Half",
     "H Quater",
-    "V0 Half",
-    "\0"
+    "V0 Half"
 };
 
 const char* tileScales[] = {
@@ -31,8 +30,7 @@ const char* tileScales[] = {
     "13 (1.23x1.23)",
     "14 (1.14x1.14)",
     "15 (1.06x1.06)",
-    "16 (1x1)",
-    "\0"
+    "16 (1x1)"
 };
 
 LevelEditor::LevelEditor(Editor* ed)

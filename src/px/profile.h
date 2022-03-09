@@ -28,7 +28,7 @@ struct Profile
     u8 lastMinute = 12;
     u8 lastSecond = 16;
     u8 lastProfileSave = 0;
-    u32 useJoystick = 0;
+    u8 useJoystick = 0;
     u8 keyboardLeft = 0x25;
     u8 keyboardUp = 0x26;
     u8 keyboardRight = 0x27;
@@ -53,16 +53,76 @@ struct Profile
     //u8 gameProfileUnknown[]
     std::vector<ProfileSave> saves = std::vector<ProfileSave>();
 
+    // Number of saves.
+    static constexpr u8 NUM_SAVES = 3;
+
+    // If a file exists in the profile folder.
+    bool FileExists(std::string rsc_k, std::string name);
+
+    // Get a Gota's bin file from the profile directory. 
     GFile GetGFile(std::string rsc_k, std::string name);
+
+    // Read all files.
     void ReadAll(std::string rsc_k);
+
+    // Load the fullscreen file.
+    void LoadFullscreen(std::string rsc_k);
+
+    // Save the fullscreen file.
     void SaveFullscreen(std::string rsc_k);
-    void SaveRegion(std::string rsc_k);
-    void SaveRect(std::string rsc_k);
-    void SaveLastIdx(std::string rsc_k);
-    void SaveSize(std::string rsc_k);
-    void SaveLastTime(std::string rsc_k);
-    void SaveKeyConfig(std::string rsc_k);
-    void SaveControlInterfaceMode(std::string rsc_k);
+
+    // Load the game profile.
+    void LoadGameProfile(std::string rsc_k);
+
+    // Save the game profile.
     void SaveGameProfile(std::string rsc_k);
+
+    // Load the last controller interface mode used.
+    void LoadControlInterfaceMode(std::string rsc_k);
+
+    // Save the last controller interface mode used.
+    void SaveControlInterfaceMode(std::string rsc_k);
+
+    // Load the region file.
+    void LoadRegion(std::string rsc_k);
+
+    // Save the region file.
+    void SaveRegion(std::string rsc_k);
+
+    // Load the screen position.
+    void LoadRect(std::string rsc_k);
+
+    // Save the screen position.
+    void SaveRect(std::string rsc_k);
+
+    // Load the last profile used.
+    void LoadLastIdx(std::string rsc_k);
+
+    // Save the last profile used.
+    void SaveLastIdx(std::string rsc_k);
+
+    // Load a save file.
+    void LoadProfileSave(std::string rsc_k, u8 num);
+
+    // Save a save file.
     void SaveProfileSave(std::string rsc_k, u8 num);
+
+    // Load the last screen size used.
+    void LoadSize(std::string rsc_k);
+
+    // Save the last screen size used.
+    void SaveSize(std::string rsc_k);
+
+    // Load the last time used.
+    void LoadLastTime(std::string rsc_k);
+
+    // Save the last time used.
+    void SaveLastTime(std::string rsc_k);
+    
+    // Load the last key config used.
+    void LoadKeyConfig(std::string rsc_k);
+
+    // Save the last key config used.
+    void SaveKeyConfig(std::string rsc_k);
+
 };

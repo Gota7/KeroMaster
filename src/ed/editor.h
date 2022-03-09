@@ -3,11 +3,13 @@
 #include <map>
 #include "raylib.h"
 #include "../px/pxmap.h"
+#include "../px/profile.h"
 #include "tilesetEditor.h"
 #include "settings.h"
 #include "attributeEditor.h"
 #include "entityEditor.h"
 #include "musicPlayer.h"
+#include "profileEditor.h"
 #include "scriptEditor.h"
 #include "styleEditor.h"
 #include "undoStack.h"
@@ -21,6 +23,7 @@ struct AttributeEditor;
 struct EntityEditor;
 struct LevelEditor;
 struct MusicPlayer;
+struct ProfileEditor;
 struct ScriptEditor;
 struct Settings;
 struct StyleEditor;
@@ -39,6 +42,7 @@ struct Editor
 {
     static Settings settings;
     Map map;
+    Profile profile;
     string mapName = "";
     Camera2D cam = {0};
     static std::map<string, Tileset> tilesets;
@@ -88,9 +92,9 @@ struct Editor
     EntityEditor* entityEditor = nullptr;
     LevelEditor* levelEditor = nullptr;
     MusicPlayer* musicPlayer = nullptr;
+    ProfileEditor* profileEditor = nullptr;
     StyleEditor* styleEditor = nullptr;
     TilesetEditor* editingTileset = nullptr;
-    bool showProfileEditor = false;
     bool showHelp = false;
     bool helpModal = false;
     UndoStack* undoStack;
@@ -110,7 +114,6 @@ struct Editor
     void DrawMainMenu(bool startup = false);
     void DrawPalette();
     void DrawToolbar();
-    void DrawProfileEditor();
     void OpenTileset(std::string name);
     void OpenAttrEditor(std::string name);
     void OpenScript(std::string name);

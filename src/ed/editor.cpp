@@ -347,7 +347,12 @@ void Editor::DrawUI()
     DrawToolbar();
 
     // Profile editor.
-    DrawProfileEditor();
+    if (!profileEditor)
+    {
+        profileEditor = new ProfileEditor(this);
+        profile.ReadAll(rsc);
+    }
+    profileEditor->DrawUI();
 
 }
 
@@ -439,7 +444,7 @@ void Editor::DrawMainMenu(bool startup)
 
             if (ImGui::MenuItem("Profile Editor"))
             {
-                showProfileEditor = true;
+                profileEditor->open = true;
             }
 
             if (ImGui::MenuItem("Style Editor"))
@@ -905,25 +910,6 @@ void Editor::DrawToolbar()
         Tooltip("Click after hitting to place an entity or again to cancel.\nHolding shift while placing will allow you to place multiple.\nPressing the delete key will delete the selected entity.");
     }
 
-    ImGui::End();
-}
-
-void Editor::DrawProfileEditor()
-{
-    if (!showProfileEditor)
-    {
-        return;
-    }
-    ImGui::Begin("Profile Editor", &showProfileEditor);
-    focus.ObserveFocus();
-    if (ImGui::BeginTabBar("Profile Tabs"))
-    {
-        if (ImGui::BeginTabItem("Screen Settings"))
-        {
-            ImGui::EndTabItem();
-        }
-        ImGui::EndTabBar();
-    }
     ImGui::End();
 }
 
