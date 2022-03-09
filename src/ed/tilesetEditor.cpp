@@ -1,16 +1,19 @@
 #include "tilesetEditor.h"
 #include "../rlImGui/rlImGui.h"
+#include "../px/tileset.h"
 
-TilesetEditor::TilesetEditor(Editor* ed, string name)
+TilesetEditor::TilesetEditor(Editor* ed, string name, float tileSize)
 {
     open = true;
     this->ed = ed;
     this->name = name;
     if (ed->tilesets.find(name) == ed->tilesets.end())
     {
-        open = false;
+        open = false; // Close immediately if tileset not found.
     }
-    target = LoadRenderTexture(ed->tilesets[name].width * 8 * 2, ed->tilesets[name].height * 8 * 2);
+    this->tileSize = tileSize;
+    target = LoadRenderTexture(ed->tilesets[name].width * Tileset::EDITOR_TILE_SIZE, ed->tilesets[name].height * Tileset::EDITOR_TILE_SIZE);
+    finalTarget = LoadRenderTexture(ed->tilesets[name].width * Tileset::EDITOR_TILE_SIZE, ed->tilesets[name].height * Tileset::EDITOR_TILE_SIZE);
 }
 
 void TilesetEditor::Draw()
@@ -25,7 +28,26 @@ void TilesetEditor::Draw()
     // Draw target.
     BeginTextureMode(target);
     ClearBackground(BLACK);
-    DrawTexturePro(ed->tilesets[name].tex, { 0, 0, (float)ed->tilesets[name].width * 8, -(float)ed->tilesets[name].height * 8 }, { 0, 0, (float)ed->tilesets[name].width * 8 * 2, (float)ed->tilesets[name].height * 8 * 2}, { 0, 0 }, 0, WHITE);
+    DrawTexturePro(
+        ed->tilesets[name].tex,
+        {
+            0,
+            0,
+            (float)ed->tilesets[name].width * tileSize,
+            (float)ed->tilesets[name].height * tileSize
+        },
+        {
+            0,
+            0,
+            (float)ed->tilesets[name].width * Tileset::EDITOR_TILE_SIZE,
+            (float)ed->tilesets[name].height * Tileset::EDITOR_TILE_SIZE
+        },
+        { 0, 0 },
+        0,
+        WHITE
+    );
+
+    // Draw attributes on top.
     if (viewAttr && ed->tilesets[name].tiles != NULL)
     {
         for (u16 x = 0; x < ed->tilesets[name].width; x++)
@@ -35,17 +57,39 @@ void TilesetEditor::Draw()
                 u8 attr = ed->tilesets[name].GetTilesetAttr(x, y);
                 if (attr != 0)
                 {
-                    DrawTextureRec(Tileset::attrTex, { (float)(attr % 16 * 16), (float)(attr / 16 * 16), 16, -16 }, { (float)x * 16, (float)(ed->tilesets[name].height - y - 1) * 16 }, WHITE);
+                    Tileset::DrawTileAttr(attr, x, y, Tileset::EDITOR_TILE_SIZE);
                 }
             }
         }
     }
+
+    // Draw the currently selected tile.
     if (currTile >= 0 && currTile < ed->tilesets[name].width * ed->tilesets[name].height)
     {
         u16 x = currTile % ed->tilesets[name].width;
-        u16 y = ed->tilesets[name].height - currTile / ed->tilesets[name].width - 1;
-        DrawRectangleLinesEx( { (float)x * 8 * 2, (float)(y - selectionHeight + 1) * 8 * 2, (float)8 * 2 * selectionWidth, (float)8 * 2 * selectionHeight }, 2, WHITE);
+        u16 y = currTile / ed->tilesets[name].width;
+        DrawRectangleLinesEx(
+            {
+                (float)x * Tileset::EDITOR_TILE_SIZE,
+                (float)y * Tileset::EDITOR_TILE_SIZE,
+                (float)selectionWidth * Tileset::EDITOR_TILE_SIZE,
+                (float)selectionHeight * Tileset::EDITOR_TILE_SIZE
+            },
+            2,
+            WHITE);
     }
+    EndTextureMode();
+
+    // Hack - Y flip the target by drawing it on another final target that is the same size.
+    BeginTextureMode(finalTarget);
+    DrawTexturePro(
+        target.texture,
+        { 0, 0, (float)target.texture.width, (float)target.texture.height },
+        { 0, 0, (float)target.texture.width, (float)target.texture.height },
+        { 0, 0 },
+        0,
+        WHITE
+    );
     EndTextureMode();
 
 }
@@ -59,7 +103,7 @@ void TilesetEditor::DrawUI()
         return;
     }
 
-    // Interface.
+    // Determine which layers are allowed and selected.
     ImGui::Begin(("Tileset - " + name).c_str(), &open);
     ed->focus.ObserveFocus();
     if (allowLayer0)
@@ -76,6 +120,8 @@ void TilesetEditor::DrawUI()
     {
         ImGui::RadioButton("Background", &currLayer, 2);
     }
+
+    // Attribute editing.
     ImGui::Checkbox("View Attributes", &viewAttr);
     ImGui::SameLine();
     if (ImGui::Button("Edit Attributes"))
@@ -102,7 +148,7 @@ void TilesetEditor::DrawUI()
     imgSizeX = w;
     imgSizeY = h;
     ImVec2 tmp = ImGui::GetCursorPos();
-    RLImGuiImageSize(&target.texture, (int)h, (int)w);
+    RLImGuiImageSize(&finalTarget.texture, (int)h, (int)w);
     ImGui::SetCursorPos(tmp);
     ImGui::InvisibleButton("NoDrag", ImVec2((int)w, (int)h));
     ImGui::End();

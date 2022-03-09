@@ -17,6 +17,8 @@ struct TilesetEditor
     bool open = false; // Window is open.
     string name; // Tileset name.
     RenderTexture2D target; // Where to draw the texture.
+    RenderTexture2D finalTarget; // After transforming the original target (thanks OpenGL coordinates).
+    float tileSize; // How big each tile is.
     int currTile = -1;
     int selectionWidth;
     int selectionHeight;
@@ -32,7 +34,7 @@ struct TilesetEditor
     bool allowLayer2 = false;
     int currLayer = -1;
 
-    TilesetEditor(Editor* ed, string name);
+    TilesetEditor(Editor* ed, string name, float tileSize);
     void Draw();
     void DrawUI();
     void Update();

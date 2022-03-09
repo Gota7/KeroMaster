@@ -58,7 +58,7 @@ struct Tileset
     static Rectangle GetDestRect(s32 tileX, s32 tileY, f32 tileSize, Vector2 offset = { 0, 0 });
 
     // Draw a tile attribute.
-    void DrawTileAttr(u8 attr, s32 tileX, s32 tileY, f32 destTileSize, Color tint = WHITE);
+    static void DrawTileAttr(u8 attr, s32 tileX, s32 tileY, f32 destTileSize, Color tint = WHITE);
 
     // Draw a tile index to a destination tile position with a destination tile size.
     void Draw(u8 index, s32 tileX, s32 tileY, f32 tileSize, f32 destTileSize, bool showAttr = false, bool allowIndex0 = false, bool useTrueImageSize = false, Vector2 offset = { 0, 0 }, Color tint = WHITE);

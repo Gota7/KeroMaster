@@ -78,7 +78,7 @@ void Editor::LoadLevel(string name)
     {
         if (strcmp(map.tilesets[i].dat.c_str(), "") != 0)
         {
-            if (openTilesetsOnLoad) { tilesetEditors.push_back(TilesetEditor(this, map.tilesets[i].dat)); }
+            if (openTilesetsOnLoad) { tilesetEditors.push_back(TilesetEditor(this, map.tilesets[i].dat, 8)); }
         }
     }
     settings.lastLevel = name;
@@ -922,7 +922,7 @@ void Editor::OpenTileset(std::string name)
             return;
         }
     }
-    auto t = TilesetEditor(this, name);
+    auto t = TilesetEditor(this, name, 8);
     if (strcmp(name.c_str(), map.tilesets[2].dat.c_str()) == 0) { t.allowLayer2 = true; t.currLayer = 2; }
     if (strcmp(name.c_str(), map.tilesets[1].dat.c_str()) == 0) { t.allowLayer1 = true; t.currLayer = 1; }
     if (strcmp(name.c_str(), map.tilesets[0].dat.c_str()) == 0) { t.allowLayer0 = true; t.currLayer = 0; }
