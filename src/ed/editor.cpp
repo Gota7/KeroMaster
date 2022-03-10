@@ -938,7 +938,7 @@ void Editor::OpenAttrEditor(std::string name)
             return;
         }
     }
-    attrEditors.push_back(AttributeEditor(this, name));
+    attrEditors.push_back(AttributeEditor(this, name, 8.0f));
 }
 
 void Editor::OpenScript(std::string name)

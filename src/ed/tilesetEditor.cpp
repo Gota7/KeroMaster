@@ -80,14 +80,7 @@ void TilesetEditor::Draw()
 
     // Hack - Y flip the target by drawing it on another final target that is the same size.
     BeginTextureMode(finalTarget);
-    DrawTexturePro(
-        target.texture,
-        { 0, 0, (float)target.texture.width, (float)target.texture.height },
-        { 0, 0, (float)target.texture.width, (float)target.texture.height },
-        { 0, 0 },
-        0,
-        WHITE
-    );
+    DrawTexture(target.texture, 0, 0, WHITE);
     EndTextureMode();
 
 }

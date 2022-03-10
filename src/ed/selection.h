@@ -31,7 +31,7 @@ struct Selection
     static bool MouseInCanvas(float xOff = 0, float yOff = 0, float canvasXMin = NAN, float canvasYMin = NAN, float canvasXMax = NAN, float canvasYMax = NAN);
 
     // The selection is just an area with one click.
-    void OneClickSelection(float tileSize, int selectionButton, int minTileX = INT_MIN, int minTileY = INT_MIN, int maxTileX = INT_MAX, int maxTileY = INT_MAX, float xOff = 0, float yOff = 0, float canvasXMin = NAN, float canvasYMin = NAN, float canvasXMax = NAN, float canvasYMax = NAN);
+    void OneClickSelection(float tileSize, int selectionButton, bool focused, int minTileX = INT_MIN, int minTileY = INT_MIN, int maxTileX = INT_MAX, int maxTileY = INT_MAX, float xOff = 0, float yOff = 0, float canvasXMin = NAN, float canvasYMin = NAN, float canvasXMax = NAN, float canvasYMax = NAN);
 
     // Update the selection process given the offsets of the canvas. The mouse can also optionally be within a specified canvas to start selecting.
     void Update(float tileSize, int selectionButton, bool focused, int minTileX = INT_MIN, int minTileY = INT_MIN, int maxTileX = INT_MAX, int maxTileY = INT_MAX, float xOff = 0, float yOff = 0, float canvasXMin = NAN, float canvasYMin = NAN, float canvasXMax = NAN, float canvasYMax = NAN);

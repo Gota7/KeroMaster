@@ -47,9 +47,9 @@ bool Selection::MouseInCanvas(float xOff, float yOff, float canvasXMin, float ca
     return true;
 }
 
-void Selection::OneClickSelection(float tileSize, int selectionButton, int minTileX, int minTileY, int maxTileX, int maxTileY, float xOff, float yOff, float canvasXMin, float canvasYMin, float canvasXMax, float canvasYMax)
+void Selection::OneClickSelection(float tileSize, int selectionButton, bool focused, int minTileX, int minTileY, int maxTileX, int maxTileY, float xOff, float yOff, float canvasXMin, float canvasYMin, float canvasXMax, float canvasYMax)
 {
-    if (MouseInCanvas(xOff, yOff, canvasXMin, canvasYMin, canvasXMax, canvasYMax) && IsMouseButtonDown(selectionButton))
+    if (MouseInCanvas(xOff, yOff, canvasXMin, canvasYMin, canvasXMax, canvasYMax) && IsMouseButtonDown(selectionButton) && focused)
     {
         GetTileAtPos(tileSize, &x, &y, GetMouseX(), GetMouseY(), xOff, yOff);
         width = 1;

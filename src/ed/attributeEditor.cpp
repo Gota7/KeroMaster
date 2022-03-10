@@ -1,25 +1,26 @@
 #include "attributeEditor.h"
 #include "../rlImGui/rlImGui.h"
 
-using namespace std;
-
-const float TEX_SCALE = 2.0f;
-
-AttributeEditor::AttributeEditor(Editor* ed, string name)
+AttributeEditor::AttributeEditor(Editor* ed, std::string name, float tileSize)
 {
     open = true;
     this->ed = ed;
     this->name = name;
+    this->tileSize = tileSize;
     if (ed->tilesets.find(name) == ed->tilesets.end()) // Tileset not loaded, close.
     {
         open = false;
     }
-    else if (ed->tilesets[name].tiles == NULL)
+    else if (ed->tilesets[name].tiles == nullptr)
     {
-        ed->tilesets[name].tiles = new u8[ed->tilesets[name].width * ed->tilesets[name].height];
+        ed->tilesets[name].tiles = new u8[ed->tilesets[name].width * ed->tilesets[name].height]; // Init new tileset attributes.
         memset(ed->tilesets[name].tiles, 0, ed->tilesets[name].width * ed->tilesets[name].height);
     }
-    target = LoadRenderTexture(ed->tilesets[name].width * 8 * 2 + (float)Tileset::attrTex.width, max((float)ed->tilesets[name].height * 8 * 2, (float)Tileset::attrTex.height));
+    target = LoadRenderTexture(
+        ed->tilesets[name].width * Tileset::EDITOR_TILE_SIZE + (float)Tileset::attrTex.width,
+        max((float)ed->tilesets[name].height * Tileset::EDITOR_TILE_SIZE, (float)Tileset::attrTex.height)
+    ); // Height is just the bigger of the two.
+    finalTarget = LoadRenderTexture(target.texture.width, target.texture.height);
 }
 
 void AttributeEditor::Draw()
@@ -31,23 +32,50 @@ void AttributeEditor::Draw()
         return;
     }
 
-    // Draw data.
+    // Draw the textures.
     BeginTextureMode(target);
     ClearBackground(BLACK);
-    DrawTexturePro(ed->tilesets[name].tex, { 0, 0, (float)ed->tilesets[name].width * 8, -(float)ed->tilesets[name].height * 8 }, { 0, 0, (float)ed->tilesets[name].width * 8 * 2, (float)ed->tilesets[name].height * 8 * 2 }, { 0, 0 }, 0, WHITE);
-    DrawTextureRec(Tileset::attrTex, { 0, 0, (float)Tileset::attrTex.width, -(float)Tileset::attrTex.height }, { (float)ed->tilesets[name].width * 8 * 2, 0 }, WHITE);
-    DrawLineEx( { (float)ed->tilesets[name].width * 8 * 2, 0 }, { (float)ed->tilesets[name].width * 8 * 2, (float)ed->tilesets[name].height * 8 * 2 }, 3, RED);
+    DrawTexturePro(
+        ed->tilesets[name].tex,
+        { 0, 0, (float)ed->tilesets[name].width * tileSize, (float)ed->tilesets[name].height * tileSize },
+        { 0, 0, (float)ed->tilesets[name].width * Tileset::EDITOR_TILE_SIZE, (float)ed->tilesets[name].height * Tileset::EDITOR_TILE_SIZE },
+        { 0, 0 },
+        0,
+        WHITE
+    );
+    DrawTextureRec(
+        Tileset::attrTex,
+        { 0, 0, (float)Tileset::attrTex.width, (float)Tileset::attrTex.height },
+        { (float)ed->tilesets[name].width * Tileset::EDITOR_TILE_SIZE, 0 },
+        WHITE
+    );
+    
+    // Divider border.
+    DrawLineEx(
+        { (float)ed->tilesets[name].width * Tileset::EDITOR_TILE_SIZE, 0 },
+        { (float)ed->tilesets[name].width * Tileset::EDITOR_TILE_SIZE, (float)target.texture.height },
+        3,
+        RED
+    );
+    
+    // Draw the selected attribute.
     u16 x = attrTile % 16;
-    u16 y = 16 - attrTile / 16 - 1;
-    DrawRectangleLinesEx( { (float)x * 8 * 2 + ed->tilesets[name].width * 8 * 2, (float)y * 8 * 2, (float)8 * 2, (float)8 * 2 }, 1, ColorAlpha(YELLOW, .5f));
+    u16 y = attrTile / 16;
+    DrawRectangleLinesEx(Tileset::GetDestRect(x, y, Tileset::EDITOR_TILE_SIZE, { (float)ed->tilesets[name].width * Tileset::EDITOR_TILE_SIZE, 0 }), 1, ColorAlpha(YELLOW, .5f));
+    
+    // Draw each regular attribute.
     for (int i = 0; i < ed->tilesets[name].width; i++)
     {
         for (int j = 0; j < ed->tilesets[name].height; j++)
         {
-            u8 attr = ed->tilesets[name].GetTilesetAttr(i, j);
-            DrawTextureRec(Tileset::attrTex, { (float)(attr % 16 * 16), (float)(attr / 16 * 16), 16, -16 }, { (float)i * 16, (float)(ed->tilesets[name].height - j - 1) * 16 }, WHITE);
+            Tileset::DrawTileAttr(ed->tilesets[name].GetTilesetAttr(i, j), i, j, Tileset::EDITOR_TILE_SIZE);
         }
     }
+    EndTextureMode();
+    
+    // Hack, flip the Y coordinate by drawing it again.
+    BeginTextureMode(finalTarget);
+    DrawTexture(target.texture, 0, 0, WHITE);
     EndTextureMode();
 
 }
@@ -63,6 +91,7 @@ void AttributeEditor::DrawUI()
 
     // Draw layout.
     ImGui::Begin(("Attributes - " + name).c_str(), &open);
+    ImGui::SetWindowSize(ImVec2(500.0f, 500.0f), ImGuiCond_FirstUseEver);
     ed->focus.ObserveFocus();
     isFocused = ImGui::IsWindowFocused();
     const int itemWidth = 150;
@@ -88,6 +117,8 @@ void AttributeEditor::DrawUI()
     ImGui::RadioButton("Paint", &mode, 0);
     ImGui::SameLine();
     ImGui::RadioButton("Erase", &mode, 1);
+
+    // Calculate tileset image size and draw it.
     float w = ImGui::GetWindowWidth() - ImGui::GetCursorPosX();
     float h = ImGui::GetWindowHeight() - ImGui::GetCursorPosY();
     float texW = target.texture.width;
@@ -108,7 +139,7 @@ void AttributeEditor::DrawUI()
     imgSizeX = w;
     imgSizeY = h;
     ImVec2 tmp = ImGui::GetCursorPos();
-    RLImGuiImageSize(&target.texture, (int)h, (int)w);
+    RLImGuiImageSize(&finalTarget.texture, (int)h, (int)w);
     ImGui::SetCursorPos(tmp);
     ImGui::InvisibleButton("NoDrag", ImVec2((int)w, (int)h));
     ImGui::End();
@@ -129,48 +160,58 @@ void AttributeEditor::Update()
         return;
     }
 
-    // Get action.
-    int mouseX = GetMouseX();
-    int mouseY = GetMouseY();
-    if (ed->focus.mouseInWindow && \
-        mouseX > imgPos.x && \
-        mouseX < imgPos.x + imgSizeX && \
-        mouseY > imgPos.y && \
-        mouseY < imgPos.y + imgSizeY && \
-        isFocused && \
-        IsMouseButtonDown(MOUSE_LEFT_BUTTON)
-    )
+    // Get attribute selection.
+    float scale = imgSizeX / target.texture.width;
+    attrSelection.OneClickSelection(
+        Tileset::EDITOR_TILE_SIZE * scale,
+        MOUSE_LEFT_BUTTON,
+        isFocused,
+        0,
+        0,
+        Tileset::attrTex.width / Tileset::ATTR_TILE_SIZE,
+        Tileset::attrTex.height / Tileset::ATTR_TILE_SIZE,
+        imgPos.x + ed->tilesets[name].width * Tileset::EDITOR_TILE_SIZE * scale,
+        imgPos.y,
+        0,
+        0,
+        Tileset::attrTex.width * scale,
+        Tileset::attrTex.height * scale
+    );
+    if (attrSelection.validSelection)
     {
-        int tX = (mouseX - imgPos.x) / imgSizeX * (ed->tilesets[name].width + 16);
-        int tY = (mouseY - imgPos.y) / imgSizeY * max(ed->tilesets[name].height, (u16)16);
-        bool left = true;
-        if (tX >= ed->tilesets[name].width)
+        attrTile = Tileset::attrTex.width / Tileset::ATTR_TILE_SIZE * attrSelection.y + attrSelection.x;
+    }
+
+    // Get tile selection.
+    tileSelection.OneClickSelection(
+        Tileset::EDITOR_TILE_SIZE * scale,
+        MOUSE_LEFT_BUTTON,
+        isFocused,
+        0,
+        0,
+        ed->tilesets[name].width,
+        ed->tilesets[name].height,
+        imgPos.x,
+        imgPos.y,
+        0,
+        0,
+        ed->tilesets[name].width * Tileset::EDITOR_TILE_SIZE * scale,
+        ed->tilesets[name].height * Tileset::EDITOR_TILE_SIZE * scale
+    );
+
+    // Either paint or erase depending on the mode.
+    if (tileSelection.validSelection)
+    {
+        int tNum = ed->tilesets[name].width * tileSelection.y + tileSelection.x;
+        if (!mode)
         {
-            left = false;
-            tX -= ed->tilesets[name].width;
-        }
-        if (left)
-        {
-            if (tX >= 0 && tX < ed->tilesets[name].width && tY >= 0 && tY < ed->tilesets[name].height)
-            {
-                int tNum = ed->tilesets[name].width * tY + tX;
-                if (mode == 0 && attrTile != -1)
-                {
-                    ed->tilesets[name].tiles[tNum] = attrTile;
-                }
-                else if (mode == 1)
-                {
-                    ed->tilesets[name].tiles[tNum] = 0;
-                }
-            }
+            ed->tilesets[name].tiles[tNum] = attrTile;
         }
         else
         {
-            if (tY < 16 && tY >= 0 && tX >= 0 && tX < 16)
-            {
-                attrTile = tY * 16 + tX;
-            }
+            ed->tilesets[name].tiles[tNum] = 0;
         }
+        tileSelection.ClearSelection();
     }
 
 }
@@ -178,4 +219,5 @@ void AttributeEditor::Update()
 void AttributeEditor::Close()
 {
     UnloadRenderTexture(target);
+    UnloadRenderTexture(finalTarget);
 }
