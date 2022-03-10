@@ -23,19 +23,28 @@ struct TilesetEditor
     Selection selection; // Current tile selection.
     int selectedTile; // The selected tile ID.
     bool focused; // If the tileset editor is focused.
-    ImVec2 imgPos;
-    float imgSizeX;
-    float imgSizeY;
-    bool viewAttr = false;
-    bool allowLayer0 = false;
-    bool allowLayer1 = false;
-    bool allowLayer2 = false;
-    int currLayer = -1;
+    ImVec2 imgPos; // Position of the displayed tileset image.
+    float imgSizeX; // How wide the image will be displayed.
+    float imgSizeY; // How tall the image will be displayed.
+    bool viewAttr = false; // If to view the tileset attributes.
+    bool allowLayer0 = false; // Can paint this tileset on layer 0.
+    bool allowLayer1 = false; // Can paint this tileset on layer 1.
+    bool allowLayer2 = false; // Can paint this tileset on layer 2.
+    int currLayer = -1; // Current layer to paint on.
 
+    // Create a tileset editor to look at a tileset.
     TilesetEditor(Editor* ed, string name, float tileSize);
+
+    // Draw the displayed tileset image.
     void Draw();
+    
+    // Draw the user interface.
     void DrawUI();
+
+    // Update logic for the editor.
     void Update();
-    void CalcTiles();
+
+    // Close the editor.
     void Close();
+
 };

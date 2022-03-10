@@ -105,7 +105,7 @@ void TilesetEditor::DrawUI()
     ImGui::Begin(("Tileset - " + name).c_str(), &open);
     ImGui::SetWindowSize(ImVec2(500.0f, 500.0f), ImGuiCond_FirstUseEver);
     ed->focus.ObserveFocus();
-    focused = ImGui::IsWindowFocused();
+    focused = ImGui::IsWindowHovered();
     if (allowLayer0)
     {
         ImGui::RadioButton("Foreground", &currLayer, 0);
@@ -128,6 +128,8 @@ void TilesetEditor::DrawUI()
     {
         ed->OpenAttrEditor(name);
     }
+
+    // Scale the tileset image properly.
     float w = ImGui::GetWindowWidth() - ImGui::GetCursorPosX();
     float h = ImGui::GetWindowHeight() - ImGui::GetCursorPosY();
     float texW = target.texture.width;
@@ -144,6 +146,8 @@ void TilesetEditor::DrawUI()
         w = texW * scale;
         h = texH * scale;
     }
+
+    // Set variables, draw the tileset image, and use an invisible button to prevent moving the window when selecting tiles.
     imgPos = ImGui::GetCursorScreenPos();
     imgSizeX = w;
     imgSizeY = h;
@@ -193,9 +197,14 @@ void TilesetEditor::Update()
         ed->RemoveAllOtherTilesetViewerSelections(this);
         ed->editingTileset = this;
     }
-    else
+    else if (!selection.validSelection || selection.isSelecting)
     {
         selectedTile = -1;
+    }
+    if (selection.isSelecting)
+    {
+        ed->RemoveAllOtherTilesetViewerSelections(this);
+        ed->editingTileset = this;
     }
 
 }

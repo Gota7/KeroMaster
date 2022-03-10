@@ -1,6 +1,7 @@
 #include "selection.h"
 #include "raylib.h"
 #include <algorithm>
+#include <stdio.h>
 
 void Selection::ClearSelection()
 {
@@ -39,10 +40,10 @@ bool Selection::MouseInCanvas(float xOff, float yOff, float canvasXMin, float ca
 {
     float mouseX = GetMouseX() - xOff;
     float mouseY = GetMouseY() - yOff;
-    if (canvasXMin && mouseX < canvasXMin) return false;
-    if (canvasXMax && mouseX > canvasXMax) return false;
-    if (canvasYMin && mouseY < canvasYMin) return false;
-    if (canvasYMax && mouseY > canvasYMax) return false;
+    if (canvasXMin != NAN && mouseX < canvasXMin) return false;
+    if (canvasXMax != NAN && mouseX > canvasXMax) return false;
+    if (canvasYMin != NAN && mouseY < canvasYMin) return false;
+    if (canvasYMax != NAN && mouseY > canvasYMax) return false;
     return true;
 }
 
@@ -62,7 +63,6 @@ void Selection::Update(float tileSize, int selectionButton, bool focused, int mi
 {
 
     // Initial click.
-    printf("%d\n", MouseInCanvas(xOff, yOff, canvasXMin, canvasYMin, canvasXMax, canvasYMax));
     if (MouseInCanvas(xOff, yOff, canvasXMin, canvasYMin, canvasXMax, canvasYMax) && IsMouseButtonPressed(selectionButton) && focused)
     {
         int mouseX = GetMouseX();

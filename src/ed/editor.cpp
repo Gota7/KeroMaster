@@ -1051,12 +1051,12 @@ void Editor::ResizeAllTilesetViewers(std::string name)
 
 void Editor::RemoveAllOtherTilesetViewerSelections(TilesetEditor* exclude)
 {
-    currentTile = -1;
     for (int i = 0; i < tilesetEditors.size(); i++)
     {
         if (&tilesetEditors[i] != exclude)
         {
             tilesetEditors[i].selection.ClearSelection();
+            tilesetEditors[i].selectedTile = -1;
         }
     }
 }
