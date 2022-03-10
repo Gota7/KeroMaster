@@ -64,16 +64,14 @@ void TilesetEditor::Draw()
     }
 
     // Draw the currently selected tile.
-    if (currTile >= 0 && currTile < ed->tilesets[name].width * ed->tilesets[name].height)
+    if (selection.validSelection)
     {
-        u16 x = currTile % ed->tilesets[name].width;
-        u16 y = currTile / ed->tilesets[name].width;
         DrawRectangleLinesEx(
             {
-                (float)x * Tileset::EDITOR_TILE_SIZE,
-                (float)y * Tileset::EDITOR_TILE_SIZE,
-                (float)selectionWidth * Tileset::EDITOR_TILE_SIZE,
-                (float)selectionHeight * Tileset::EDITOR_TILE_SIZE
+                (float)selection.x * Tileset::EDITOR_TILE_SIZE,
+                (float)selection.y * Tileset::EDITOR_TILE_SIZE,
+                (float)selection.width * Tileset::EDITOR_TILE_SIZE,
+                (float)selection.height * Tileset::EDITOR_TILE_SIZE
             },
             2,
             WHITE);
@@ -105,7 +103,9 @@ void TilesetEditor::DrawUI()
 
     // Determine which layers are allowed and selected.
     ImGui::Begin(("Tileset - " + name).c_str(), &open);
+    ImGui::SetWindowSize(ImVec2(500.0f, 500.0f), ImGuiCond_FirstUseEver);
     ed->focus.ObserveFocus();
+    focused = ImGui::IsWindowFocused();
     if (allowLayer0)
     {
         ImGui::RadioButton("Foreground", &currLayer, 0);
@@ -169,76 +169,35 @@ void TilesetEditor::Update()
         return;
     }
 
-    // Check.
-    if (currTile >= ed->tilesets[name].width * ed->tilesets[name].height)
-    {
-        currTile = -1;
-    }
+    // Update selection.
+    selection.Update(
+        imgSizeX / ed->tilesets[name].width,
+        MOUSE_LEFT_BUTTON,
+        focused,
+        0,
+        0,
+        ed->tilesets[name].width,
+        ed->tilesets[name].height,
+        imgPos.x,
+        imgPos.y,
+        0,
+        0,
+        imgSizeX,
+        imgSizeY
+    );
 
-    // Tile clicked.
-    int mouseX = GetMouseX();
-    int mouseY = GetMouseY();
-    if (ed->focus.mouseInWindow && \
-        mouseX > imgPos.x && \
-        mouseX < imgPos.x + imgSizeX && \
-        mouseY > imgPos.y && \
-        mouseY < imgPos.y + imgSizeY && \
-        IsMouseButtonPressed(MOUSE_LEFT_BUTTON)
-    )
+    // Update editor's selection.
+    if (selection.validSelection && !selection.isSelecting && focused)
     {
-        startMouseX = mouseX;
-        startMouseY = mouseY;
-        CalcTiles();
-        selectingTiles = true;
-    }
-    else if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON) && selectingTiles)
-    {
-        selectingTiles = false;
-        CalcTiles();
-    }
-    else if (selectingTiles)
-    {
-        CalcTiles();
-    }
-
-}
-
-void TilesetEditor::CalcTiles()
-{
-    int mouseX = GetMouseX();
-    int mouseY = GetMouseY();
-    int startTileX = (startMouseX - imgPos.x) / imgSizeX * ed->tilesets[name].width;
-    int startTileY = (startMouseY - imgPos.y) / imgSizeY * ed->tilesets[name].height;
-    int endTileX = (mouseX - imgPos.x) / imgSizeX * ed->tilesets[name].width;
-    int endTileY = (mouseY - imgPos.y) / imgSizeY * ed->tilesets[name].height;
-    if (endTileX >= ed->tilesets[name].width)
-    {
-        endTileX = ed->tilesets[name].width - 1;
-    }
-    else if (endTileX < 0)
-    {
-        endTileX = 0;
-    }
-    if (endTileY >= ed->tilesets[name].height)
-    {
-        endTileY = ed->tilesets[name].height - 1;
-    }
-    else if (endTileY < 0)
-    {
-        endTileY = 0;
-    }
-    int currTileX;
-    int currTileY;
-    currTileX = min(startTileX, endTileX);
-    currTileY = min(startTileY, endTileY);
-    selectionWidth = abs(endTileX - startTileX) + 1;
-    selectionHeight = abs(endTileY - startTileY) + 1;
-    currTile = currTileX + currTileY * ed->tilesets[name].width;
-    if (currTile != -1)
-    {
+        selectedTile = selection.y * ed->tilesets[name].width + selection.x;
         ed->RemoveAllOtherTilesetViewerSelections(this);
         ed->editingTileset = this;
     }
+    else
+    {
+        selectedTile = -1;
+    }
+
 }
 
 void TilesetEditor::Close()
@@ -249,4 +208,5 @@ void TilesetEditor::Close()
     }
     open = false;
     UnloadRenderTexture(target);
+    UnloadRenderTexture(finalTarget);
 }

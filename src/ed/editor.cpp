@@ -225,10 +225,10 @@ void Editor::Draw()
     int numTilesY = selectionHeight;
     if (tileDraw == -1 && editingTileset != nullptr)
     {
-        tileDraw = editingTileset->currTile;
+        tileDraw = editingTileset->selectedTile;
         layerDraw = editingTileset->currLayer;
-        numTilesX = editingTileset->selectionWidth;
-        numTilesY = editingTileset->selectionHeight;
+        numTilesX = editingTileset->selection.width;
+        numTilesY = editingTileset->selection.height;
     }
     if (currentTool == EditorTool::TileBrush && tileDraw != -1)
     {
@@ -1056,7 +1056,7 @@ void Editor::RemoveAllOtherTilesetViewerSelections(TilesetEditor* exclude)
     {
         if (&tilesetEditors[i] != exclude)
         {
-            tilesetEditors[i].currTile = -1;
+            tilesetEditors[i].selection.ClearSelection();
         }
     }
 }
@@ -1161,10 +1161,10 @@ void Editor::CheckEdit()
     int placeH = selectionHeight;
     if (placeTile == -1 && editingTileset != nullptr)
     {
-        placeTile = editingTileset->currTile;
+        placeTile = editingTileset->selectedTile;
         placeLayer = editingTileset->currLayer;
-        placeW = editingTileset->selectionWidth;
-        placeH = editingTileset->selectionHeight;
+        placeW = editingTileset->selection.width;
+        placeH = editingTileset->selection.height;
     }
     PxMap& layer = map.maps[placeLayer];
     if (placeTile != -1 && tileX >= 0 && tileX < layer.width && tileY >= 0 && tileY < layer.height && !isSelecting) {

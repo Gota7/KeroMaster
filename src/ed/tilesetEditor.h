@@ -6,6 +6,7 @@
 #include <string.h>
 #include "../px/tileset.h"
 #include "editor.h"
+#include "selection.h"
 
 using namespace std;
 
@@ -19,16 +20,13 @@ struct TilesetEditor
     RenderTexture2D target; // Where to draw the texture.
     RenderTexture2D finalTarget; // After transforming the original target (thanks OpenGL coordinates).
     float tileSize; // How big each tile is.
-    int currTile = -1;
-    int selectionWidth;
-    int selectionHeight;
+    Selection selection; // Current tile selection.
+    int selectedTile; // The selected tile ID.
+    bool focused; // If the tileset editor is focused.
     ImVec2 imgPos;
     float imgSizeX;
     float imgSizeY;
     bool viewAttr = false;
-    bool selectingTiles = false;
-    int startMouseX;
-    int startMouseY;
     bool allowLayer0 = false;
     bool allowLayer1 = false;
     bool allowLayer2 = false;
