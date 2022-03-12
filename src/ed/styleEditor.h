@@ -1,7 +1,5 @@
 #pragma once
 
-#include "editor.h"
-#include "rlImGui/utils.h"
 #include <string>
 
 struct Editor;

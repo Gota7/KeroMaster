@@ -1,4 +1,7 @@
 #include "musicPlayer.h"
+#include "editor.h"
+#include "../bgm/bgm.h"
+#include "imgui.h"
 
 MusicPlayer::MusicPlayer(Editor* ed)
 {
@@ -13,7 +16,7 @@ void MusicPlayer::DrawUI()
     ImGui::Begin("Music Player", &open, ImGuiWindowFlags_AlwaysAutoResize);
     ed->focus.ObserveFocus();
     ImGui::Combo("Song", &BgmPlayer::currSongInd, BgmPlayer::songs, BgmPlayer::numSongs);
-    ImGui::ProgressBar(BgmPlayer::GetPos() / (float)max(BgmPlayer::GetEnd(), 1));
+    ImGui::ProgressBar(BgmPlayer::GetPos() / (float)std::max(BgmPlayer::GetEnd(), 1));
     ImGui::SliderFloat("Volume", &BgmPlayer::volume, 0, 1, "%f", 1);
     if (ImGui::Button("Play"))
     {

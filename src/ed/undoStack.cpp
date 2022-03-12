@@ -1,4 +1,5 @@
 #include "undoStack.h"
+#include "editor.h"
 
 void UndoStack::SetMaxLen(int maxSize)
 {

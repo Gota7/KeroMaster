@@ -1,5 +1,8 @@
 #include "profileEditor.h"
+#include "editor.h"
+#include "../px/profile.h"
 #include "../rlImGui/dateChooser.h"
+#include "../rlImGui/utils.h"
 
 // Keycodes.
 const char* WIN_KEYCODES[] =
@@ -301,7 +304,7 @@ void ProfileEditor::DrawUI()
         }
         for (int i = 0; i < Profile::NUM_SAVES; i++)
         {
-            if (ImGui::BeginTabItem(("Save " + to_string(i)).c_str()))
+            if (ImGui::BeginTabItem(("Save " + std::to_string(i)).c_str()))
             {
                 DrawSaveInfo(itemWidth, i);
                 ImGui::EndTabItem();

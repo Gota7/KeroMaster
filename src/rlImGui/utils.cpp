@@ -1,13 +1,11 @@
 #include "utils.h"
 #include "raylib.h"
 
-using namespace std;
-
-vector<string> ReadFilesFromDir(string path, bool includeExt)
+std::vector<std::string> ReadFilesFromDir(std::string path, bool includeExt)
 {
     int numFiles;
     char** files = GetDirectoryFiles(path.c_str(), &numFiles);
-    vector<string> ret;
+    std::vector<std::string> ret;
     for (int i = 0; i < numFiles; i++)
     {
         if (strcmp(files[i], ".") != 0 && strcmp(files[i], "..") != 0)
@@ -25,14 +23,14 @@ vector<string> ReadFilesFromDir(string path, bool includeExt)
     return ret;
 }
 
-char* ConvertStrRef(const string& s)
+char* ConvertStrRef(const std::string& s)
 {
    char* pc = new char[s.size()+1];
    strcpy(pc, s.c_str());
    return pc; 
 }
 
-char** GenImGuiStringList(vector<string>& strings, int* outStringCount)
+char** GenImGuiStringList(std::vector<std::string>& strings, int* outStringCount)
 {
     char** ret;
     *outStringCount = strings.size();
@@ -53,7 +51,7 @@ void DelImGuiStringList(char** ptr, int stringCount)
     delete[] ptr;
 }
 
-void ImGuiNumEdit(string name, s64& data, size_t min, size_t max, string format)
+void ImGuiNumEdit(std::string name, s64& data, size_t min, size_t max, std::string format)
 {
     float spacing = ImGui::GetStyle().ItemInnerSpacing.x;
     ImGui::PushButtonRepeat(true);
@@ -65,7 +63,7 @@ void ImGuiNumEdit(string name, s64& data, size_t min, size_t max, string format)
     ImGui::PopButtonRepeat();
 }
 
-void ImGuiTooltip(string tip)
+void ImGuiTooltip(std::string tip)
 {
     ImGui::SameLine();
     ImGui::TextDisabled("(?)");
@@ -77,12 +75,12 @@ void ImGuiTooltip(string tip)
     }
 }
 
-bool ImGuiStringEdit(const char* label, string* toEdit)
+bool ImGuiStringEdit(const char* label, std::string* toEdit)
 {
     char buf[128];
     strcpy(buf, &(*toEdit)[0]);
     bool ret = ImGui::InputText(label, buf, 128);
-    *toEdit = string(buf);
+    *toEdit = std::string(buf);
     return ret;
 }
 

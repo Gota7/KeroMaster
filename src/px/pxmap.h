@@ -6,9 +6,11 @@
 #include <map>
 #include "str.h"
 #include "gbin/gtypes.h"
-#include "tileset.h"
-#include "../ed/entityDisplay.h"
-#include "../conv/conv.h"
+
+// Forward declarations.
+struct Entity;
+struct EntityDisplay;
+struct Tileset;
 
 // Level data constants.
 const int NUM_REFERENCES = 5;
@@ -96,7 +98,7 @@ struct Map
     void Unload(std::map<std::string, Tileset>& tilesets);
 
     // Write the map data.
-    void Write(string rsc_k, string mapName);
+    void Write(std::string rsc_k, std::string mapName);
 
     // Clear the screen with the map's background color.
     void Clear();
@@ -105,7 +107,7 @@ struct Map
     float TileSize(int layerNum);
 
     // Draw a map layer using the loaded tilesets.
-    void DrawLayer(u8 layerNum, std::map<string, Tileset>& tilesets, Vector2 origin, bool showAttr);
+    void DrawLayer(u8 layerNum, std::map<std::string, Tileset>& tilesets, Vector2 origin, bool showAttr);
 
     // Draw the entities on the map using the loaded tilesets.
     void DrawEntities(std::map<u8, EntityDisplay>& entities, std::map<std::string, Tileset>& tilesets, Vector2 origin, bool debug = false);

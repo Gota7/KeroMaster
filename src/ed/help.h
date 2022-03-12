@@ -1,7 +1,6 @@
 #pragma once
 
-#include "raylib.h"
-#include "imgui.h"
-#include "../rlImGui/focusData.h"
+struct FocusData;
 
+// Show the help menu.
 void ShowHelp(FocusData* focus, bool* showHelp, bool modal);

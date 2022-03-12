@@ -38,7 +38,7 @@ static int EditorLoop() {
         e.LoadFixedTilesets();
         BgmPlayer::Init(e.settings.rscPath);
         BgmPlayer::LoadSongList();
-    } catch (string &e) {
+    } catch (std::string &e) {
         TraceLog(LOG_ERROR, "Failed to load game data: %s\n", e.c_str());
         return 1;
     }

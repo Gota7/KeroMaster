@@ -1,13 +1,27 @@
+#include "editor.h"
+#include "attributeEditor.h"
+#include "entityDisplay.h"
+#include "entityEditor.h"
+#include "help.h"
+#include "levelEditor.h"
+#include "musicPlayer.h"
+#include "profileEditor.h"
+#include "scriptEditor.h"
+#include "settings.h"
+#include "styleEditor.h"
+#include "tilesetEditor.h"
+#include "undoStack.h"
+#include "tools/hand.h"
+#include "../bgm/bgm.h"
+#include "../px/pxmap.h"
+#include "../px/tileset.h"
+#include "../rlImGui/fileBrowser.h"
+#include "../rlImGui/utils.h"
 #include <iostream>
 #include <fstream>
 #include <imgui.h>
-#include "editor.h"
-#include "help.h"
-#include "../bgm/bgm.h"
-#include "../rlImGui/fileBrowser.h"
-#include "../rlImGui/utils.h"
 
-std::map<string, Tileset> Editor::tilesets;
+std::map<std::string, Tileset> Editor::tilesets;
 std::map<u8, EntityDisplay> Editor::entities;
 Settings Editor::settings;
 Color Editor::fadeColor = { 255, 0, 0, 255 };
@@ -15,6 +29,7 @@ double Editor::timer;
 bool Editor::doFullscreen = false;
 const float MIN_ZOOM = 0.25;
 const float MAX_ZOOM = 10.0;
+std::vector<Tool> Editor::tools = { HandTool() };
 
 using namespace imgui_addons;
 
@@ -27,19 +42,24 @@ int cmpstr(const void* a, const void* b)
     return strcmp(aa, bb);
 }
 
-void Editor::SetPath(string rsc)
+void Editor::Init()
+{
+    currTool = &tools[0];
+}
+
+void Editor::SetPath(std::string rsc)
 {
     this->rsc = rsc;
 }
 
-void Editor::LoadEnemies(string xmlName)
+void Editor::LoadEnemies(std::string xmlName)
 {
     entities = LoadXML(xmlName);
     if (!entityEditor) entityEditor = new EntityEditor(this);
     entityEditor->LoadEntityListing();
 }
 
-void Editor::LoadTileset(string tilesetName)
+void Editor::LoadTileset(std::string tilesetName)
 {
     Tileset t;
     t.Load(rsc, tilesetName);
@@ -48,10 +68,10 @@ void Editor::LoadTileset(string tilesetName)
 
 void Editor::LoadFixedTilesets()
 {
-    fstream f;
-    f.open("object_data/alwaysLoaded.txt", ios::in);
-    string s;
-    while (getline(f, s))
+    std::fstream f;
+    f.open("object_data/alwaysLoaded.txt", std::ios::in);
+    std::string s;
+    while (std::getline(f, s))
     {
         LoadTileset(s);
     }
@@ -60,7 +80,7 @@ void Editor::LoadFixedTilesets()
     Tileset::unitType = LoadTexture("object_data/unittype.png");
 }
 
-void Editor::LoadLevel(string name)
+void Editor::LoadLevel(std::string name)
 {
     if (enabled)
     {
@@ -260,7 +280,7 @@ void Editor::Draw()
         if (tileY < 0) { draw = false; }
         if (tileX > 0xFFFF) { draw = false; }
         if (tileY > 0xFFFF) { draw = false; }
-        string tilesetNames[3];
+        std::string tilesetNames[3];
         tilesetNames[0] = map.tilesets[0].dat;
         tilesetNames[1] = map.tilesets[1].dat;
         tilesetNames[2] = map.tilesets[2].dat;
@@ -362,7 +382,7 @@ void Editor::DrawMainMenu(bool startup)
     // Vars.
     static int numFiles;
     static char** files;
-    static string newFileName = "";
+    static std::string newFileName = "";
     bool openPopup = false;
     bool openSettings = false;
     bool doNew = !startup && (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && IsKeyDown(KEY_N);
@@ -806,8 +826,8 @@ void Editor::DrawPalette()
             }
             int currTileX;
             int currTileY;
-            currTileX = min(startTileX, endTileX);
-            currTileY = min(startTileY, endTileY);
+            currTileX = std::min(startTileX, endTileX);
+            currTileY = std::min(startTileY, endTileY);
             selectionWidth = abs(endTileX - startTileX) + 1;
             selectionHeight = abs(endTileY - startTileY) + 1;
             currentTile = currTileX + currTileY * te->second.width;
@@ -1003,6 +1023,14 @@ void Editor::Update()
 
     // Panning.
     CheckPan();
+    /*std::vector<int> handButtons;
+    if (currentTool == EditorTool::Hand)
+    {
+        handButtons.push_back(MOUSE_BUTTON_LEFT);
+    }
+    handButtons.push_back(MOUSE_BUTTON_RIGHT);
+    tools[0].SetActive(this, handButtons);
+    tools[0].Update(this);*/
     
     // Scrolling.
     CheckScroll();
@@ -1044,7 +1072,7 @@ void Editor::ResizeAllTilesetViewers(std::string name)
         if (attrEditors[i].open && strcmp(attrEditors[i].name.c_str(), name.c_str()) == 0)
         {
             UnloadRenderTexture(attrEditors[i].target);
-            attrEditors[i].target = LoadRenderTexture(tilesets[name].width * 8 * 2 + (float)Tileset::attrTex.width, max((float)tilesets[name].height * 8 * 2, (float)Tileset::attrTex.height));
+            attrEditors[i].target = LoadRenderTexture(tilesets[name].width * 8 * 2 + (float)Tileset::attrTex.width, std::max((float)tilesets[name].height * 8 * 2, (float)Tileset::attrTex.height));
         }
     }
 }

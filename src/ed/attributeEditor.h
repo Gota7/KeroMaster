@@ -2,6 +2,8 @@
 
 #include "editor.h"
 #include "selection.h"
+#include "raylib.h"
+#include <imgui.h>
 #include <string>
 
 struct Editor;
@@ -11,7 +13,7 @@ struct AttributeEditor
     Editor* ed; // Referenced editor.
     RenderTexture2D target; // Target to draw displayed image to.
     RenderTexture2D finalTarget; // Final flipped image hack.
-    string name; // Tileset name.
+    std::string name; // Tileset name.
     float tileSize; // Tile size.
     bool open = false; // Window is open.
     ImVec2 imgPos; // Position of the image to display.

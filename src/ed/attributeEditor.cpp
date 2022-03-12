@@ -1,4 +1,6 @@
 #include "attributeEditor.h"
+#include "editor.h"
+#include "../px/tileset.h"
 #include "../rlImGui/rlImGui.h"
 
 AttributeEditor::AttributeEditor(Editor* ed, std::string name, float tileSize)
@@ -18,7 +20,7 @@ AttributeEditor::AttributeEditor(Editor* ed, std::string name, float tileSize)
     }
     target = LoadRenderTexture(
         ed->tilesets[name].width * Tileset::EDITOR_TILE_SIZE + (float)Tileset::attrTex.width,
-        max((float)ed->tilesets[name].height * Tileset::EDITOR_TILE_SIZE, (float)Tileset::attrTex.height)
+        std::max((float)ed->tilesets[name].height * Tileset::EDITOR_TILE_SIZE, (float)Tileset::attrTex.height)
     ); // Height is just the bigger of the two.
     finalTarget = LoadRenderTexture(target.texture.width, target.texture.height);
 }
@@ -59,8 +61,8 @@ void AttributeEditor::Draw()
     );
     
     // Draw the selected attribute.
-    u16 x = attrTile % 16;
-    u16 y = attrTile / 16;
+    u16 x = attrTile % (int)Tileset::ATTR_TILE_SIZE;
+    u16 y = attrTile / Tileset::ATTR_TILE_SIZE;
     DrawRectangleLinesEx(Tileset::GetDestRect(x, y, Tileset::EDITOR_TILE_SIZE, { (float)ed->tilesets[name].width * Tileset::EDITOR_TILE_SIZE, 0 }), 1, ColorAlpha(YELLOW, .5f));
     
     // Draw each regular attribute.

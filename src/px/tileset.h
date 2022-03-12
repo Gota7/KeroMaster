@@ -1,11 +1,8 @@
 #pragma once
 
 #include <string>
-#include <string.h>
 #include <raylib.h>
 #include "gbin/gfile.h"
-
-using namespace std;
 
 // Tilesets used for levels.
 struct Tileset
@@ -28,13 +25,13 @@ struct Tileset
     constexpr static float UNIT_TYPE_TILE_SIZE = 16;
 
     // Load a tileset from the tileset section of the resource folder.
-    void Load(string rsc_k, string tilesetName);
+    void Load(std::string rsc_k, std::string tilesetName);
 
     // Unload the current tileset.
     void Unload();
 
     // Save this tileset to the tileset section of the resource folder.
-    void Write(string rsc_k, string tilesetName);
+    void Write(std::string rsc_k, std::string tilesetName);
 
     // Get tileset attributes at a tile index.
     u8 GetTilesetAttr(u8 index);

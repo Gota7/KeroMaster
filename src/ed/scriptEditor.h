@@ -1,7 +1,7 @@
 #pragma once
 
-#include "editor.h"
 #include <string>
+#include "imgui.h"
 
 struct Editor;
 

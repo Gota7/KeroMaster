@@ -1,8 +1,9 @@
 #pragma once
 
-#include "editor.h"
+#include "../types.h"
 
 struct Editor;
+struct Profile;
 
 // For editing save data.
 struct ProfileEditor

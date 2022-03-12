@@ -6,16 +6,14 @@
 #include <string>
 #include <cstring>
 
-using namespace std;
-
 struct Editor;
 enum class EditorTool;
 struct FocusData;
 
 struct Settings
 {
-    string rscPath = "";
-    string lastLevel = "";
+    std::string rscPath = "";
+    std::string lastLevel = "";
     bool usePalette = true;
     EditorTool leftClick = (EditorTool)4;
     EditorTool rightClick = (EditorTool)0;

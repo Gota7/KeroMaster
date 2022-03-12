@@ -2,7 +2,7 @@
 
 #include <deque>
 #include "../types.h"
-#include "editor.h"
+#include "entityDisplay.h"
 
 struct Editor;
 

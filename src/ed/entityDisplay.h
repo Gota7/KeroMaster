@@ -4,13 +4,12 @@
 #include <cstring>
 #include <map>
 #include <stdexcept>
-#include "../tinyxml2/tinyxml2.h"
-#include "../px/tileset.h"
+#include <vector>
+#include "raylib.h"
 #include "../px/str.h"
 #include "../types.h"
 
-using namespace std;
-using namespace tinyxml2;
+struct Tileset;
 
 // Entity data constants.
 const int NUM_PARAMETERS = 3;
@@ -40,7 +39,7 @@ struct EntityTile
     u16 numTilesY = 1; // Height in tiles.
     s8 xOffPixels = 0; // Destination x offset in pixels.
     s8 yOffPixels = 0; // Destination y offset in pixels.
-    string tileset = ""; // Tileset to use. It can be a fixed one, blank for the NPC sheet, or /0, /1, or /2 for corresponding map tilesets.
+    std::string tileset = ""; // Tileset to use. It can be a fixed one, blank for the NPC sheet, or /0, /1, or /2 for corresponding map tilesets.
     u8 flagMode = true; // If this tile only appears if a bit in flags is set.
     u8 flagBit = 0; // The bit in flags to be set to show this tile if in flag mode. 1 is added, as 0 means disabled.
     u16 unkDraw = 0; // Draw using the unknown parameter. 1 is added to this as 0 means disabled.
@@ -49,14 +48,14 @@ struct EntityTile
 // Entity display information.
 struct EntityDisplay
 {
-    string name = ""; // Entity name.
-    string description = ""; // What the entity does.
+    std::string name = ""; // Entity name.
+    std::string description = ""; // What the entity does.
     int numTiles = 0; // Number of entity tiles.
     EntityTile* tiles; // Entity tiles to display.
     bool allowRollYourOwnSprite = true; // Allow for custom sprites to show specified by a parameter.
-    static string parameterNames[3]; // Names of each parameter.
-    static string parameterDescriptions[3]; // How the parameters work.
-    static map<string, vector<EntityTile>> rollYourOwnSprite; // Maps strings to sprites that can be shown in game.
+    static std::string parameterNames[3]; // Names of each parameter.
+    static std::string parameterDescriptions[3]; // How the parameters work.
+    static std::map<std::string, std::vector<EntityTile>> rollYourOwnSprite; // Maps strings to sprites that can be shown in game.
     static float transparency; // Transparency of the entity to display.
 
     // Draw a box with the entity ID.
@@ -69,12 +68,12 @@ struct EntityDisplay
     void DrawEntityTiles(Tileset& ts, u16 x, u16 y, u16 width, u16 height, s32 tileX, s32 tileY, Vector2 offset = { 0, 0 });
 
     // Draw an entity tile.
-    void DrawEntityTile(EntityTile* tile, map<string, Tileset>& loadedTilesets, string spriteSheet, string tilesetNames[3], s32 tileX, s32 tileY, Vector2 offset = { 0, 0 });
+    void DrawEntityTile(EntityTile* tile, std::map<std::string, Tileset>& loadedTilesets, std::string spriteSheet, std::string tilesetNames[3], s32 tileX, s32 tileY, Vector2 offset = { 0, 0 });
 
     // Draw an entity.
-    void Draw(Entity* entity, map<string, Tileset>& loadedTilesets, string spriteSheet, string tilesetNames[3], bool debug = false, Vector2 offset = { 0, 0 });
+    void Draw(Entity* entity, std::map<std::string, Tileset>& loadedTilesets, std::string spriteSheet, std::string tilesetNames[3], bool debug = false, Vector2 offset = { 0, 0 });
 
 };
 
 // Load an XML map for all entities.
-map<u8, EntityDisplay> LoadXML(string game);
+std::map<u8, EntityDisplay> LoadXML(std::string game);

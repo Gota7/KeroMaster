@@ -1,5 +1,7 @@
 #include "styleEditor.h"
 #include <algorithm>
+#include "editor.h"
+#include "../rlImGui/utils.h"
 
 StyleEditor::StyleEditor(Editor* ed)
 {

@@ -2,18 +2,15 @@
 #include "inicpp.h"
 #include "../rlImGui/rlImGui.h"
 
-using namespace std;
-using namespace ini;
-
-void EditorStyle::Load(string name)
+void EditorStyle::Load(std::string name)
 {
     this->name = name;
-    if (strcmp(name.c_str(), "default") == 0)
+    if (name == "default")
     {
         ImGui::StyleColorsClassic(&style);
         return;
     }
-    IniFile t = IniFile("object_data/themes/" + name + ".ini");
+    ini::IniFile t = ini::IniFile("object_data/themes/" + name + ".ini");
     style.Alpha = t["Theme"]["Alpha"].as<float>();
     style.AntiAliasedFill = t["Theme"]["AntiAliasedFill"].as<bool>();
     style.AntiAliasedLines = t["Theme"]["AntiAliasedLines"].as<bool>();
@@ -28,10 +25,10 @@ void EditorStyle::Load(string name)
     style.ColorButtonPosition = (ImGuiDir)t["Theme"]["ColorButtonPosition"].as<int>();
     for (int i = 0; i < 53; i++)
     {
-        style.Colors[i].x = t["Theme"]["ColorR_" + to_string(i)].as<float>();
-        style.Colors[i].y = t["Theme"]["ColorG_" + to_string(i)].as<float>();
-        style.Colors[i].z = t["Theme"]["ColorB_" + to_string(i)].as<float>();
-        style.Colors[i].w = t["Theme"]["ColorA_" + to_string(i)].as<float>();
+        style.Colors[i].x = t["Theme"]["ColorR_" + std::to_string(i)].as<float>();
+        style.Colors[i].y = t["Theme"]["ColorG_" + std::to_string(i)].as<float>();
+        style.Colors[i].z = t["Theme"]["ColorB_" + std::to_string(i)].as<float>();
+        style.Colors[i].w = t["Theme"]["ColorA_" + std::to_string(i)].as<float>();
     }
     style.ColumnsMinSpacing = t["Theme"]["ColumnsMinSpacing"].as<float>();
     style.CurveTessellationTol = t["Theme"]["CurveTessellationTol"].as<float>();
@@ -77,11 +74,11 @@ void EditorStyle::Load(string name)
 
 void EditorStyle::Save()
 {
-    if (strcmp(name.c_str(), "default") == 0)
+    if (name == "default")
     {
         return;
     }
-    IniFile t;
+    ini::IniFile t;
     t["Theme"]["Alpha"] = style.Alpha;
     t["Theme"]["AntiAliasedFill"] = style.AntiAliasedFill;
     t["Theme"]["AntiAliasedLines"] = style.AntiAliasedLines;
@@ -96,10 +93,10 @@ void EditorStyle::Save()
     t["Theme"]["ColorButtonPosition"] = (int)style.ColorButtonPosition;
     for (int i = 0; i < 53; i++)
     {
-        t["Theme"]["ColorR_" + to_string(i)] = style.Colors[i].x;
-        t["Theme"]["ColorG_" + to_string(i)] = style.Colors[i].y;
-        t["Theme"]["ColorB_" + to_string(i)] = style.Colors[i].z;
-        t["Theme"]["ColorA_" + to_string(i)] = style.Colors[i].w;
+        t["Theme"]["ColorR_" + std::to_string(i)] = style.Colors[i].x;
+        t["Theme"]["ColorG_" + std::to_string(i)] = style.Colors[i].y;
+        t["Theme"]["ColorB_" + std::to_string(i)] = style.Colors[i].z;
+        t["Theme"]["ColorA_" + std::to_string(i)] = style.Colors[i].w;
     }
     t["Theme"]["ColumnsMinSpacing"] = style.ColumnsMinSpacing;
     t["Theme"]["CurveTessellationTol"] = style.CurveTessellationTol;

@@ -1,4 +1,9 @@
 #include "entityEditor.h"
+#include <vector>
+#include "entityDisplay.h"
+#include "editor.h"
+#include "../rlImGui/utils.h"
+#include "imgui.h"
 
 EntityEditor::EntityEditor(Editor* ed)
 {
@@ -9,12 +14,12 @@ void EntityEditor::LoadEntityListing()
 {
     std::vector<std::string> defaultListing;
     std::fstream f;
-    f.open("object_data/unittype.txt", ios::in);
+    f.open("object_data/unittype.txt", std::ios::in);
     for (u16 i = 0; i <= 255; i++)
     {
         std::string defaultStr;
         std::getline(f, defaultStr);
-        defaultListing.push_back(to_string(i) + " - " + (ed->entities.find(i) != ed->entities.end() ? ed->entities[i].name : defaultStr));
+        defaultListing.push_back(std::to_string(i) + " - " + (ed->entities.find(i) != ed->entities.end() ? ed->entities[i].name : defaultStr));
     }
     f.close();
     entityListing = GenImGuiStringList(defaultListing, &numEntities);

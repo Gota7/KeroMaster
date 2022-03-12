@@ -15,8 +15,6 @@
 #define __bswap_64(x) _byteswap_uint64(x)
 #endif
 
-using namespace std;
-
 u32 GFile::systemEndian = 0;
 enum e_endian
 {
@@ -330,9 +328,9 @@ f64 GFile::ReadF64()
     return tmp;
 }
 
-string GFile::ReadStr()
+std::string GFile::ReadStr()
 {
-    string ret = "";
+    std::string ret = "";
     char c = ReadU8();
     while (c != 0)
     {
@@ -342,9 +340,9 @@ string GFile::ReadStr()
     return ret;
 }
 
-string GFile::ReadStrFixed(u32 len)
+std::string GFile::ReadStrFixed(u32 len)
 {
-    string ret = "";
+    std::string ret = "";
     for (u32 i = 0; i < len; i++)
     {
         ret += ReadU8();
@@ -461,7 +459,7 @@ void GFile::Write(f64 val)
     Write(&tmp, 8);
 }
 
-void GFile::Write(string val)
+void GFile::Write(std::string val)
 {
     for (u32 i = 0; i < val.length(); i++)
     {
@@ -469,7 +467,7 @@ void GFile::Write(string val)
     }
 }
 
-void GFile::WriteNullTerminated(string val)
+void GFile::WriteNullTerminated(std::string val)
 {
     Write(val);
     Write((u8)0);

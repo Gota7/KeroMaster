@@ -1,10 +1,11 @@
 #pragma once
 
-#include "editor.h"
 #include <fstream>
 #include <string>
+#include "../types.h"
 
 struct Editor;
+struct Entity;
 
 // For editing the currently selected entity.
 struct EntityEditor

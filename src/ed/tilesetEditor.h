@@ -4,11 +4,7 @@
 #include <imgui.h>
 #include <string>
 #include <string.h>
-#include "../px/tileset.h"
-#include "editor.h"
 #include "selection.h"
-
-using namespace std;
 
 struct Editor;
 
@@ -16,7 +12,7 @@ struct TilesetEditor
 {
     Editor* ed; // Main editor.
     bool open = false; // Window is open.
-    string name; // Tileset name.
+    std::string name; // Tileset name.
     RenderTexture2D target; // Where to draw the texture.
     RenderTexture2D finalTarget; // After transforming the original target (thanks OpenGL coordinates).
     float tileSize; // How big each tile is.
@@ -33,7 +29,7 @@ struct TilesetEditor
     int currLayer = -1; // Current layer to paint on.
 
     // Create a tileset editor to look at a tileset.
-    TilesetEditor(Editor* ed, string name, float tileSize);
+    TilesetEditor(Editor* ed, std::string name, float tileSize);
 
     // Draw the displayed tileset image.
     void Draw();

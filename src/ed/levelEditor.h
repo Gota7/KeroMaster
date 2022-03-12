@@ -1,6 +1,6 @@
 #pragma once
 
-#include "editor.h"
+#include "../px/pxmap.h"
 
 struct Editor;
 

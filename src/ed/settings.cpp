@@ -16,13 +16,13 @@ void Settings::Load()
     {
         IniFile f;
         f.load("settings.ini");
-        rscPath = f["Settings"]["RscPath"].as<string>();
-        lastLevel = f["Settings"]["LastLevel"].as<string>();
+        rscPath = f["Settings"]["RscPath"].as<std::string>();
+        lastLevel = f["Settings"]["LastLevel"].as<std::string>();
         leftClick = (EditorTool)f["Settings"]["LeftClick"].as<int>();
         rightClick = (EditorTool)f["Settings"]["RightClick"].as<int>();
         middleClick = (EditorTool)f["Settings"]["MiddleClick"].as<int>();
         usePalette = f["Settings"]["UsePalette"].as<bool>();
-        style.Load(f["Settings"]["Style"].as<string>());
+        style.Load(f["Settings"]["Style"].as<std::string>());
     }
     else
     {

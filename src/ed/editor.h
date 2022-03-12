@@ -1,20 +1,15 @@
 #pragma once
 
 #include <map>
-#include "raylib.h"
+#include <string>
+#include "attributeEditor.h"
+#include "scriptEditor.h"
+#include "settings.h"
+#include "tilesetEditor.h"
 #include "../px/pxmap.h"
 #include "../px/profile.h"
-#include "tilesetEditor.h"
-#include "settings.h"
-#include "attributeEditor.h"
-#include "entityEditor.h"
-#include "musicPlayer.h"
-#include "profileEditor.h"
-#include "scriptEditor.h"
-#include "styleEditor.h"
-#include "undoStack.h"
-#include "levelEditor.h"
-#include "rlImGui/focusData.h"
+#include "../px/tileset.h"
+#include "../rlImGui/focusData.h"
 
 // Scale the map properly.
 constexpr float MAP_SIZE = Tileset::EDITOR_TILE_SIZE / Tileset::MAP_TILE_SIZE;
@@ -30,6 +25,9 @@ struct StyleEditor;
 struct TilesetEditor;
 struct UndoStack;
 
+struct Tool;
+struct HandTool;
+
 enum class EditorTool : int {
     Hand,
     TileBrush,
@@ -43,14 +41,14 @@ struct Editor
     static Settings settings;
     Map map;
     Profile profile;
-    string mapName = "";
+    std::string mapName = "";
     Camera2D cam = {0};
-    static std::map<string, Tileset> tilesets;
+    static std::map<std::string, Tileset> tilesets;
     static std::map<u8, EntityDisplay> entities;
     static Color fadeColor;
     static double timer;
     static bool doFullscreen;
-    string rsc = "";
+    std::string rsc = "";
     bool enabled = false;
     Vector2 origin;
     float scrollSpeed = 7.5;
@@ -99,6 +97,11 @@ struct Editor
     bool helpModal = false;
     UndoStack* undoStack;
 
+    // Tools.
+    static std::vector<Tool> tools;
+    Tool* currTool;
+
+    void Init();
     void SetPath(std::string rsc);
     void LoadEnemies(std::string xml);
     void LoadTileset(std::string tilesetName);

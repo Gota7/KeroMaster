@@ -1,9 +1,5 @@
 #pragma once
 
-#include "editor.h"
-#include "../bgm/bgm.h"
-#include <imgui.h>
-
 struct Editor;
 
 // For music playback.

@@ -5,11 +5,11 @@
 Texture2D Tileset::attrTex;
 Texture2D Tileset::unitType;
 
-void Tileset::Load(string rsc_k, string tilesetName)
+void Tileset::Load(std::string rsc_k, std::string tilesetName)
 {
 
     // Where to search for tilesets.
-    static std::vector<string> lookupPaths = {
+    static std::vector<std::string> lookupPaths = {
         "/img/",
         "/localize/en.lproj/",
         "/localize/ja.lproj/",
@@ -17,7 +17,7 @@ void Tileset::Load(string rsc_k, string tilesetName)
 
     // Load the tileset.
     for (auto& path : lookupPaths) {
-        string imagePath = rsc_k + path + tilesetName + ".png";
+        std::string imagePath = rsc_k + path + tilesetName + ".png";
 
         if (GFile::FileExists(imagePath.c_str()))
         {
@@ -40,10 +40,10 @@ void Tileset::Load(string rsc_k, string tilesetName)
     if (GFile::FileExists((rsc_k + "/img/" + tilesetName + ".pxattr").c_str()))
     {
         GFile f = GFile((rsc_k + "/img/" + tilesetName + ".pxattr").c_str());
-        if (strcmp(f.ReadStr().c_str(), "pxMAP01"))
+        if (f.ReadStr() != "pxMAP01")
         {
             printf("Invalid tileset attribute magic!\n");
-            throw new exception();
+            throw new std::exception();
         }
         else
         {
@@ -73,7 +73,7 @@ void Tileset::Unload()
     }
 }
 
-void Tileset::Write(string rsc_k, string tilesetName)
+void Tileset::Write(std::string rsc_k, std::string tilesetName)
 {
     GFile f = GFile((rsc_k + "/img/" + tilesetName + ".pxattr").c_str());
     f.WriteNullTerminated("pxMAP01");

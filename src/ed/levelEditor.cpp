@@ -1,4 +1,7 @@
 #include "levelEditor.h"
+#include "editor.h"
+#include "../rlImGui/utils.h"
+#include "imgui.h"
 
 const char* scrollTypes[] = {
     "Normal",
@@ -102,12 +105,12 @@ void LevelEditor::DrawUI()
     {
         ImGui::Separator();
         ImGui::PushItemWidth(itemWidth / 2 - 5);
-        ImGui::InputScalar(("##MapWidth" + to_string(i)).c_str(), ImGuiDataType_U16, &ed->map.maps[i].newWidth);
+        ImGui::InputScalar(("##MapWidth" + std::to_string(i)).c_str(), ImGuiDataType_U16, &ed->map.maps[i].newWidth);
         ImGui::SameLine(0, -5.0);
         ImGui::PushItemWidth(itemWidth / 2 - 5);
-        ImGui::InputScalar(("Map " + to_string(i) + " Size##MapHeight" + to_string(i)).c_str(), ImGuiDataType_U16, &ed->map.maps[i].newHeight);
+        ImGui::InputScalar(("Map " + std::to_string(i) + " Size##MapHeight" + std::to_string(i)).c_str(), ImGuiDataType_U16, &ed->map.maps[i].newHeight);
         ImGui::SameLine();
-        if (ImGui::SmallButton(("Resize##Map" + to_string(i)).c_str()))
+        if (ImGui::SmallButton(("Resize##Map" + std::to_string(i)).c_str()))
         {
             resizeWarning = false;
             for (int x = ed->map.maps[i].newWidth; x < ed->map.maps[i].width; x++)
@@ -141,22 +144,22 @@ void LevelEditor::DrawUI()
                 ed->map.maps[i].Resize(ed->map.maps[i].newWidth, ed->map.maps[i].newHeight);
             }
         }
-        if (ImGui::SmallButton(("Move Up##Map" + to_string(i)).c_str()))
+        if (ImGui::SmallButton(("Move Up##Map" + std::to_string(i)).c_str()))
         {
             CanShiftInDirCheck(ShiftDirection::Up, i);
         }
         ImGui::SameLine();
-        if (ImGui::SmallButton(("Move Down##Map" + to_string(i)).c_str()))
+        if (ImGui::SmallButton(("Move Down##Map" + std::to_string(i)).c_str()))
         {
             CanShiftInDirCheck(ShiftDirection::Down, i);
         }
         ImGui::SameLine();
-        if (ImGui::SmallButton(("Move Left##Map" + to_string(i)).c_str()))
+        if (ImGui::SmallButton(("Move Left##Map" + std::to_string(i)).c_str()))
         {
             CanShiftInDirCheck(ShiftDirection::Left, i);
         }
         ImGui::SameLine();
-        if (ImGui::SmallButton(("Move Right##Map" + to_string(i)).c_str()))
+        if (ImGui::SmallButton(("Move Right##Map" + std::to_string(i)).c_str()))
         {
             CanShiftInDirCheck(ShiftDirection::Right, i);
         }
@@ -215,7 +218,7 @@ void LevelEditor::DrawTilesetSettings(int tilesetNum, int itemWidth)
     // Edit tileset tile size.
     ImGui::PushItemWidth(itemWidth);
     int index = ed->map.tilesetSettings1[tilesetNum];
-    if (ImGui::Combo(("Tileset " + to_string(tilesetNum) + " Tile Size").c_str(), &index, tileScales, IM_ARRAYSIZE(tileScales)))
+    if (ImGui::Combo(("Tileset " + std::to_string(tilesetNum) + " Tile Size").c_str(), &index, tileScales, IM_ARRAYSIZE(tileScales)))
     {
         ed->map.tilesetSettings1[tilesetNum] = (u8)index;
     }
@@ -223,7 +226,7 @@ void LevelEditor::DrawTilesetSettings(int tilesetNum, int itemWidth)
 
     // Tileset scroll type.
     int tmpScrollType = ed->map.tilesetSettings2[tilesetNum];
-    if (ImGui::Combo(("Tileset " + to_string(tilesetNum) + " Scroll Mode").c_str(), &tmpScrollType, scrollTypes, IM_ARRAYSIZE(scrollTypes)))
+    if (ImGui::Combo(("Tileset " + std::to_string(tilesetNum) + " Scroll Mode").c_str(), &tmpScrollType, scrollTypes, IM_ARRAYSIZE(scrollTypes)))
     {
         ed->map.tilesetSettings2[tilesetNum] = (u8)tmpScrollType;
     }
@@ -232,11 +235,11 @@ void LevelEditor::DrawTilesetSettings(int tilesetNum, int itemWidth)
 
     // Tileset name editor.
     ImGui::PushItemWidth(itemWidth);
-    ImGuiStringEdit(("Tileset " + to_string(tilesetNum)).c_str(), &ed->map.tilesets[tilesetNum].dat);
+    ImGuiStringEdit(("Tileset " + std::to_string(tilesetNum)).c_str(), &ed->map.tilesets[tilesetNum].dat);
     if (ed->map.tilesets[tilesetNum].dat != "")
     {
         ImGui::SameLine();
-        if (ImGui::SmallButton(("Open##Tileset" + to_string(tilesetNum)).c_str()))
+        if (ImGui::SmallButton(("Open##Tileset" + std::to_string(tilesetNum)).c_str()))
         {
             ed->OpenTileset(ed->map.tilesets[tilesetNum].dat);
         }
@@ -264,7 +267,7 @@ void LevelEditor::EditLevelButton(int id)
     if (ed->map.references[id].dat != "")
     {
         ImGui::SameLine();
-        if (ImGui::Button(("Edit##Lvl" + to_string(id)).c_str()))
+        if (ImGui::Button(("Edit##Lvl" + std::to_string(id)).c_str()))
         {
             ed->LoadLevel(ed->map.references[id].dat);
         }
