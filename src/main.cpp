@@ -1,15 +1,9 @@
-#include <map>
-#include "raylib.h"
-#include "imgui.h"
-#include "rlImGui/rlImGui.h"
-#include "px/tileset.h"
-#include "px/pxmap.h"
-#include "ed/editor.h"
-#include "ed/undoStack.h"
-#include "bgm/bgm.h"
+#include "ed/editorNew.h"
 
-constexpr int SCREEN_WIDTH = 1240;
-constexpr int SCREEN_HEIGHT = 720;
+//constexpr int SCREEN_WIDTH = 1240;
+//constexpr int SCREEN_HEIGHT = 720;
+
+/*
 bool runOnce = true;
 
 static int EditorLoop() {
@@ -102,4 +96,12 @@ int main(int argc, char *argv[])
     CloseWindow();
 
     return exit;
+}
+*/
+
+int main(int argc, char* argv[])
+{
+    EditorNew editor;
+    editor.Init();
+    return editor.EditorLoop();
 }

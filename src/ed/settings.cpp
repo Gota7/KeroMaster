@@ -1,21 +1,21 @@
-#include "raylib.h"
-#include "inicpp.h"
 #include "settings.h"
+#include "editor.h"
+#include "inicpp.h"
 #include "../gbin/gfile.h"
 #include "../rlImGui/fileBrowser.h"
 #include "../rlImGui/utils.h"
 #include "../bgm/bgm.h"
-
-using namespace std;
-using namespace ini;
-using namespace imgui_addons;
+#include "raylib.h"
 
 void Settings::Load()
 {
     if (GFile::FileExists("settings.ini"))
     {
-        IniFile f;
+        ini::IniFile f;
         f.load("settings.ini");
+        width = f["Settings"]["Width"].as<int>();
+        height = f["Settings"]["Height"].as<int>();
+        maximized = f["Settings"]["Maximized"].as<bool>();
         rscPath = f["Settings"]["RscPath"].as<std::string>();
         lastLevel = f["Settings"]["LastLevel"].as<std::string>();
         leftClick = (EditorTool)f["Settings"]["LeftClick"].as<int>();
@@ -32,7 +32,10 @@ void Settings::Load()
 
 void Settings::Save()
 {
-    IniFile f;
+    ini::IniFile f;
+    f["Settings"]["Width"] = width;
+    f["Settings"]["Height"] = height;
+    f["Settings"]["Maximized"] = maximized;
     f["Settings"]["RscPath"] = rscPath;
     f["Settings"]["LastLevel"] = lastLevel;
     f["Settings"]["LeftClick"] = (int)leftClick;
@@ -52,7 +55,7 @@ const char* ActionTypes[] = {
 
 void Settings::ShowWindow(Editor* ed)
 {
-    static ImGuiFileBrowser fB;
+    static imgui_addons::ImGuiFileBrowser fB;
     static int numFiles;
     static char** files;
     static int actionMouse = 0;
@@ -181,7 +184,7 @@ void Settings::ShowWindow(Editor* ed)
                 }
             }
         }
-        if (fB.showFileDialog("Open Resource Path", ImGuiFileBrowser::DialogMode::SELECT))
+        if (fB.showFileDialog("Open Resource Path", imgui_addons::ImGuiFileBrowser::DialogMode::SELECT))
         {
             rscPath = fB.selected_path;
             lastLevel = "";

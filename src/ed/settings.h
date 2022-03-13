@@ -1,7 +1,5 @@
 #pragma once
 
-#include "raylib.h"
-#include "editor.h"
 #include "style.h"
 #include <string>
 #include <cstring>
@@ -12,6 +10,9 @@ struct FocusData;
 
 struct Settings
 {
+    int width = 1240;
+    int height = 720;
+    bool maximized = false;
     std::string rscPath = "";
     std::string lastLevel = "";
     bool usePalette = true;

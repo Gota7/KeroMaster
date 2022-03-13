@@ -5,6 +5,15 @@
 
 struct Editor;
 
+// Tool item.
+enum class ToolItem : int {
+    Hand,
+    TileBrush,
+    Eraser,
+    EntityHand,
+    CurrentTool
+};
+
 // Tool that can be used by the editor.
 struct Tool
 {
