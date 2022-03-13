@@ -1,7 +1,13 @@
 #pragma once
 
+#include "entityDisplay.h"
+#include "entityEditor.h"
+#include "undoStack.h"
 #include "settingsNew.h"
 #include "style.h"
+#include "../px/pxmap.h"
+#include "../px/tileset.h"
+#include "../rlImGui/focusData.h"
 #include "raylib.h"
 
 // The main editor.
@@ -13,6 +19,14 @@ struct EditorNew
     Image icon; // Editor icon.
     bool enabled = false; // If the editor is enabled and ready to edit.
     bool doFullscreen = false; // If the editor is in fullscreen mode.
+    FocusData focus; // For focusing subwindows.
+    std::string rsc = ""; // Resource path.
+    std::string level = ""; // Open level.
+    EntityEditor entityEditor = EntityEditor(this); // Entity editor.
+    Map map; // Currently loaded pxmap.
+    std::map<std::string, Tileset> tilesets; // Loaded tilesets.
+    Camera2D cam; // Camera for viewing the map.
+    UndoStack undoStack; // Undo stack for undo/redo actions.
 
     // Initialize the editor.
     void Init();
@@ -31,5 +45,26 @@ struct EditorNew
 
     // Do the fade effect.
     void FadeEffect();
+
+    // Initialize the editor by loading everything needed.
+    void InitEditor();
+
+    // Load a tileset.
+    void LoadTileset(std::string tilesetName);
+
+    // Unload a tileset.
+    void UnloadTileset(std::string tilesetName);
+
+    // Load the fixed tilesets.
+    void LoadFixedTilesets();
+
+    // Load a level from the current level name.
+    void LoadLevel();
+
+    // Unload the current level.
+    void UnloadLevel();
+
+    // Draw the grid.
+    void DrawGrid();
 
 };

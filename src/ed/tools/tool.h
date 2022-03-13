@@ -11,13 +11,15 @@ enum class ToolItem : int {
     TileBrush,
     Eraser,
     EntityHand,
-    CurrentTool
+    CurrentTool,
+    NumTools = CurrentTool
 };
 
 // Tool that can be used by the editor.
 struct Tool
 {
     bool toolActive = false; // If the tool is activated.
+    static const char* toolNames[]; // Names of the tools.
 
     // Tool is selected, do its initial routine.
     virtual void Init(Editor* ed) {}

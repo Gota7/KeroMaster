@@ -27,6 +27,14 @@ enum class ShiftDirection
     Resize
 };
 
+// Map layers.
+enum class MapLayer
+{
+    FG,
+    MG,
+    BG
+};
+
 // Contains raw tile data.
 struct PxMap : GReadable, GWriteable
 {

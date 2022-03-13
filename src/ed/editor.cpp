@@ -55,8 +55,8 @@ void Editor::SetPath(std::string rsc)
 void Editor::LoadEnemies(std::string xmlName)
 {
     entities = LoadXML(xmlName);
-    if (!entityEditor) entityEditor = new EntityEditor(this);
-    entityEditor->LoadEntityListing();
+    //if (!entityEditor) entityEditor = new EntityEditor(this);
+    //entityEditor->LoadEntityListing();
 }
 
 void Editor::LoadTileset(std::string tilesetName)
@@ -357,8 +357,8 @@ void Editor::DrawUI()
     levelEditor->DrawUI();
 
     // Entity editor.
-    if (!entityEditor) entityEditor = new EntityEditor(this);
-    entityEditor->DrawUI();
+    //if (!entityEditor) entityEditor = new EntityEditor(this);
+    //entityEditor->DrawUI();
 
     // Draw palette.
     if (settings.usePalette) DrawPalette();

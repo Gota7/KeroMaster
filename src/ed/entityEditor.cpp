@@ -1,17 +1,18 @@
 #include "entityEditor.h"
 #include <vector>
 #include "entityDisplay.h"
-#include "editor.h"
+#include "editorNew.h"
 #include "../rlImGui/utils.h"
 #include "imgui.h"
 
-EntityEditor::EntityEditor(Editor* ed)
+EntityEditor::EntityEditor(EditorNew* ed)
 {
     this->ed = ed;
 }
 
-void EntityEditor::LoadEntityListing()
+void EntityEditor::LoadEntityListing(std::string xmlName)
 {
+    entities = LoadXML(xmlName);
     std::vector<std::string> defaultListing;
     std::fstream f;
     f.open("object_data/unittype.txt", std::ios::in);
@@ -19,7 +20,7 @@ void EntityEditor::LoadEntityListing()
     {
         std::string defaultStr;
         std::getline(f, defaultStr);
-        defaultListing.push_back(std::to_string(i) + " - " + (ed->entities.find(i) != ed->entities.end() ? ed->entities[i].name : defaultStr));
+        defaultListing.push_back(std::to_string(i) + " - " + (entities.find(i) != entities.end() ? entities[i].name : defaultStr));
     }
     f.close();
     entityListing = GenImGuiStringList(defaultListing, &numEntities);
@@ -39,7 +40,7 @@ void EntityEditor::DrawUI()
     // Entity ID.
     const int itemWidth = 150;
     int currId = editingEntity->id;
-    EntityDisplay* d = &ed->entities[currId];
+    EntityDisplay* d = &entities[currId];
     ImGui::PushItemWidth(itemWidth);
     if (ImGui::Combo("Entity Id", &currId, entityListing, numEntities))
     {

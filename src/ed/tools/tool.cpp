@@ -1,6 +1,14 @@
 #include "tool.h"
 #include "../editor.h"
 
+const char* Tool::toolNames[] =
+{
+    "Hand",
+    "Tile Brush",
+    "Eraser",
+    "Entity Hand"
+};
+
 void Tool::SetActive(Editor* ed, std::vector<int>& buttons)
 {
 
