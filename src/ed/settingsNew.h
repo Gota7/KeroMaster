@@ -22,7 +22,7 @@ struct SettingsNew
     bool showPlayArea = true; // If to show bounds of each map.
     bool showGrid = false; // Show the grid.
     bool viewLayers[3] = { true, true, true }; // What layers can be seen.
-    bool viewSpriteImages = true; // If to show sprite images, if not, show the images from unit type.
+    bool viewEntityImages = true; // If to show entity images, if not, show the images from unit type.
     bool viewEntityBoxes = true; // Show the boxes for entities.
     bool viewEntities = true; // Show entities.
     bool viewTileAttributes = false; // If to view tile attributes.

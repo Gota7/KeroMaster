@@ -2,6 +2,7 @@
 
 #include "entityDisplay.h"
 #include "entityEditor.h"
+#include "levelEditor.h"
 #include "undoStack.h"
 #include "settingsNew.h"
 #include "style.h"
@@ -23,6 +24,7 @@ struct EditorNew
     std::string rsc = ""; // Resource path.
     std::string level = ""; // Open level.
     EntityEditor entityEditor = EntityEditor(this); // Entity editor.
+    LevelEditor levelEditor = LevelEditor(this); // Level editor.
     Map map; // Currently loaded pxmap.
     std::map<std::string, Tileset> tilesets; // Loaded tilesets.
     Camera2D cam; // Camera for viewing the map.
@@ -66,5 +68,17 @@ struct EditorNew
 
     // Draw the grid.
     void DrawGrid();
+
+    // Detect if a keyboard shortcut is down.
+    bool KeyboardShortcut(bool control, bool alt, bool shift, int key);
+
+    // Draw the main menu at the top of the screen.
+    void DrawMainMenu();
+
+    // Open a tileset.
+    void OpenTileset(std::string tilesetName);
+
+    // Open a script.
+    void OpenScript(std::string scriptName);
 
 };

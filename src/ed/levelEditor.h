@@ -2,19 +2,19 @@
 
 #include "../px/pxmap.h"
 
-struct Editor;
+struct EditorNew;
 
 // For editing a level.
 struct LevelEditor
 {
-    Editor* ed; // Main editor.
+    EditorNew* ed; // Main editor.
     bool open = true; // If the level editor is open.
     bool resizeWarning = false; // If a resize is going to happen and a warning should be shown.
     ShiftDirection resizeMode = ShiftDirection::Resize; // Where to shift, or resize tiles.
     u8 resizeMapLayer = 0; // The layer to resize.
 
     // Create a new editor.
-    LevelEditor(Editor* ed);
+    LevelEditor(EditorNew* ed);
 
     // Draw the level editor interface.
     void DrawUI();

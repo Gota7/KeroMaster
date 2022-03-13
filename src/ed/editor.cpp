@@ -353,7 +353,7 @@ void Editor::DrawUI()
     }
 
     // Level editor.
-    if (!levelEditor) levelEditor = new LevelEditor(this);
+    //if (!levelEditor) levelEditor = new LevelEditor(this);
     levelEditor->DrawUI();
 
     // Entity editor.

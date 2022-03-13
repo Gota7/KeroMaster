@@ -1,5 +1,5 @@
 #include "levelEditor.h"
-#include "editor.h"
+#include "editorNew.h"
 #include "../rlImGui/utils.h"
 #include "imgui.h"
 
@@ -36,7 +36,7 @@ const char* tileScales[] = {
     "16 (1x1)"
 };
 
-LevelEditor::LevelEditor(Editor* ed)
+LevelEditor::LevelEditor(EditorNew* ed)
 {
     this->ed = ed;
 }
@@ -51,7 +51,7 @@ void LevelEditor::DrawUI()
     auto& io = ImGui::GetIO();
 
     // Initialize editor.
-    ImGui::Begin(("Level Editor - " + ed->mapName + "###EditorDialog").c_str(), &open);
+    ImGui::Begin(("Level Editor - " + ed->level + "###EditorDialog").c_str(), &open);
     ImGui::SetWindowPos(ImVec2(io.DisplaySize.x - 330.0f, 30.0f), ImGuiCond_FirstUseEver);
     ed->focus.ObserveFocus();
 
@@ -168,11 +168,11 @@ void LevelEditor::DrawUI()
     // Script editing.
     int numButtons = 0;
     ImGui::Separator();
-    if (ed->mapName != "")
+    if (ed->level != "")
     {
         if (ImGui::Button("Edit Script"))
         {
-            ed->OpenScript(ed->mapName);
+            ed->OpenScript(ed->level);
         }
         numButtons++;
         if (numButtons < 2)
@@ -269,7 +269,8 @@ void LevelEditor::EditLevelButton(int id)
         ImGui::SameLine();
         if (ImGui::Button(("Edit##Lvl" + std::to_string(id)).c_str()))
         {
-            ed->LoadLevel(ed->map.references[id].dat);
+            ed->level = ed->map.references[id].dat;
+            ed->LoadLevel();
         }
     }
 }
