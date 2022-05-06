@@ -1,7 +1,6 @@
 #include "settingsNew.h"
 #include "editorNew.h"
 #include "inicpp.h"
-#include "tools/tool.h"
 #include "../gbin/gfile.h"
 #include "../rlImGui/fileBrowser.h"
 #include "../rlImGui/utils.h"
@@ -175,15 +174,15 @@ void SettingsNew::DrawUI(EditorNew* ed)
                 }
                 if (actionMouse != 0)
                 {
-                    ImGui::Combo("Left Click Action", (int*)&leftClick, Tool::toolNames, (int)ToolItem::NumTools);
+                    ImGui::Combo("Left Click Action", (int*)&leftClick, Tools::toolNames, (int)ToolItem::NumTools);
                 }
                 if (actionMouse != 1)
                 {
-                    ImGui::Combo("Right Click Action", (int*)&rightClick, Tool::toolNames, (int)ToolItem::NumTools);
+                    ImGui::Combo("Right Click Action", (int*)&rightClick, Tools::toolNames, (int)ToolItem::NumTools);
                 }
                 if (actionMouse != 2)
                 {
-                    ImGui::Combo("Middle Click Action", (int*)&middleClick, Tool::toolNames, (int)ToolItem::NumTools);
+                    ImGui::Combo("Middle Click Action", (int*)&middleClick, Tools::toolNames, (int)ToolItem::NumTools);
                 }
                 ImGui::Separator();
                 ImGui::Checkbox("Use Tile Palette", &usePalette);

@@ -29,7 +29,7 @@ double Editor::timer;
 bool Editor::doFullscreen = false;
 const float MIN_ZOOM = 0.25;
 const float MAX_ZOOM = 10.0;
-std::vector<Tool> Editor::tools = { HandTool() };
+//std::vector<Tool> Editor::tools = { HandTool() };
 
 using namespace imgui_addons;
 
@@ -44,7 +44,7 @@ int cmpstr(const void* a, const void* b)
 
 void Editor::Init()
 {
-    currTool = &tools[0];
+    //currTool = &tools[0];
 }
 
 void Editor::SetPath(std::string rsc)

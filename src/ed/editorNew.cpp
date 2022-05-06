@@ -29,7 +29,7 @@ int EditorNew::EditorLoop()
 {
 
     // Main loop.
-    while (!WindowShouldClose())
+    while (!WindowShouldClose() || quit)
     {
 
         // Begin drawing.
@@ -135,17 +135,50 @@ void EditorNew::DrawUI()
     // Level editor.
     levelEditor.DrawUI();
 
+    // Draw select level UI.
+    DrawSelectLevelUI();
+
+    // Draw the open level UI.
+    DrawOpenLevelUI();
+
+    // About popup.
+    DrawAboutPopup();
+
 }
 
 void EditorNew::Update()
 {
-    
+
     // Safety, can't use the editor here.
     if (!enabled)
     {
         FadeEffect();
         return;
     }
+
+    // Get mouse.
+    oldMouseX = mouseX;
+    oldMouseY = mouseY;
+    mouseX = GetMouseX();
+    mouseY = GetMouseY();
+
+    // Update tools.
+    for (int i = 0; i < (int)ToolItem::NumTools; i++)
+    {
+        ToolItem item = (ToolItem)i;
+        std::vector<int> buttons;
+        if (settings.leftClick == item || (currTool == item && settings.leftClick == ToolItem::CurrentTool))
+            buttons.push_back(MOUSE_LEFT_BUTTON);
+        if (settings.middleClick == item || (currTool == item && settings.middleClick == ToolItem::CurrentTool))
+            buttons.push_back(MOUSE_MIDDLE_BUTTON);
+        if (settings.rightClick == item || (currTool == item && settings.rightClick == ToolItem::CurrentTool))
+            buttons.push_back(MOUSE_RIGHT_BUTTON);
+        tools.SetActive(this, i, buttons);
+    }
+    tools.Update(this);
+
+    // Update focus.
+    focus.Update();
 
 }
 
@@ -266,9 +299,9 @@ void EditorNew::DrawGrid()
 bool EditorNew::KeyboardShortcut(bool control, bool alt, bool shift, int key)
 {
     bool ret = true;
-    if (control) ret &= IsKeyDown(KEY_LEFT_CONTROL) | IsKeyDown(KEY_RIGHT_CONTROL);
-    if (alt) ret &= IsKeyDown(KEY_LEFT_ALT) | IsKeyDown(KEY_RIGHT_ALT);
-    if (shift) ret &= IsKeyDown(KEY_LEFT_SHIFT) | IsKeyDown(KEY_RIGHT_SHIFT);
+    ret &= !(control ^ (IsKeyDown(KEY_LEFT_CONTROL) | IsKeyDown(KEY_RIGHT_CONTROL)));
+    ret &= !(alt ^ (IsKeyDown(KEY_LEFT_ALT) | IsKeyDown(KEY_RIGHT_ALT)));
+    ret &= !(shift ^ (IsKeyDown(KEY_LEFT_SHIFT) | IsKeyDown(KEY_RIGHT_SHIFT)));
     ret &= IsKeyPressed(key);
     return ret;
 }
@@ -277,9 +310,6 @@ void EditorNew::DrawMainMenu()
 {
 
     // Vars.
-    static int numFiles;
-    static char** files;
-    static std::string newFileName = "";
     bool openPopup = false;
     bool openSettings = false;
     bool doNew = KeyboardShortcut(true, false, false, KEY_N);
@@ -293,7 +323,6 @@ void EditorNew::DrawMainMenu()
     bool isFullscreening = false;
     bool openNewLevelPopup = false;
     bool openAboutPopup = false;
-    static bool isNew = false;
 
     // File menu.
     if (ImGui::BeginMainMenuBar())
@@ -395,10 +424,10 @@ void EditorNew::DrawMainMenu()
             ImGui::Checkbox("Entities", &settings.viewEntities);
             ImGui::Separator();
             ImGui::Checkbox("Tile Attributes", &settings.viewTileAttributes);
-            if (ImGui::Button("Fullscreen"))
+            /*if (ImGui::Button("Fullscreen"))
             {
                 isFullscreening = true;
-            }
+            }*/
             ImGui::EndMenu();
         }
         /*if (ImGui::MenuItem("Help")) // Help may not be needed.
@@ -413,6 +442,222 @@ void EditorNew::DrawMainMenu()
         ImGui::EndMainMenuBar();
     }
 
+    // Take care of actions.
+    if (doNew) LevelNameSelect(false);
+    if (doOpen) LevelNameOpen();
+    if (doSave) SaveLevel();
+    if (doSaveAs) LevelNameSelect(true);
+    if (doClose) CloseLevel();
+    if (doQuit) Quit();
+    if (doUndo) Undo();
+    if (doRedo) Redo();
+    if (isFullscreening) DoToggleFullscreen();
+    if (openAboutPopup) OpenAboutPopup();
+
+}
+
+void EditorNew::LevelNameSelect(bool saveAs)
+{
+    newFileName = "";
+    closeNewLevel = false;
+    isNew = !saveAs;
+    ImGui::OpenPopup("Enter Level Name");
+}
+
+void EditorNew::LevelNameOpen()
+{
+
+    // Get new level list and then open popup.
+    std::vector<std::string> files = ReadFilesFromDir(rsc + "/field");
+    std::sort(files.begin(), files.end());
+    if (levelFiles != nullptr) DelImGuiStringList(levelFiles, numLevelFiles);
+    levelFiles = GenImGuiStringList(files, &numLevelFiles);
+    ImGui::OpenPopup("Select Level");
+
+}
+
+void EditorNew::DrawSelectLevelUI()
+{
+    if (ImGui::BeginPopupModal("Enter Level Name", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        focus.ObserveFocus();
+        focus.isModal |= true;
+        ImGuiStringEdit("Level Name", &newFileName);
+        if (newFileName != "")
+        {
+            if (closeNewLevel)
+            {
+                ImGui::CloseCurrentPopup();
+            }
+            static Map m;
+            if (ImGui::Button("Save"))
+            {
+                m.levelSettings[0] = 0;
+                m.levelSettings[1] = 0;
+                m.levelSettings[2] = 0;
+                m.levelSettings[3] = 0;
+                m.levelSettings[4] = 1;
+                m.levelSettings[5] = 0;
+                m.levelSettings[6] = 0;
+                m.levelSettings[7] = 0;
+                m.tilesetSettings1[0] = 2;
+                m.tilesetSettings1[1] = 2;
+                m.tilesetSettings1[2] = 2;
+                m.tilesetSettings2[0] = 0;
+                m.tilesetSettings2[1] = 0;
+                m.tilesetSettings2[2] = 0;
+                bool needsVerify = GFile::FileExists((rsc + "/field/" + newFileName + ".pxpack").c_str());
+                if (!needsVerify)
+                {
+                    if (isNew)
+                    {
+                        m.Write(rsc, newFileName);
+                    }
+                    else
+                    {
+                        map.Write(rsc, newFileName);
+                    }
+                    UnloadLevel();
+                    OpenLevel(newFileName);
+                    ImGui::CloseCurrentPopup();
+                }
+                else
+                {
+                    ImGui::OpenPopup("Overwrite Level");
+                }
+            }
+            if (ImGui::BeginPopupModal("Overwrite Level", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+            {
+                if (ImGui::Button("Yes"))
+                {
+                    if (isNew)
+                    {
+                        m.Write(rsc, newFileName);
+                    }
+                    else
+                    {
+                        map.Write(rsc, newFileName);
+                    }
+                    OpenLevel(newFileName);
+                    ImGui::CloseCurrentPopup();
+                    closeNewLevel = true;
+                }
+                ImGui::SameLine();
+                if (ImGui::Button("No"))
+                {
+                    ImGui::CloseCurrentPopup();
+                }
+                ImGui::EndPopup();
+            }
+        }
+        if (newFileName != "")
+        {
+            ImGui::SameLine();
+        }
+        if (ImGui::Button("Cancel"))
+        {
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
+    }
+}
+
+void EditorNew::DrawOpenLevelUI()
+{
+    if (ImGui::BeginPopupModal("Select Level", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        focus.ObserveFocus();
+        focus.isModal |= true;
+        ImGui::BeginListBox("Levels", ImVec2(300, 500));
+        for (int i = 2; i < numLevelFiles; i++)
+        {
+            bool dummy = false;
+            const char* name = GetFileNameWithoutExt(levelFiles[i]);
+            if (ImGui::Selectable(name, &dummy))
+            {
+                OpenLevel(name);
+                ImGui::CloseCurrentPopup();
+            }
+        }
+        ImGui::EndListBox();
+        if (ImGui::Button("Cancel"))
+        {
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
+    }
+}
+
+void EditorNew::DrawAboutPopup()
+{
+    if (ImGui::BeginPopupModal("About", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        focus.ObserveFocus();
+        focus.isModal |= true;
+        ImGui::TextColored(ImVec4(.4, 1, 0, 1), "Kero Master");
+        ImGui::TextColored(ImVec4(1, .1, .5, 1), "\tAn editor for Kero Blaster, Pink Hour, and Pink Heaven.");
+        ImGui::Separator();
+        ImGui::TextColored(ImVec4(0, 1, 1, 1), "Alula - Windows & SHIFT-JIS support, tile editing, palette, various fixes/improvements.");
+        ImGui::TextColored(ImVec4(1, 0, 1, 1), "Gota7 - UI design, format support, entity editing, script editing, tileset editing, editor data.");
+        ImGui::Separator();
+        if (ImGui::Button("Ok"))
+        {
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
+    }
+}
+
+void EditorNew::OpenLevel(std::string level)
+{
+    this->level = level;
+    LoadLevel();
+}
+
+void EditorNew::SaveLevel()
+{
+    if (enabled) map.Write(rsc, level);
+}
+
+void EditorNew::CloseLevel()
+{
+    enabled = false;
+    map.Unload(tilesets);
+}
+
+void EditorNew::Quit()
+{
+    enabled = false;
+    map.Unload(tilesets);
+    quit = true;
+}
+
+void EditorNew::Undo()
+{
+    //if (enabled) undoStack.Undo(this);
+}
+
+void EditorNew::Redo()
+{
+    //if (enabled) undoStack.Redo(this);
+}
+
+void EditorNew::DoToggleFullscreen()
+{
+    ToggleFullscreen();
+    if (IsWindowFullscreen())
+    {
+        SetWindowSize(GetMonitorWidth(0), GetMonitorHeight(0));
+    }
+    else
+    {
+        SetWindowSize(settings.width, settings.height);
+    }
+}
+
+void EditorNew::OpenAboutPopup()
+{
+    ImGui::OpenPopup("About");
 }
 
 void EditorNew::OpenTileset(std::string tilesetName)
@@ -423,4 +668,54 @@ void EditorNew::OpenTileset(std::string tilesetName)
 void EditorNew::OpenScript(std::string scriptName)
 {
 
+}
+
+void EditorNew::MoveCamX(float amount, bool relative)
+{
+    if (relative)
+    {
+        cam.offset.x += amount;
+    }
+    else
+    {
+        cam.offset.x = amount;
+    }
+}
+
+void EditorNew::MoveCamY(float amount, bool relative)
+{
+    if (relative)
+    {
+        cam.offset.y += amount;
+    }
+    else
+    {
+        cam.offset.y = amount;
+    }
+}
+
+int EditorNew::GetTileX(s8 layer)
+{
+    int ret = ((mouseX - cam.offset.x) / Tileset::EDITOR_TILE_SIZE / cam.zoom);
+    if (ret < 0 || (layer != -1 && ret >= map.maps[layer].width))
+    {
+        return -1;
+    }
+    else
+    {
+        return ret;
+    }
+}
+
+int EditorNew::GetTileY(s8 layer)
+{
+    int ret = ((mouseY - cam.offset.y) / Tileset::EDITOR_TILE_SIZE / cam.zoom);
+    if (ret < 0 || (layer != -1 && ret >= map.maps[layer].width))
+    {
+        return -1;
+    }
+    else
+    {
+        return ret;
+    }
 }

@@ -26,7 +26,7 @@ struct TilesetEditor;
 struct UndoStack;
 
 struct Tool;
-struct HandTool;
+//struct HandTool;
 
 enum class EditorTool : int {
     Hand,
@@ -98,7 +98,7 @@ struct Editor
     UndoStack* undoStack;
 
     // Tools.
-    static std::vector<Tool> tools;
+    //static std::vector<Tool> tools;
     Tool* currTool;
 
     void Init();
