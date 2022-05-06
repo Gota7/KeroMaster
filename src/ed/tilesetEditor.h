@@ -1,16 +1,16 @@
 #pragma once
 
+#include "selection.h"
 #include "raylib.h"
 #include <imgui.h>
 #include <string>
 #include <string.h>
-#include "selection.h"
 
-struct Editor;
+struct EditorNew;
 
 struct TilesetEditor
 {
-    Editor* ed; // Main editor.
+    EditorNew* ed; // Main editor.
     bool open = false; // Window is open.
     std::string name; // Tileset name.
     RenderTexture2D target; // Where to draw the texture.
@@ -29,11 +29,11 @@ struct TilesetEditor
     int currLayer = -1; // Current layer to paint on.
 
     // Create a tileset editor to look at a tileset.
-    TilesetEditor(Editor* ed, std::string name, float tileSize);
+    TilesetEditor(EditorNew* ed, std::string name, float tileSize);
 
     // Draw the displayed tileset image.
     void Draw();
-    
+
     // Draw the user interface.
     void DrawUI();
 

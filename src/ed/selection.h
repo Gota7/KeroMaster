@@ -14,6 +14,7 @@ struct Selection
     bool isSelecting = false; // If the mouse is currently down and selecting tiles.
     int startSelectTileX; // Starting x tile when selecting.
     int startSelectTileY; // Starting y tile when selecting.
+    int layer; // Optional layer field to fill in when selecting.
 
     // Remove the current selection.
     void ClearSelection();

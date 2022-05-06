@@ -1,5 +1,5 @@
 #include "scriptEditor.h"
-#include "editor.h"
+#include "editorNew.h"
 #include "../gbin/gfile.h"
 #include "../rlImGui/utils.h"
 #include "../tinyxml2/tinyxml2.h"
@@ -8,7 +8,7 @@ bool ScriptEditor::loadedGuide = false;
 ScriptHelpData* ScriptEditor::commands;
 int ScriptEditor::numCommands = 0;
 
-ScriptEditor::ScriptEditor(Editor* ed, std::string scriptName)
+ScriptEditor::ScriptEditor(EditorNew* ed, std::string scriptName)
 {
     this->ed = ed;
     name = scriptName;

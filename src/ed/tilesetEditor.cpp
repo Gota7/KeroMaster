@@ -1,9 +1,10 @@
 #include "tilesetEditor.h"
+
+#include "editorNew.h"
 #include "../rlImGui/rlImGui.h"
 #include "../px/tileset.h"
-#include "editor.h"
 
-TilesetEditor::TilesetEditor(Editor* ed, std::string name, float tileSize)
+TilesetEditor::TilesetEditor(EditorNew* ed, std::string name, float tileSize)
 {
     open = true;
     this->ed = ed;
@@ -88,7 +89,7 @@ void TilesetEditor::Draw()
 
 void TilesetEditor::DrawUI()
 {
-    
+
     // Safety.
     if (!open)
     {
@@ -120,7 +121,7 @@ void TilesetEditor::DrawUI()
     ImGui::SameLine();
     if (ImGui::Button("Edit Attributes"))
     {
-        ed->OpenAttrEditor(name);
+        ed->OpenAttr(name, 8.0f); // TODO: GIVE THIS PROPER TILE SIZE!!!
     }
 
     // Scale the tileset image properly.
@@ -183,13 +184,14 @@ void TilesetEditor::Update()
         imgSizeX,
         imgSizeY
     );
+    selection.layer = currLayer;
 
     // Update editor's selection.
     if (selection.validSelection && !selection.isSelecting && focused)
     {
         selectedTile = selection.y * ed->tilesets[name].width + selection.x;
         ed->RemoveAllOtherTilesetViewerSelections(this);
-        ed->editingTileset = this;
+        ed->tilesToPaint = selection;
     }
     else if (!selection.validSelection || selection.isSelecting)
     {
@@ -198,17 +200,13 @@ void TilesetEditor::Update()
     if (selection.isSelecting)
     {
         ed->RemoveAllOtherTilesetViewerSelections(this);
-        ed->editingTileset = this;
+        ed->tilesToPaint = selection;
     }
 
 }
 
 void TilesetEditor::Close()
 {
-    if (ed->editingTileset == this)
-    {
-        ed->editingTileset = nullptr;
-    }
     open = false;
     UnloadRenderTexture(target);
     UnloadRenderTexture(finalTarget);

@@ -1,14 +1,18 @@
 #pragma once
 
+#include "attributeEditor.h"
 #include "entityDisplay.h"
 #include "entityEditor.h"
 #include "levelEditor.h"
 #include "musicPlayer.h"
 #include "profileEditor.h"
 #include "undoStack.h"
+#include "selection.h"
 #include "settingsNew.h"
+#include "scriptEditor.h"
 #include "style.h"
 #include "styleEditor.h"
+#include "tilesetEditor.h"
 #include "toolbar.h"
 #include "tools/tools.h"
 #include "../px/profile.h"
@@ -34,6 +38,10 @@ struct EditorNew
     ProfileEditor profileEditor = ProfileEditor(this); // Profile editor.
     StyleEditor styleEditor = StyleEditor(this); // Style editor.
     MusicPlayer musicPlayer = MusicPlayer(this); // Music player.
+    std::vector<TilesetEditor> tilesetEditors = std::vector<TilesetEditor>(); // Tileset editors.
+    std::vector<AttributeEditor> attrEditors = std::vector<AttributeEditor>(); // Attribute editors.
+    std::vector<ScriptEditor> scriptEditors = std::vector<ScriptEditor>(); // Script editors.
+    Selection tilesToPaint; // Tiles to paint to the canvas.
     Map map; // Currently loaded pxmap.
     Profile profile; // Player profile.
     std::map<std::string, Tileset> tilesets; // Loaded tilesets.
@@ -73,6 +81,12 @@ struct EditorNew
 
     // Draw the main background.
     void Draw();
+
+    // Draw tile place preview.
+    void DrawTilePlacePreview();
+
+    // Draw entity place preview.
+    void DrawEntityPlacePreview();
 
     // Draw the main UI.
     void DrawUI();
@@ -153,7 +167,16 @@ struct EditorNew
     void OpenAboutPopup();
 
     // Open a tileset.
-    void OpenTileset(std::string tilesetName);
+    void OpenTileset(std::string tilesetName, float tileSize);
+
+    // Remove selections from all other tileset viewers.
+    void RemoveAllOtherTilesetViewerSelections(TilesetEditor* exclude);
+
+    // Resize all tileset editors.
+    void ResizeAllTilesetViewers(std::string name);
+
+    // Open an attribute editor.
+    void OpenAttr(std::string name, float tileSize);
 
     // Open a script.
     void OpenScript(std::string scriptName);

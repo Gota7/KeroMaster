@@ -27,6 +27,7 @@ struct SettingsNew
     bool viewEntityBoxes = true; // Show the boxes for entities.
     bool viewEntities = true; // Show entities.
     bool viewTileAttributes = false; // If to view tile attributes.
+    bool openTilesetsOnLoad = false; // Open tilesets on load.
 
     // Load the settings.
     void Load();

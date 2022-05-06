@@ -1,9 +1,9 @@
 #include "attributeEditor.h"
-#include "editor.h"
+#include "editorNew.h"
 #include "../px/tileset.h"
 #include "../rlImGui/rlImGui.h"
 
-AttributeEditor::AttributeEditor(Editor* ed, std::string name, float tileSize)
+AttributeEditor::AttributeEditor(EditorNew* ed, std::string name, float tileSize)
 {
     open = true;
     this->ed = ed;
@@ -74,7 +74,7 @@ void AttributeEditor::Draw()
         }
     }
     EndTextureMode();
-    
+
     // Hack, flip the Y coordinate by drawing it again.
     BeginTextureMode(finalTarget);
     DrawTexture(target.texture, 0, 0, WHITE);

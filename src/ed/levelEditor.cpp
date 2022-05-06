@@ -184,7 +184,7 @@ void LevelEditor::DrawUI()
             numButtons = 0;
         }
     }
-    
+
     // Reload tilesets.
     if (ImGui::Button("Reload Tilesets"))
     {
@@ -241,7 +241,7 @@ void LevelEditor::DrawTilesetSettings(int tilesetNum, int itemWidth)
         ImGui::SameLine();
         if (ImGui::SmallButton(("Open##Tileset" + std::to_string(tilesetNum)).c_str()))
         {
-            ed->OpenTileset(ed->map.tilesets[tilesetNum].dat);
+            ed->OpenTileset(ed->map.tilesets[tilesetNum].dat, 8.0f); // TODO: MAKE THIS HAVE THE CORRECT SIZE!!!
         }
     }
     ImGuiTooltip("Name of the tileset to use in the img folder.");

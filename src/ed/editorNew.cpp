@@ -31,15 +31,16 @@ int EditorNew::EditorLoop()
 {
 
     // Main loop.
-    while (!WindowShouldClose() || quit)
+    while (!WindowShouldClose() && !quit)
     {
 
         // Begin drawing.
         BeginDrawing();
 
         // Something went wrong, need to show the settings window.
-        if (settings.show)
+        if (settings.show || !enabled)
         {
+            if (!settings.show) settings.show = true;
             ClearBackground(fadeColor);
             BeginRLImGui();
             ImGui::OpenPopup("Editor Settings");
@@ -95,6 +96,14 @@ void EditorNew::Draw()
 {
 
     // Draw the sub-editors.
+    for (int i = 0; i < tilesetEditors.size(); i++)
+    {
+        tilesetEditors[i].Draw();
+    }
+    for (int i = 0; i < attrEditors.size(); i++)
+    {
+        attrEditors[i].Draw();
+    }
 
     // Safety.
     if (!enabled) return;
@@ -107,6 +116,8 @@ void EditorNew::Draw()
     if (settings.viewLayers[(u8)MapLayer::BG]) map.DrawLayer((u8)MapLayer::BG, tilesets, { 0, 0 }, settings.viewTileAttributes);
     if (settings.viewLayers[(u8)MapLayer::MG]) map.DrawLayer((u8)MapLayer::MG, tilesets, { 0, 0 }, settings.viewTileAttributes);
     if (settings.viewLayers[(u8)MapLayer::FG]) map.DrawLayer((u8)MapLayer::FG, tilesets, { 0, 0 }, settings.viewTileAttributes);
+
+    // Draw entities.
     if (settings.viewEntities) map.DrawEntities(entityEditor.entities, tilesets, { 0, 0 }, settings.viewEntityBoxes);
 
     // Show the map play area.
@@ -117,9 +128,11 @@ void EditorNew::Draw()
         if (settings.viewLayers[(u8)MapLayer::FG]) DrawRectangleLinesEx({ 0, 0, map.maps[(u8)MapLayer::FG].width * Tileset::EDITOR_TILE_SIZE, map.maps[(u8)MapLayer::FG].height * Tileset::EDITOR_TILE_SIZE }, 1, RED);
     }
 
-    // Draw tile to place. TODO!!!
+    // Draw tile to place.
+    DrawTilePlacePreview();
 
-    // Draw entity to place. TODO!!!
+    // Draw entity to place.
+    DrawEntityPlacePreview();
 
     // Show the grid.
     DrawGrid();
@@ -127,17 +140,99 @@ void EditorNew::Draw()
 
 }
 
+void EditorNew::DrawTilePlacePreview()
+{
+    if (currTool == ToolItem::TileBrush && tilesToPaint.validSelection)
+    {
+        int tileX = GetTileX();
+        int tileY = GetTileY();
+        static Color alphaTint = ColorFromNormalized({ 1.0, 1.0, 1.0, 0.6 });
+
+        PxMap& m = map.maps[tilesToPaint.layer];
+        Tileset& t = tilesets[map.tilesets[tilesToPaint.layer].dat];
+
+        for (int x = 0; x < tilesToPaint.width; x++)
+        {
+            for (int y = 0; y < tilesToPaint.height; y++)
+            {
+                if (x >= 0 && y >= 0 & tileX + x < m.width && tileY + y < m.height)
+                {
+                    t.Draw(tilesToPaint.x + x, tilesToPaint.y + y, tileX + x, tileY + y, map.TileSize(tilesToPaint.layer), Tileset::EDITOR_TILE_SIZE, false, false, false, { 0, 0 }, alphaTint);
+                }
+            }
+        }
+    }
+    else if (currTool == ToolItem::Eraser)
+    {
+        Tileset& t = tilesets[map.tilesets[currentLayer].dat];
+        DrawRectangleRec(
+            t.GetDestRect(GetTileX(), GetTileY(), Tileset::EDITOR_TILE_SIZE, { 0, 0 }),
+            { map.levelSettings[5], map.levelSettings[6], map.levelSettings[7], 255 }
+        );
+    }
+}
+
+void EditorNew::DrawEntityPlacePreview()
+{
+    if (currTool == ToolItem::EntityHand && isPlacingEntity)
+    {
+        bool draw = true;
+        int tileX = GetTileX();
+        int tileY = GetTileY();
+        if (tileX < 0) { draw = false; }
+        if (tileY < 0) { draw = false; }
+        if (tileX > 0xFFFF) { draw = false; }
+        if (tileY > 0xFFFF) { draw = false; }
+        std::string tilesetNames[3];
+        tilesetNames[0] = map.tilesets[0].dat;
+        tilesetNames[1] = map.tilesets[1].dat;
+        tilesetNames[2] = map.tilesets[2].dat;
+        if (draw)
+        {
+            Entity e;
+            e.beingEdited = false;
+            e.flags = 0;
+            e.id = placeEntityId;
+            e.parametersByte[0] = 0;
+            e.parametersByte[1] = 0;
+            e.parametersStr[0].dat = "";
+            e.unk = 0;
+            e.xPos = tileX;
+            e.yPos = tileY;
+            entityEditor.entities[placeEntityId].Draw(
+                &e,
+                tilesets,
+                map.references[RT_NPC_PALETTE].dat,
+                tilesetNames,
+                true,
+                { 0, 0 }
+            );
+        }
+    }
+}
+
 void EditorNew::DrawUI()
 {
-
-    // Safety.
-    if (!enabled) return;
 
     // Main menu.
     DrawMainMenu();
 
     // Toolbar gadgets.
     toolbar.DrawUI();
+
+    // Other windows.
+    for (int i = 0; i < tilesetEditors.size(); i++)
+    {
+        tilesetEditors[i].DrawUI();
+    }
+    for (int i = 0; i < attrEditors.size(); i++)
+    {
+        attrEditors[i].DrawUI();
+    }
+    for (int i = 0; i < scriptEditors.size(); i++)
+    {
+        scriptEditors[i].DrawUI();
+    }
 
     // Misc. windows.
     levelEditor.DrawUI();
@@ -164,6 +259,40 @@ void EditorNew::Update()
     {
         FadeEffect();
         return;
+    }
+
+    // Other editors.
+    for (int i = tilesetEditors.size() - 1; i >= 0; i--)
+    {
+        if (!tilesetEditors[i].open)
+        {
+            tilesetEditors[i].Close();
+            tilesetEditors.erase(tilesetEditors.begin() + i);
+        }
+        else
+        {
+            tilesetEditors[i].Update();
+        }
+    }
+    for (int i = attrEditors.size() - 1; i >= 0; i--)
+    {
+        if (!attrEditors[i].open)
+        {
+            attrEditors[i].Close();
+            attrEditors.erase(attrEditors.begin() + i);
+        }
+        else
+        {
+            attrEditors[i].Update();
+        }
+    }
+    for (int i = scriptEditors.size() - 1; i >= 0; i--)
+    {
+        if (!scriptEditors[i].open)
+        {
+            scriptEditors[i].Close();
+            scriptEditors.erase(scriptEditors.begin() + i);
+        }
     }
 
     // Get mouse.
@@ -209,7 +338,7 @@ void EditorNew::FadeEffect()
 void EditorNew::InitEditor()
 {
     entityEditor.LoadEntityListing("all");
-    if (settings.rscPath != rsc || settings.lastLevel != level)
+    if (!enabled || settings.rscPath != rsc || settings.lastLevel != level)
     {
         for (auto& t : tilesets)
         {
@@ -273,6 +402,16 @@ void EditorNew::LoadLevel()
     settings.lastLevel = level;
     settings.Save();
     undoStack.Reset();
+    if (settings.openTilesetsOnLoad)
+    {
+        for (int i = 0; i < NUM_TILESETS; i++)
+        {
+            if (map.tilesets[i].dat != "")
+            {
+                OpenTileset(map.tilesets[i].dat, 8.0f); // TODO: MAKE THIS OPEN THE CORRECT SIZE!!!
+            }
+        }
+    }
 }
 
 void EditorNew::UnloadLevel()
@@ -693,14 +832,71 @@ void EditorNew::OpenAboutPopup()
     ImGui::OpenPopup("About");
 }
 
-void EditorNew::OpenTileset(std::string tilesetName)
+void EditorNew::OpenTileset(std::string tilesetName, float tileSize)
 {
+    for (int i = 0; i < tilesetEditors.size(); i++)
+    {
+        if (tilesetEditors[i].name == tilesetName) return; // No duplicate tilesets.
+    }
+    auto t = TilesetEditor(this, tilesetName, tileSize);
+    if (tilesetName == map.tilesets[2].dat) { t.allowLayer2 = true; t.currLayer = 2; }
+    if (tilesetName == map.tilesets[1].dat) { t.allowLayer1 = true; t.currLayer = 1; }
+    if (tilesetName == map.tilesets[0].dat) { t.allowLayer0 = true; t.currLayer = 0; }
+    tilesetEditors.push_back(t);
+}
 
+void EditorNew::RemoveAllOtherTilesetViewerSelections(TilesetEditor* exclude)
+{
+    for (int i = 0; i < tilesetEditors.size(); i++)
+    {
+        if (&tilesetEditors[i] != exclude)
+        {
+            tilesetEditors[i].selection.ClearSelection();
+            tilesetEditors[i].selectedTile = -1;
+        }
+    }
+}
+
+void EditorNew::ResizeAllTilesetViewers(std::string name)
+{
+    if (tilesets.find(name) == tilesets.end())
+    {
+        return;
+    }
+    for (int i = 0; i < tilesetEditors.size(); i++)
+    {
+        if (tilesetEditors[i].open && tilesetEditors[i].name == name)
+        {
+            UnloadRenderTexture(tilesetEditors[i].target);
+            tilesetEditors[i].target = LoadRenderTexture(tilesets[name].width * 8 * 2, tilesets[name].height * 8 * 2);
+        }
+    }
+    for (int i = 0; i < attrEditors.size(); i++)
+    {
+        if (attrEditors[i].open && attrEditors[i].name == name)
+        {
+            UnloadRenderTexture(attrEditors[i].target);
+            attrEditors[i].target = LoadRenderTexture(tilesets[name].width * 8 * 2 + (float)Tileset::attrTex.width, std::max((float)tilesets[name].height * 8 * 2, (float)Tileset::attrTex.height));
+        }
+    }
+}
+
+void EditorNew::OpenAttr(std::string name, float tileSize)
+{
+    for (int i = 0; i < attrEditors.size(); i++)
+    {
+        if (attrEditors[i].name == name) return; // No duplicate editors.
+    }
+    attrEditors.push_back(AttributeEditor(this, name, tileSize));
 }
 
 void EditorNew::OpenScript(std::string scriptName)
 {
-
+    for (int i = 0; i < scriptEditors.size(); i++)
+    {
+        if (scriptEditors[i].name == scriptName) return; // No duplicate editors.
+    }
+    scriptEditors.push_back(ScriptEditor(this, scriptName));
 }
 
 void EditorNew::MoveCamX(float amount, bool relative)
