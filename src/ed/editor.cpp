@@ -333,11 +333,11 @@ void Editor::DrawUI()
     }
 
     // Style editor.
-    if (!styleEditor) styleEditor = new StyleEditor(this);
+    //if (!styleEditor) styleEditor = new StyleEditor(this);
     styleEditor->DrawUI();
 
     // Music.
-    if (!musicPlayer) musicPlayer = new MusicPlayer(this);
+    //if (!musicPlayer) musicPlayer = new MusicPlayer(this);
     musicPlayer->DrawUI();
 
     // Help.
@@ -369,7 +369,7 @@ void Editor::DrawUI()
     // Profile editor.
     if (!profileEditor)
     {
-        profileEditor = new ProfileEditor(this);
+        //profileEditor = new ProfileEditor(this);
         profile.ReadAll(rsc);
     }
     profileEditor->DrawUI();

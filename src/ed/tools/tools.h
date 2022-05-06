@@ -11,6 +11,7 @@ enum class ToolItem : int {
     TileBrush,
     Eraser,
     EntityHand,
+    Zoom,
     CurrentTool,
     NumTools = CurrentTool
 };

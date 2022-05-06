@@ -2,18 +2,18 @@
 
 #include "../types.h"
 
-struct Editor;
+struct EditorNew;
 struct Profile;
 
 // For editing save data.
 struct ProfileEditor
 {
-    Editor* ed; // Base editor.
+    EditorNew* ed; // Base editor.
     bool open = false; // If this is open.
     Profile* profile; // The profile save to edit.
 
     // Create a new profile editor.
-    ProfileEditor(Editor* ed);
+    ProfileEditor(EditorNew* ed);
 
     // Draw the main interface.
     void DrawUI();

@@ -1,17 +1,21 @@
 #include "tools.h"
-#include "../editorNew.h"
+
 #include "hand.h"
+#include "zoom.h"
+#include "../editorNew.h"
 
 const char* Tools::toolNames[] =
 {
     "Hand",
     "Tile Brush",
     "Eraser",
-    "Entity Hand"
+    "Entity Hand",
+    "Zoom"
 };
 
 const ToolBasicFunction Tools::initFunctions[] =
 {
+    nullptr,
     nullptr,
     nullptr,
     nullptr,
@@ -23,7 +27,8 @@ const ToolActivateFunction Tools::activateFunctions[] =
     HandToolActivate,
     nullptr,
     nullptr,
-    nullptr
+    nullptr,
+    ZoomToolActivate
 };
 
 const ToolBasicFunction Tools::updateFunctions[] =
@@ -31,11 +36,13 @@ const ToolBasicFunction Tools::updateFunctions[] =
     HandToolUpdate,
     nullptr,
     nullptr,
-    nullptr
+    nullptr,
+    ZoomToolUpdate
 };
 
 const ToolBasicFunction Tools::closeFunctions[] =
 {
+    nullptr,
     nullptr,
     nullptr,
     nullptr,

@@ -1,9 +1,11 @@
 #include "editorNew.h"
+#include "../bgm/bgm.h"
 #include "../px/tileset.h"
 #include "../rlImGui/rlImGui.h"
 #include "../rlImGui/utils.h"
 #include "imgui.h"
 #include "raylib.h"
+#include <cmath>
 
 void EditorNew::Init()
 {
@@ -50,11 +52,12 @@ int EditorNew::EditorLoop()
             Draw();
             BeginRLImGui();
             DrawUI();
+            settings.DrawUI(this);
         }
 
         // ImGui demo debug.
         //ImGui::ShowDemoWindow();
-        
+
         // Finish drawing.
         EndRLImGui();
         EndDrawing();
@@ -104,6 +107,7 @@ void EditorNew::Draw()
     if (settings.viewLayers[(u8)MapLayer::BG]) map.DrawLayer((u8)MapLayer::BG, tilesets, { 0, 0 }, settings.viewTileAttributes);
     if (settings.viewLayers[(u8)MapLayer::MG]) map.DrawLayer((u8)MapLayer::MG, tilesets, { 0, 0 }, settings.viewTileAttributes);
     if (settings.viewLayers[(u8)MapLayer::FG]) map.DrawLayer((u8)MapLayer::FG, tilesets, { 0, 0 }, settings.viewTileAttributes);
+    if (settings.viewEntities) map.DrawEntities(entityEditor.entities, tilesets, { 0, 0 }, settings.viewEntityBoxes);
 
     // Show the map play area.
     if (settings.showPlayArea)
@@ -132,8 +136,14 @@ void EditorNew::DrawUI()
     // Main menu.
     DrawMainMenu();
 
-    // Level editor.
+    // Toolbar gadgets.
+    toolbar.DrawUI();
+
+    // Misc. windows.
     levelEditor.DrawUI();
+    profileEditor.DrawUI();
+    styleEditor.DrawUI();
+    musicPlayer.DrawUI();
 
     // Draw select level UI.
     DrawSelectLevelUI();
@@ -177,6 +187,9 @@ void EditorNew::Update()
     }
     tools.Update(this);
 
+    // Do default tool routine for things like panning and zooming.
+    DoDefaultToolRoutine();
+
     // Update focus.
     focus.Update();
 
@@ -196,13 +209,24 @@ void EditorNew::FadeEffect()
 void EditorNew::InitEditor()
 {
     entityEditor.LoadEntityListing("all");
-    LoadFixedTilesets();
     if (settings.rscPath != rsc || settings.lastLevel != level)
     {
+        for (auto& t : tilesets)
+        {
+            UnloadTileset(t.first);
+        }
+        LoadFixedTilesets();
         rsc = settings.rscPath;
         level = settings.lastLevel;
         LoadLevel();
+        InitSubeditors();
     }
+}
+
+void EditorNew::InitSubeditors()
+{
+    profile.ReadAll(rsc);
+    BgmPlayer::Init(rsc);
 }
 
 void EditorNew::LoadTileset(std::string tilesetName)
@@ -383,17 +407,18 @@ void EditorNew::DrawMainMenu()
 
             if (ImGui::MenuItem("Profile Editor"))
             {
-                //profileEditor.open = true;
+                profileEditor.open = true;
             }
 
             if (ImGui::MenuItem("Style Editor"))
             {
-                //styleEditor.open = true;
+                styleEditor.open = true;
             }
 
             if (ImGui::MenuItem("Music Player"))
             {
-                //musicPlayer.open = true;
+                musicPlayer.open = true;
+                BgmPlayer::LoadSongList();
             }
             ImGui::EndMenu();
         }
@@ -453,6 +478,14 @@ void EditorNew::DrawMainMenu()
     if (doRedo) Redo();
     if (isFullscreening) DoToggleFullscreen();
     if (openAboutPopup) OpenAboutPopup();
+
+    // Settings.
+    if (openSettings)
+    {
+        ImGui::OpenPopup("Editor Settings");
+        openSettings = false;
+        settings.softShow = true;
+    }
 
 }
 
@@ -707,6 +740,35 @@ int EditorNew::GetTileX(s8 layer)
     }
 }
 
+float EditorNew::GetZoomSpeed()
+{
+    if (cam.zoom < 1.0f) {
+        return 0.125f;
+    } else if (cam.zoom < 3.0f) {
+        return 0.25f;
+    } else {
+        return 0.5f;
+    }
+}
+
+void EditorNew::Zoom(Vector2 origin, float amount, bool relative)
+{
+
+    // Add to existing zoom if relative.
+    if (relative)
+    {
+        amount += cam.zoom;
+    }
+
+    // Apply new zoom amount.
+    if (amount < MIN_ZOOM) amount = MIN_ZOOM;
+    if (amount > MAX_ZOOM) amount = MAX_ZOOM;
+    cam.offset.x = -(origin.x - cam.offset.x) * amount / cam.zoom + origin.x;
+    cam.offset.y = -(origin.y - cam.offset.y) * amount / cam.zoom + origin.y;
+    cam.zoom = amount;
+
+}
+
 int EditorNew::GetTileY(s8 layer)
 {
     int ret = ((mouseY - cam.offset.y) / Tileset::EDITOR_TILE_SIZE / cam.zoom);
@@ -718,4 +780,54 @@ int EditorNew::GetTileY(s8 layer)
     {
         return ret;
     }
+}
+
+void EditorNew::DoDefaultToolRoutine()
+{
+    CheckScroll();
+    CheckZoom();
+}
+
+void EditorNew::CheckScroll()
+{
+    const float SCROLL_SPEED = 7.5f;
+    if (focus.windowFocused || focus.isModal)
+    {
+        return;
+    }
+
+    if (IsKeyUp(KEY_LEFT_CONTROL) && IsKeyUp(KEY_RIGHT_CONTROL) && IsKeyUp(KEY_LEFT_ALT) && IsKeyUp(KEY_RIGHT_ALT) && IsKeyUp(KEY_LEFT_SHIFT) && IsKeyUp(KEY_RIGHT_SHIFT) && (IsKeyDown(KEY_W) || IsKeyDown(KEY_UP)))
+    {
+        cam.offset.y += SCROLL_SPEED;
+    }
+    if (IsKeyUp(KEY_LEFT_CONTROL) && IsKeyUp(KEY_RIGHT_CONTROL) && IsKeyUp(KEY_LEFT_ALT) && IsKeyUp(KEY_RIGHT_ALT) && IsKeyUp(KEY_LEFT_SHIFT) && IsKeyUp(KEY_RIGHT_SHIFT) && (IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN)))
+    {
+        cam.offset.y -= SCROLL_SPEED;
+    }
+    if (IsKeyUp(KEY_LEFT_CONTROL) && IsKeyUp(KEY_RIGHT_CONTROL) && IsKeyUp(KEY_LEFT_ALT) && IsKeyUp(KEY_RIGHT_ALT) && IsKeyUp(KEY_LEFT_SHIFT) && IsKeyUp(KEY_RIGHT_SHIFT) && (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT)))
+    {
+        cam.offset.x += SCROLL_SPEED;
+    }
+    if (IsKeyUp(KEY_LEFT_CONTROL) && IsKeyUp(KEY_RIGHT_CONTROL) && IsKeyUp(KEY_LEFT_ALT) && IsKeyUp(KEY_RIGHT_ALT) && IsKeyUp(KEY_LEFT_SHIFT) && IsKeyUp(KEY_RIGHT_SHIFT) && (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT)))
+    {
+        cam.offset.x -= SCROLL_SPEED;
+    }
+}
+
+void EditorNew::CheckZoom()
+{
+
+    // Focus check.
+    if (focus.mouseInWindow || focus.isModal)
+    {
+        return;
+    }
+
+    // Zooming.
+    float zoom = GetMouseWheelMove();
+    if (zoom != 0)
+    {
+        Zoom({ mouseX, mouseY }, GetZoomSpeed() * zoom / fabs(zoom), true);
+    }
+
 }

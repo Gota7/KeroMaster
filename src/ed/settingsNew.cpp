@@ -56,7 +56,7 @@ void SettingsNew::DrawUI(EditorNew* ed)
 {
 
     // Open check.
-    if (!show) return;
+    if (!show && !softShow) return;
 
     // Settings data.
     static imgui_addons::ImGuiFileBrowser fB;
@@ -193,6 +193,14 @@ void SettingsNew::DrawUI(EditorNew* ed)
                     Save();
                     ed->InitEditor();
                     show = false;
+                    softShow = false;
+                    ImGui::CloseCurrentPopup();
+                }
+                if (softShow && (ImGui::SameLine(), true) && ImGui::Button("Cancel"))
+                {
+                    Load();
+                    show = false;
+                    softShow = false;
                     ImGui::CloseCurrentPopup();
                 }
             }

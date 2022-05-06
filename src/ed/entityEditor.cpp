@@ -23,12 +23,13 @@ void EntityEditor::LoadEntityListing(std::string xmlName)
         defaultListing.push_back(std::to_string(i) + " - " + (entities.find(i) != entities.end() ? entities[i].name : defaultStr));
     }
     f.close();
+    if (entityListing != nullptr) DelImGuiStringList(entityListing, numEntities);
     entityListing = GenImGuiStringList(defaultListing, &numEntities);
 }
 
 void EntityEditor::DrawUI()
 {
-    
+
     // Nothing to edit.
     if (!editingEntity) return;
 
@@ -50,7 +51,7 @@ void EntityEditor::DrawUI()
     {
         ImGuiTooltip(d->description);
     }
-    
+
     // Entity flags.
     EditFlagBit(editingEntity->flags, 0, "Alive", "If the entity will spawn alive.", itemWidth);
     EditFlagBit(editingEntity->flags, 1, "Unk1", "Unknown flag.", itemWidth);

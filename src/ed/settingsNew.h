@@ -19,6 +19,7 @@ struct SettingsNew
     ToolItem middleClick = ToolItem::EntityHand; // Middle click tool.
     std::string currStyle; // Current style.
     bool show = false; // If to show the settings window.
+    bool softShow = false; // If to show the settings window but its controlled and not from a problem.
     bool showPlayArea = true; // If to show bounds of each map.
     bool showGrid = false; // Show the grid.
     bool viewLayers[3] = { true, true, true }; // What layers can be seen.

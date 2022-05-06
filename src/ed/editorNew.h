@@ -3,10 +3,15 @@
 #include "entityDisplay.h"
 #include "entityEditor.h"
 #include "levelEditor.h"
+#include "musicPlayer.h"
+#include "profileEditor.h"
 #include "undoStack.h"
 #include "settingsNew.h"
 #include "style.h"
+#include "styleEditor.h"
+#include "toolbar.h"
 #include "tools/tools.h"
+#include "../px/profile.h"
 #include "../px/pxmap.h"
 #include "../px/tileset.h"
 #include "../rlImGui/focusData.h"
@@ -26,7 +31,11 @@ struct EditorNew
     std::string level = ""; // Open level.
     EntityEditor entityEditor = EntityEditor(this); // Entity editor.
     LevelEditor levelEditor = LevelEditor(this); // Level editor.
+    ProfileEditor profileEditor = ProfileEditor(this); // Profile editor.
+    StyleEditor styleEditor = StyleEditor(this); // Style editor.
+    MusicPlayer musicPlayer = MusicPlayer(this); // Music player.
     Map map; // Currently loaded pxmap.
+    Profile profile; // Player profile.
     std::map<std::string, Tileset> tilesets; // Loaded tilesets.
     Camera2D cam; // Camera for viewing the map.
     UndoStack undoStack; // Undo stack for undo/redo actions.
@@ -35,8 +44,13 @@ struct EditorNew
     float oldMouseY; // Old mouse Y position.
     float mouseX; // Mouse X position.
     float mouseY; // Mouse Y position.
+    Toolbar toolbar = Toolbar(this); // Toolbar for widgets.
     Tools tools; // Editor tool widgets.
     ToolItem currTool = ToolItem::Hand; // Current tool.
+    int currentLayer = (int)MapLayer::FG; // Current layer to edit.
+    int placeEntityId = 0; // The entity ID to place if an entity is being placed.
+    bool isPlacingEntity = false; // If an entity is being placed.
+    bool doingEntityMove = false; // If an entity is moving.
 
     // New level selection vars.
     std::string newFileName; // Name for the new file.
@@ -46,6 +60,10 @@ struct EditorNew
     // Level file select vars.
     int numLevelFiles; // How many level files there are to display.
     char** levelFiles = nullptr; // Actual level file names.
+
+    // Zoom constants.
+    static constexpr float MIN_ZOOM = 0.25f;
+    static constexpr float MAX_ZOOM = 10.0f;
 
     // Initialize the editor.
     void Init();
@@ -67,6 +85,9 @@ struct EditorNew
 
     // Initialize the editor by loading everything needed.
     void InitEditor();
+
+    // Init sub-editors.
+    void InitSubeditors();
 
     // Load a tileset.
     void LoadTileset(std::string tilesetName);
@@ -143,10 +164,25 @@ struct EditorNew
     // Move the camera in the Y direction.
     void MoveCamY(float amount, bool relative = true);
 
+    // Get how much to speed the zoom by.
+    float GetZoomSpeed();
+
+    // Zoom the camera in an out from a certain point with an amount.
+    void Zoom(Vector2 origin, float amount, bool relative);
+
     // Get the tile at the X position with the current mouse and layer. -1 is out of bounds.
     int GetTileX(s8 layer = -1);
 
     // Get the tile at the Y position with the current mouse and layer. -1 is out of bounds.
     int GetTileY(s8 layer = -1);
+
+    // Check for default tool applications.
+    void DoDefaultToolRoutine();
+
+    // Check for default scrolling with shortcuts.
+    void CheckScroll();
+
+    // Check for default zooming with mouse wheel.
+    void CheckZoom();
 
 };

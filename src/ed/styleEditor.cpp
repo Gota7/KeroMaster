@@ -1,9 +1,11 @@
 #include "styleEditor.h"
-#include <algorithm>
-#include "editor.h"
+
+#include "editorNew.h"
 #include "../rlImGui/utils.h"
 
-StyleEditor::StyleEditor(Editor* ed)
+#include <algorithm>
+
+StyleEditor::StyleEditor(EditorNew* ed)
 {
     this->ed = ed;
 }
@@ -28,7 +30,7 @@ void StyleEditor::ScanForThemes()
     currTheme = 0;
     for (int i = 0; i < themeList.size(); i++)
     {
-        if (ed->settings.style.name == themeList[i])
+        if (ed->settings.currStyle == themeList[i])
         {
             currTheme = i;
             break;
@@ -56,31 +58,35 @@ void StyleEditor::DrawUI()
     ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.50f);
     if (ImGui::Combo("Current Style", &currTheme, themes, numThemes))
     {
-        ed->settings.style.Load(themes[currTheme]);
+        ed->style.Load(themes[currTheme]);
         ed->settings.Save();
     }
-    std::string oldName = ed->settings.style.name;
-    if (ImGuiStringEdit("Style Name", &ed->settings.style.name))
+    std::string oldName = ed->style.name;
+    if (ImGuiStringEdit("Style Name", &ed->style.name))
     {
-        ed->settings.style.Save();
+        ed->settings.currStyle = ed->style.name;
+        ed->style.Save();
         ed->settings.Save();
         scanDirs = true;
         remove(("object_data/themes/" + oldName + ".ini").c_str());
     }
-    if (ed->settings.style.name != "New Theme" && ImGui::Button("New Theme"))
+    if (ed->style.name != "New Theme" && ImGui::Button("New Theme"))
     {
-        ed->settings.style.name = "New Theme";
+        ed->style.name = "New Theme";
+        ed->settings.currStyle = ed->style.name;
         scanDirs = true;
-        ed->settings.style.Save();
+        ed->style.Save();
         ed->settings.Save();
     }
     if (numThemes > 1)
     {
-        if (ed->settings.style.name != "New Theme") { ImGui::SameLine(); }
+        if (ed->style.name != "New Theme") { ImGui::SameLine(); }
         if (ImGui::Button("Delete Theme"))
         {
-            remove(("object_data/themes/" + ed->settings.style.name + ".ini").c_str());
-            ed->settings.style.Load(themes[0]);
+            remove(("object_data/themes/" + ed->style.name + ".ini").c_str());
+            ed->style.Load(themes[0]);
+            ed->settings.currStyle = themes[0];
+            ed->settings.Save();
             scanDirs = true;
         }
     }
@@ -88,12 +94,12 @@ void StyleEditor::DrawUI()
     // Copied from the ImGui demo and slightly modified for the editor.
     if (ImGui::Button("Save Style"))
     {
-        ed->settings.style.style = ref_saved_style = style;
-        ed->settings.style.Save();
+        ed->style.style = ref_saved_style = style;
+        ed->style.Save();
     }
     ImGui::SameLine();
     if (ImGui::Button("Revert Style"))
-        style = ed->settings.style.style;
+        style = ed->style.style;
 
     ImGui::Separator();
 
@@ -166,13 +172,13 @@ void StyleEditor::DrawUI()
                     continue;
                 ImGui::PushID(i);
                 ImGui::ColorEdit4("##color", (float*)&style.Colors[i], ImGuiColorEditFlags_AlphaBar | alpha_flags);
-                if (memcmp(&style.Colors[i], &ed->settings.style.style.Colors[i], sizeof(ImVec4)) != 0)
+                if (memcmp(&style.Colors[i], &ed->style.style.Colors[i], sizeof(ImVec4)) != 0)
                 {
                     // Tips: in a real user application, you may want to merge and use an icon font into the main font,
                     // so instead of "Save"/"Revert" you'd use icons!
                     // Read the FAQ and docs/FONTS.md about using icon fonts. It's really easy and super convenient!
-                    ImGui::SameLine(0.0f, style.ItemInnerSpacing.x); if (ImGui::Button("Save")) { ed->settings.style.style.Colors[i] = style.Colors[i]; }
-                    ImGui::SameLine(0.0f, style.ItemInnerSpacing.x); if (ImGui::Button("Revert")) { style.Colors[i] = ed->settings.style.style.Colors[i]; }
+                    ImGui::SameLine(0.0f, style.ItemInnerSpacing.x); if (ImGui::Button("Save")) { ed->style.style.Colors[i] = style.Colors[i]; }
+                    ImGui::SameLine(0.0f, style.ItemInnerSpacing.x); if (ImGui::Button("Revert")) { style.Colors[i] = ed->style.style.Colors[i]; }
                 }
                 ImGui::SameLine(0.0f, style.ItemInnerSpacing.x);
                 ImGui::TextUnformatted(name);
