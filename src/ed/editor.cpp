@@ -642,6 +642,9 @@ void Editor::DrawMainMenu()
         settings.softShow = true;
     }
 
+    // Update focus for menu.
+    focus.mouseInWindow |= ImGui::IsAnyItemHovered();
+
 }
 
 void Editor::LevelNameSelect(bool saveAs)
