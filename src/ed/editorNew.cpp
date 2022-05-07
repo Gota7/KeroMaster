@@ -351,6 +351,10 @@ void EditorNew::InitEditor()
         LoadLevel();
         InitSubeditors();
     }
+    if (settings.maxUndoDepth != undoStack.MaxLen())
+    {
+        undoStack.SetMaxLen(settings.maxUndoDepth);
+    }
 }
 
 void EditorNew::InitSubeditors()
@@ -807,12 +811,12 @@ void EditorNew::Quit()
 
 void EditorNew::Undo()
 {
-    //if (enabled) undoStack.Undo(this);
+    if (enabled) undoStack.Undo(this);
 }
 
 void EditorNew::Redo()
 {
-    //if (enabled) undoStack.Redo(this);
+    if (enabled) undoStack.Redo(this);
 }
 
 void EditorNew::DoToggleFullscreen()
@@ -1041,7 +1045,7 @@ void EditorNew::CheckEntityDelete()
         {
             if (&map.entities[i] == e)
             {
-                //undoStack->PushEntityDeleted(this, i, map.entities[i]);
+                undoStack.PushEntityDeleted(this, i, map.entities[i]);
                 map.entities.erase(map.entities.begin() + i);
             }
         }

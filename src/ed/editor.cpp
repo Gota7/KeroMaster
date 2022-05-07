@@ -562,11 +562,11 @@ void Editor::DrawMainMenu(bool startup)
     }
     else if (doRedo)
     {
-        undoStack->Redo(this);
+        //undoStack->Redo(this);
     }
     else if (doUndo)
     {
-        undoStack->Undo(this);
+        //undoStack->Undo(this);
     }
     else if (isFullscreening || doFullscreen)
     {
@@ -1281,7 +1281,7 @@ void Editor::CheckEntity()
         {
             isPlacingEntity = false;
         }
-        undoStack->PushEntityPlaced(this, map.entities.size() - 1, e.id, e.xPos, e.yPos);
+        //undoStack->PushEntityPlaced(this, map.entities.size() - 1, e.id, e.xPos, e.yPos);
     }
     else if (!isPlacingEntity && doingEntityMove && entityEditor->editingEntity != NULL)
     {
@@ -1290,7 +1290,7 @@ void Editor::CheckEntity()
         {
             if (entityEditor->editingEntity == &map.entities[i] && (backupEntityX != entityEditor->editingEntity->xPos || backupEntityY != entityEditor->editingEntity->yPos))
             {
-                undoStack->PushEntityMoved(this, i, backupEntityX, backupEntityY, entityEditor->editingEntity->xPos, entityEditor->editingEntity->yPos);
+                //undoStack->PushEntityMoved(this, i, backupEntityX, backupEntityY, entityEditor->editingEntity->xPos, entityEditor->editingEntity->yPos);
             }
         }
     }
@@ -1303,7 +1303,7 @@ void Editor::CheckEntity()
         {
             if (&map.entities[i] == e)
             {
-                undoStack->PushEntityDeleted(this, i, map.entities[i]);
+                //undoStack->PushEntityDeleted(this, i, map.entities[i]);
                 map.entities.erase(map.entities.begin() + i);
             }
         }

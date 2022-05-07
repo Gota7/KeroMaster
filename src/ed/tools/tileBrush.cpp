@@ -17,7 +17,14 @@ void TileBrushToolActivate(EditorNew* ed, Vector2 pos1, Vector2 pos2)
                 u16 yPos = startY + y;
                 if (xPos >= 0 && yPos >= 0 && xPos < layer.width && yPos < layer.height)
                 {
-                    layer.SetTile(xPos, yPos, ed->tilesToPaint.x + x + (ed->tilesToPaint.y + y) * t.width);
+                    u8 oldTile = layer.GetTile(xPos, yPos);
+                    u8 newTile = ed->tilesToPaint.x + x + (ed->tilesToPaint.y + y) * t.width;
+                    layer.SetTile(xPos, yPos, newTile);
+                    if (oldTile != newTile)
+                    {
+                        ed->undoStack.PushTilePlaced(ed, ed->tilesToPaint.layer, oldTile, newTile, xPos, yPos);
+                        if (!(x == 0 && y == 0)) ed->undoStack.SetLastChained();
+                    }
                 }
             }
         }

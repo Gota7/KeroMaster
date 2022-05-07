@@ -1,9 +1,22 @@
 #include "undoStack.h"
-#include "editor.h"
+#include "editorNew.h"
 
 void UndoStack::SetMaxLen(int maxSize)
 {
     this->maxSize = maxSize;
+    while (redoStack.size() > maxSize)
+    {
+        redoStack.pop_back();
+    }
+    while (undoStack.size() > maxSize)
+    {
+        undoStack.pop_back();
+    }
+}
+
+int UndoStack::MaxLen()
+{
+    return maxSize;
 }
 
 void UndoStack::Reset()
@@ -12,7 +25,34 @@ void UndoStack::Reset()
     redoStack.clear();
 }
 
-void UndoStack::PushEntityMoved(Editor* ed, int entityIndex, u16 xPos, u16 yPos, u16 newXPos, u16 newYPos)
+void UndoStack::PushUndoAction(UndoAction& a)
+{
+    undoStack.push_front(a);
+    redoStack.clear();
+    if (undoStack.size() > maxSize)
+    {
+        undoStack.pop_back();
+    }
+}
+
+void UndoStack::PushTilePlaced(EditorNew* ed, u8 layer, u8 oldTile, u8 newTile, u16 xPos, u16 yPos)
+{
+    UndoAction a;
+    a.type = UndoActionType::TilePlaced;
+    a.data.tilePlaced.layer = layer;
+    a.data.tilePlaced.prevTile = oldTile;
+    a.data.tilePlaced.nextTile = newTile;
+    a.data.tilePlaced.xPos = xPos;
+    a.data.tilePlaced.yPos = yPos;
+    PushUndoAction(a);
+}
+
+void UndoStack::PushTileErased(EditorNew* ed, u8 layer, u8 oldTile, u16 xPos, u16 yPos)
+{
+    PushTilePlaced(ed, layer, oldTile, 0, xPos, yPos);
+}
+
+void UndoStack::PushEntityMoved(EditorNew* ed, int entityIndex, u16 xPos, u16 yPos, u16 newXPos, u16 newYPos)
 {
     UndoAction a;
     a.type = UndoActionType::EntityMoved;
@@ -21,15 +61,10 @@ void UndoStack::PushEntityMoved(Editor* ed, int entityIndex, u16 xPos, u16 yPos,
     a.data.entityExPosition.lastY = yPos;
     a.data.entityExPosition.newX = newXPos;
     a.data.entityExPosition.newY = newYPos;
-    undoStack.push_front(a);
-    redoStack.clear();
-    if (undoStack.size() > maxSize)
-    {
-        undoStack.pop_back();
-    }
+    PushUndoAction(a);
 }
 
-void UndoStack::PushEntityPlaced(Editor* ed, int entityIndex, u8 type, u16 xPos, u16 yPos)
+void UndoStack::PushEntityPlaced(EditorNew* ed, int entityIndex, u8 type, u16 xPos, u16 yPos)
 {
     UndoAction a;
     a.type = UndoActionType::EntityPlaced;
@@ -37,35 +72,37 @@ void UndoStack::PushEntityPlaced(Editor* ed, int entityIndex, u8 type, u16 xPos,
     a.data.entityExPosition.type = type;
     a.data.entityExPosition.lastX = xPos;
     a.data.entityExPosition.lastY = yPos;
-    undoStack.push_front(a);
-    redoStack.clear();
-    if (undoStack.size() > maxSize)
-    {
-        undoStack.pop_back();
-    }
+    PushUndoAction(a);
 }
 
-void UndoStack::PushEntityDeleted(Editor* ed, int entityIndex, Entity e)
+void UndoStack::PushEntityDeleted(EditorNew* ed, int entityIndex, Entity e)
 {
     UndoAction a;
     a.type = UndoActionType::EntityDeleted;
     a.data.entityCapture.index = entityIndex;
     a.data.entityCapture.oldEntity = e;
-    undoStack.push_front(a);
-    redoStack.clear();
-    if (undoStack.size() > maxSize)
+    PushUndoAction(a);
+}
+
+void UndoStack::SetLastChained()
+{
+    if (CanUndo())
     {
-        undoStack.pop_back();
+        undoStack.front().chained = true;
     }
 }
 
-void UndoStack::Undo(Editor* ed)
+void UndoStack::Undo(EditorNew* ed)
 {
     if (!CanUndo()) return;
     UndoAction a = undoStack.front();
     undoStack.pop_front();
     switch (a.type)
     {
+        case UndoActionType::TilePlaced:
+        case UndoActionType::TileErased:
+            ed->map.maps[a.data.tilePlaced.layer].SetTile(a.data.tilePlaced.xPos, a.data.tilePlaced.yPos, a.data.tilePlaced.prevTile);
+            break;
         case UndoActionType::EntityMoved:
             ed->map.entities[a.data.entityExPosition.index].xPos = a.data.entityExPosition.lastX;
             ed->map.entities[a.data.entityExPosition.index].yPos = a.data.entityExPosition.lastY;
@@ -80,15 +117,20 @@ void UndoStack::Undo(Editor* ed)
             break;
     }
     redoStack.push_front(a);
+    if (a.chained) Undo(ed); // Undo until no longer chained.
 }
 
-void UndoStack::Redo(Editor* ed)
+void UndoStack::Redo(EditorNew* ed)
 {
     if (!CanRedo()) return;
     UndoAction a = redoStack.front();
     redoStack.pop_front();
     switch (a.type)
     {
+        case UndoActionType::TilePlaced:
+        case UndoActionType::TileErased:
+            ed->map.maps[a.data.tilePlaced.layer].SetTile(a.data.tilePlaced.xPos, a.data.tilePlaced.yPos, a.data.tilePlaced.nextTile);
+            break;
         case UndoActionType::EntityMoved:
             ed->map.entities[a.data.entityExPosition.index].xPos = a.data.entityExPosition.newX;
             ed->map.entities[a.data.entityExPosition.index].yPos = a.data.entityExPosition.newY;
@@ -115,6 +157,7 @@ void UndoStack::Redo(Editor* ed)
             break;
     }
     undoStack.push_front(a);
+    if (CanRedo() && redoStack.front().chained) Redo(ed); // Do chained redos, as ones next to the current one are chained.
 }
 
 bool UndoStack::CanUndo()

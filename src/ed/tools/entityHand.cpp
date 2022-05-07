@@ -1,6 +1,13 @@
 #include "entityHand.h"
 #include "../editorNew.h"
 
+u16 bakMoveX;
+u16 bakMoveY;
+u16 newMoveX;
+u16 newMoveY;
+u16 movingIndex;
+u8 movingType;
+
 void EntityHandToolActivate(EditorNew* ed, Vector2 pos1, Vector2 pos2)
 {
 
@@ -31,7 +38,7 @@ void EntityHandToolActivate(EditorNew* ed, Vector2 pos1, Vector2 pos2)
             ed->isPlacingEntity = false;
         }
         ed->tools.toolActive[(int)ToolItem::EntityHand] = false;
-        //ed->undoStack.PushEntityPlaced(this, map.entities.size() - 1, e.id, e.xPos, e.yPos);
+        ed->undoStack.PushEntityPlaced(ed, ed->map.entities.size() - 1, e.id, e.xPos, e.yPos);
     }
 
     // Move the entity.
@@ -43,6 +50,8 @@ void EntityHandToolActivate(EditorNew* ed, Vector2 pos1, Vector2 pos2)
         if (tileY > 0xFFFF) { tileY = 0xFFFF; }
         ed->entityEditor.editingEntity->xPos = tileX;
         ed->entityEditor.editingEntity->yPos = tileY;
+        newMoveX = tileX;
+        newMoveY = tileY;
     }
 
     // Select an entity.
@@ -53,15 +62,21 @@ void EntityHandToolActivate(EditorNew* ed, Vector2 pos1, Vector2 pos2)
         if (tileY < 0) { tileY = 0; }
         if (tileX > 0xFFFF) { tileX = 0xFFFF; }
         if (tileY > 0xFFFF) { tileY = 0xFFFF; }
+        u16 ind = 0;
         for (auto& e : ed->map.entities)
         {
             if (e.xPos == tileX && e.yPos == tileY)
             {
                 ed->entityEditor.editingEntity = &e;
                 ed->entityEditor.editingEntity->beingEdited = true;
+                bakMoveX = ed->entityEditor.editingEntity->xPos;
+                bakMoveY = ed->entityEditor.editingEntity->yPos;
+                movingIndex = ind;
+                movingType = ed->entityEditor.editingEntity->id;
                 ed->doingEntityMove = true;
                 return;
             }
+            ind++;
         }
         ed->entityEditor.editingEntity = nullptr;
         ed->tools.toolActive[(int)ToolItem::EntityHand] = false;
@@ -77,4 +92,8 @@ void EntityHandToolUpdate(EditorNew* ed)
 void EntityHandToolClose(EditorNew* ed)
 {
     ed->doingEntityMove = false;
+    if (newMoveX != bakMoveX || newMoveY != bakMoveY)
+    {
+        ed->undoStack.PushEntityMoved(ed, movingIndex, bakMoveX, bakMoveY, newMoveX, newMoveY);
+    }
 }
