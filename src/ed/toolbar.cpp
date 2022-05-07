@@ -87,6 +87,7 @@ void Toolbar::DrawUI()
     if (ToggleButton("FG", ed->currentLayer == (int)MapLayer::FG, &ed->settings.viewLayers[(int)MapLayer::FG]))
     {
         ed->currentLayer = (int)MapLayer::FG;
+        ed->palette.ChangeTileset(ed->map.tilesets[(int)MapLayer::FG].dat);
         ed->settings.viewLayers[(int)MapLayer::FG] = true;
     }
     Tooltip("Foreground Layer\nRight click to toggle visibility.");
@@ -94,6 +95,7 @@ void Toolbar::DrawUI()
     if (ToggleButton("MG", ed->currentLayer == (int)MapLayer::MG, &ed->settings.viewLayers[(int)MapLayer::MG]))
     {
         ed->currentLayer = (int)MapLayer::MG;
+        ed->palette.ChangeTileset(ed->map.tilesets[(int)MapLayer::MG].dat);
         ed->settings.viewLayers[(int)MapLayer::MG] = true;
     }
     Tooltip("Middleground Layer\nRight click to toggle visibility.");
@@ -101,6 +103,7 @@ void Toolbar::DrawUI()
     if (ToggleButton("BG", ed->currentLayer == (int)MapLayer::BG, &ed->settings.viewLayers[(int)MapLayer::BG]))
     {
         ed->currentLayer = (int)MapLayer::BG;
+        ed->palette.ChangeTileset(ed->map.tilesets[(int)MapLayer::BG].dat);
         ed->settings.viewLayers[(int)MapLayer::BG] = true;
     }
     Tooltip("Background Layer\nRight click to toggle visibility.");

@@ -5,6 +5,7 @@
 #include "entityEditor.h"
 #include "levelEditor.h"
 #include "musicPlayer.h"
+#include "palette.h"
 #include "profileEditor.h"
 #include "undoStack.h"
 #include "selection.h"
@@ -33,6 +34,7 @@ struct Editor
     FocusData focus; // For focusing subwindows.
     std::string rsc = ""; // Resource path.
     std::string level = ""; // Open level.
+    Palette palette = Palette(this); // Palette viewer.
     EntityEditor entityEditor = EntityEditor(this); // Entity editor.
     LevelEditor levelEditor = LevelEditor(this); // Level editor.
     ProfileEditor profileEditor = ProfileEditor(this); // Profile editor.

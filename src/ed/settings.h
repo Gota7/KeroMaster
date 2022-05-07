@@ -28,7 +28,7 @@ struct SettingsNew
     bool viewEntities = true; // Show entities.
     bool viewTileAttributes = false; // If to view tile attributes.
     bool openTilesetsOnLoad = false; // Open tilesets on load.
-    int maxUndoDepth = 100; // Maximum undo depth.
+    int maxUndoDepth = 1000; // Maximum undo depth.
 
     // Load the settings.
     void Load();

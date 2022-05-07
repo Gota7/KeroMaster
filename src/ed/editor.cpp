@@ -95,6 +95,12 @@ int Editor::EditorLoop()
 void Editor::Draw()
 {
 
+    // Safety.
+    if (!enabled) return;
+
+    // Draw palette.
+    palette.Draw();
+
     // Draw the sub-editors.
     for (int i = 0; i < tilesetEditors.size(); i++)
     {
@@ -104,9 +110,6 @@ void Editor::Draw()
     {
         attrEditors[i].Draw();
     }
-
-    // Safety.
-    if (!enabled) return;
 
     // Draw background.
     map.Clear();
@@ -220,6 +223,9 @@ void Editor::DrawUI()
     // Toolbar gadgets.
     toolbar.DrawUI();
 
+    // Palette.
+    palette.DrawUI();
+
     // Other windows.
     for (int i = 0; i < tilesetEditors.size(); i++)
     {
@@ -261,6 +267,9 @@ void Editor::Update()
         FadeEffect();
         return;
     }
+
+    // Palette.
+    palette.Update();
 
     // Other editors.
     for (int i = tilesetEditors.size() - 1; i >= 0; i--)
@@ -407,6 +416,7 @@ void Editor::LoadLevel()
     settings.lastLevel = level;
     settings.Save();
     undoStack.Reset();
+    palette.ChangeTileset(map.tilesets[currentLayer].dat);
     if (settings.openTilesetsOnLoad)
     {
         for (int i = 0; i < NUM_TILESETS; i++)
