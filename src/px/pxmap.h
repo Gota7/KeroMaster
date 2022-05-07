@@ -44,7 +44,8 @@ struct PxMap : GReadable, GWriteable
     u8* tiles = nullptr; // Map data.
     u16 newWidth = 0; // For editor.
     u16 newHeight = 0; // For editor.
-    
+    static const char* layerNames[]; // Map layer names.
+
     // Read a map file.
     void Read(GFile* f);
 

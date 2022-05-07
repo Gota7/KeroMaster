@@ -9,8 +9,8 @@ struct Editor;
 enum class UndoActionType {
     TilePlaced,
     TileErased,
-    LevelPropertyEdited,
-    EntityPropertyEdited,
+    //LevelPropertyEdited,
+    //EntityPropertyEdited,
     EntityMoved,
     EntityPlaced,
     EntityDeleted
@@ -54,8 +54,8 @@ public:
     void PushUndoAction(UndoAction& a);
     void PushTilePlaced(Editor* ed, u8 layer, u8 oldTile, u8 newTile, u16 xPos, u16 yPos);
     void PushTileErased(Editor* ed, u8 layer, u8 oldTile, u16 xPos, u16 yPos);
-    void PushLevelPropertyEdited(Editor* ed);
-    void PushEntityPropertyEdited(Editor* ed);
+    //void PushLevelPropertyEdited(Editor* ed);
+    //void PushEntityPropertyEdited(Editor* ed);
     void PushEntityMoved(Editor* ed, int entityIndex, u16 xPos, u16 yPos, u16 newXPos, u16 newYPos);
     void PushEntityPlaced(Editor* ed, int entityIndex, u8 type, u16 xPos, u16 yPos);
     void PushEntityDeleted(Editor* ed, int entityIndex, Entity e);

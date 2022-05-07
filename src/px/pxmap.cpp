@@ -3,9 +3,16 @@
 #include "../ed/entityDisplay.h"
 #include "tileset.h"
 
+const char* PxMap::layerNames[] =
+{
+    "Foreground",
+    "Middleground",
+    "Background"
+};
+
 void PxMap::Read(GFile* f)
 {
-    
+
     // Unload map if it has been loaded.
     if (tiles != nullptr)
     {

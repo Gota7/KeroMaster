@@ -108,7 +108,7 @@ void LevelEditor::DrawUI()
         ImGui::InputScalar(("##MapWidth" + std::to_string(i)).c_str(), ImGuiDataType_U16, &ed->map.maps[i].newWidth);
         ImGui::SameLine(0, -5.0);
         ImGui::PushItemWidth(itemWidth / 2 - 5);
-        ImGui::InputScalar(("Map " + std::to_string(i) + " Size##MapHeight" + std::to_string(i)).c_str(), ImGuiDataType_U16, &ed->map.maps[i].newHeight);
+        ImGui::InputScalar((std::string(PxMap::layerNames[i]) + " Size##MapHeight" + std::to_string(i)).c_str(), ImGuiDataType_U16, &ed->map.maps[i].newHeight);
         ImGui::SameLine();
         if (ImGui::SmallButton(("Resize##Map" + std::to_string(i)).c_str()))
         {
@@ -218,7 +218,7 @@ void LevelEditor::DrawTilesetSettings(int tilesetNum, int itemWidth)
     // Edit tileset tile size.
     ImGui::PushItemWidth(itemWidth);
     int index = ed->map.tilesetSettings1[tilesetNum];
-    if (ImGui::Combo(("Tileset " + std::to_string(tilesetNum) + " Tile Size").c_str(), &index, tileScales, IM_ARRAYSIZE(tileScales)))
+    if (ImGui::Combo((std::string(PxMap::layerNames[tilesetNum]) + " Tileset Tile Size").c_str(), &index, tileScales, IM_ARRAYSIZE(tileScales)))
     {
         ed->map.tilesetSettings1[tilesetNum] = (u8)index;
     }
@@ -226,7 +226,7 @@ void LevelEditor::DrawTilesetSettings(int tilesetNum, int itemWidth)
 
     // Tileset scroll type.
     int tmpScrollType = ed->map.tilesetSettings2[tilesetNum];
-    if (ImGui::Combo(("Tileset " + std::to_string(tilesetNum) + " Scroll Mode").c_str(), &tmpScrollType, scrollTypes, IM_ARRAYSIZE(scrollTypes)))
+    if (ImGui::Combo((std::string(PxMap::layerNames[tilesetNum]) + " Scroll Mode").c_str(), &tmpScrollType, scrollTypes, IM_ARRAYSIZE(scrollTypes)))
     {
         ed->map.tilesetSettings2[tilesetNum] = (u8)tmpScrollType;
     }
@@ -235,7 +235,7 @@ void LevelEditor::DrawTilesetSettings(int tilesetNum, int itemWidth)
 
     // Tileset name editor.
     ImGui::PushItemWidth(itemWidth);
-    ImGuiStringEdit(("Tileset " + std::to_string(tilesetNum)).c_str(), &ed->map.tilesets[tilesetNum].dat);
+    ImGuiStringEdit((std::string(PxMap::layerNames[tilesetNum]) + " Tileset").c_str(), &ed->map.tilesets[tilesetNum].dat);
     if (ed->map.tilesets[tilesetNum].dat != "")
     {
         ImGui::SameLine();
