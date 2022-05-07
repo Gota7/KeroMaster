@@ -81,7 +81,7 @@ void Toolbar::DrawUI()
 
     // Grid setting.
     ImGui::SameLine();
-    ImGui::Checkbox("Grid", &ed->settings.showGrid);
+    if (ImGui::Checkbox("Grid", &ed->settings.showGrid)) ed->settings.Save();
 
     //Map layer management.
     if (ToggleButton("FG", ed->currentLayer == (int)MapLayer::FG, &ed->settings.viewLayers[(int)MapLayer::FG]))
@@ -89,6 +89,7 @@ void Toolbar::DrawUI()
         ed->currentLayer = (int)MapLayer::FG;
         ed->palette.ChangeTileset(ed->map.tilesets[(int)MapLayer::FG].dat);
         ed->settings.viewLayers[(int)MapLayer::FG] = true;
+        ed->settings.Save();
     }
     Tooltip("Foreground Layer\nRight click to toggle visibility.");
 
@@ -97,6 +98,7 @@ void Toolbar::DrawUI()
         ed->currentLayer = (int)MapLayer::MG;
         ed->palette.ChangeTileset(ed->map.tilesets[(int)MapLayer::MG].dat);
         ed->settings.viewLayers[(int)MapLayer::MG] = true;
+        ed->settings.Save();
     }
     Tooltip("Middleground Layer\nRight click to toggle visibility.");
 
@@ -105,6 +107,7 @@ void Toolbar::DrawUI()
         ed->currentLayer = (int)MapLayer::BG;
         ed->palette.ChangeTileset(ed->map.tilesets[(int)MapLayer::BG].dat);
         ed->settings.viewLayers[(int)MapLayer::BG] = true;
+        ed->settings.Save();
     }
     Tooltip("Background Layer\nRight click to toggle visibility.");
 

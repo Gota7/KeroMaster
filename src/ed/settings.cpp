@@ -8,22 +8,38 @@
 #include <string>
 #include <vector>
 
-void SettingsNew::Load()
+void Settings::Load()
 {
     if (GFile::FileExists("settings.ini"))
     {
         ini::IniFile f;
         f.load("settings.ini");
+        u16 ldMajor = f["Version"]["Major"].as<u16>();
+        u16 ldMinor = f["Version"]["Minor"].as<u16>();
+        u16 ldRevision = f["Version"]["Revision"].as<u16>();
+
+        // Always present settings.
         width = f["Settings"]["Width"].as<int>();
         height = f["Settings"]["Height"].as<int>();
         maximized = f["Settings"]["Maximized"].as<bool>();
         rscPath = f["Settings"]["RscPath"].as<std::string>();
         lastLevel = f["Settings"]["LastLevel"].as<std::string>();
+        usePalette = f["Settings"]["UsePalette"].as<bool>();
         leftClick = (ToolItem)f["Settings"]["LeftClick"].as<int>();
         rightClick = (ToolItem)f["Settings"]["RightClick"].as<int>();
         middleClick = (ToolItem)f["Settings"]["MiddleClick"].as<int>();
-        usePalette = f["Settings"]["UsePalette"].as<bool>();
         currStyle = f["Settings"]["Style"].as<std::string>();
+        showPlayArea = f["Settings"]["ShowPlayArea"].as<bool>();
+        showGrid = f["Settings"]["ShowGrid"].as<bool>();
+        viewLayers[0] = f["Settings"]["ViewLayer0"].as<bool>();
+        viewLayers[1] = f["Settings"]["ViewLayer1"].as<bool>();
+        viewLayers[2] = f["Settings"]["ViewLayer2"].as<bool>();
+        viewEntityImages = f["Settings"]["ViewEntityImages"].as<bool>();
+        viewEntityBoxes = f["Settings"]["ViewEntityBoxes"].as<bool>();
+        viewEntities = f["Settings"]["ViewEntities"].as<bool>();
+        //viewTileAttributes = f["Settings"]["ViewTileAttributes"].as<bool>();
+        openTilesetsOnLoad = f["Settings"]["OpenTilesetsOnLoad"].as<bool>();
+        maxUndoDepth = f["Settings"]["MaxUndoDepth"].as<int>();
     }
     else
     {
@@ -34,25 +50,40 @@ void SettingsNew::Load()
     if (rscPath == "" || lastLevel == "") show = true;
     else if (!GFile::FileExists((rscPath + "/field/" + lastLevel + ".pxpack").c_str())) show = true;
 
+
 }
 
-void SettingsNew::Save()
+void Settings::Save()
 {
     ini::IniFile f;
+    f["Version"]["Major"] = versionMajor;
+    f["Version"]["Minor"] = versionMinor;
+    f["Version"]["Revision"] = versionRevision;
     f["Settings"]["Width"] = width;
     f["Settings"]["Height"] = height;
     f["Settings"]["Maximized"] = maximized;
     f["Settings"]["RscPath"] = rscPath;
     f["Settings"]["LastLevel"] = lastLevel;
+    f["Settings"]["UsePalette"] = usePalette;
     f["Settings"]["LeftClick"] = (int)leftClick;
     f["Settings"]["RightClick"] = (int)rightClick;
     f["Settings"]["MiddleClick"] = (int)middleClick;
-    f["Settings"]["UsePalette"] = usePalette;
     f["Settings"]["Style"] = currStyle;
+    f["Settings"]["ShowPlayArea"] = showPlayArea;
+    f["Settings"]["ShowGrid"] = showGrid;
+    f["Settings"]["ViewLayer0"] = viewLayers[0];
+    f["Settings"]["ViewLayer1"] = viewLayers[1];
+    f["Settings"]["ViewLayer2"] = viewLayers[2];
+    f["Settings"]["ViewEntityImages"] = viewEntityImages;
+    f["Settings"]["ViewEntityBoxes"] = viewEntityBoxes;
+    f["Settings"]["ViewEntities"] = viewEntities;
+    //f["Settings"]["ViewTileAttributes"] = viewTileAttributes;
+    f["Settings"]["OpenTilesetsOnLoad"] = openTilesetsOnLoad;
+    f["Settings"]["MaxUndoDepth"] = maxUndoDepth;
     f.save("settings.ini");
 }
 
-void SettingsNew::DrawUI(Editor* ed)
+void Settings::DrawUI(Editor* ed)
 {
 
     // Open check.
@@ -187,6 +218,10 @@ void SettingsNew::DrawUI(Editor* ed)
                 ImGui::Separator();
                 ImGui::Checkbox("Use Tile Palette", &usePalette);
                 ImGuiTooltip("Use the current layer's palette to draw in addition to from tilesets.");
+                ImGui::Checkbox("Open Tilesets On Load", &openTilesetsOnLoad);
+                ImGuiTooltip("When loading a level, open all of its tilesets.");
+                ImGui::InputScalar("Undo Stack Size", ImGuiDataType_S32, &maxUndoDepth);
+                ImGuiTooltip("How many individual allow actions to allow (bigger stack is more RAM usage).");
                 ImGui::Separator();
                 if (ImGui::Button("Save And Close"))
                 {

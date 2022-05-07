@@ -347,9 +347,9 @@ void Editor::FadeEffect()
 
 void Editor::InitEditor()
 {
-    entityEditor.LoadEntityListing("all");
-    if (!enabled || settings.rscPath != rsc || settings.lastLevel != level)
+    if (settings.rscPath != rsc || settings.lastLevel != level || levelClosed)
     {
+        entityEditor.LoadEntityListing("all");
         for (auto& t : tilesets)
         {
             UnloadTileset(t.first);
@@ -357,6 +357,7 @@ void Editor::InitEditor()
         LoadFixedTilesets();
         rsc = settings.rscPath;
         level = settings.lastLevel;
+        levelClosed = false;
         LoadLevel();
         InitSubeditors();
     }
@@ -591,18 +592,18 @@ void Editor::DrawMainMenu()
         }*/
         if (ImGui::BeginMenu("View"))
         {
-            ImGui::Checkbox("Play Area", &settings.showPlayArea);
-            ImGui::Checkbox("Show Grid", &settings.showGrid);
+            if (ImGui::Checkbox("Play Area", &settings.showPlayArea)) settings.Save();
+            if (ImGui::Checkbox("Show Grid", &settings.showGrid)) settings.Save();
             ImGui::Separator();
-            ImGui::Checkbox("Show Foreground Layer", &settings.viewLayers[(u8)MapLayer::FG]);
-            ImGui::Checkbox("Show Middleground Layer", &settings.viewLayers[(u8)MapLayer::MG]);
-            ImGui::Checkbox("Show Background Layer", &settings.viewLayers[(u8)MapLayer::BG]);
+            if (ImGui::Checkbox("Show Foreground Layer", &settings.viewLayers[(u8)MapLayer::FG])) settings.Save();
+            if (ImGui::Checkbox("Show Middleground Layer", &settings.viewLayers[(u8)MapLayer::MG])) settings.Save();
+            if (ImGui::Checkbox("Show Background Layer", &settings.viewLayers[(u8)MapLayer::BG])) settings.Save();
             ImGui::Separator();
-            ImGui::Checkbox("Entity Images", &settings.viewEntityImages);
-            ImGui::Checkbox("Entity Boxes", &settings.viewEntityBoxes);
-            ImGui::Checkbox("Entities", &settings.viewEntities);
+            if (ImGui::Checkbox("Entity Images", &settings.viewEntityImages)) settings.Save();
+            if (ImGui::Checkbox("Entity Boxes", &settings.viewEntityBoxes)) settings.Save();
+            if (ImGui::Checkbox("Entities", &settings.viewEntities)) settings.Save();
             ImGui::Separator();
-            ImGui::Checkbox("Tile Attributes", &settings.viewTileAttributes);
+            if (ImGui::Checkbox("Tile Attributes", &settings.viewTileAttributes)) settings.Save();
             /*if (ImGui::Button("Fullscreen"))
             {
                 isFullscreening = true;
@@ -781,7 +782,15 @@ void Editor::DrawAboutPopup()
     {
         focus.ObserveFocus();
         focus.isModal |= true;
-        ImGui::TextColored(ImVec4(.4, 1, 0, 1), "Kero Master");
+        ImGui::TextColored(
+            ImVec4(.4, 1, 0, 1),
+            (
+                "Kero Master - Version " +
+                std::to_string(settings.versionMajor) +
+                "." + std::to_string(settings.versionMinor) +
+                "." + std::to_string(settings.versionRevision)
+            ).c_str()
+        );
         ImGui::TextColored(ImVec4(1, .1, .5, 1), "\tAn editor for Kero Blaster, Pink Hour, and Pink Heaven.");
         ImGui::Separator();
         ImGui::TextColored(ImVec4(0, 1, 1, 1), "Alula - Windows & SHIFT-JIS support, tile editing, palette, various fixes/improvements.");
@@ -809,6 +818,7 @@ void Editor::SaveLevel()
 void Editor::CloseLevel()
 {
     enabled = false;
+    levelClosed = true;
     map.Unload(tilesets);
 }
 
@@ -869,6 +879,11 @@ void Editor::RemoveAllOtherTilesetViewerSelections(TilesetEditor* exclude)
             tilesetEditors[i].selection.ClearSelection();
             tilesetEditors[i].selectedTile = -1;
         }
+    }
+    if (exclude)
+    {
+        palette.selection.ClearSelection();
+        palette.selectedTile = -1;
     }
 }
 

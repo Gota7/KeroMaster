@@ -25,7 +25,7 @@
 // The main editor.
 struct Editor
 {
-    SettingsNew settings; // Editor settings.
+    Settings settings; // Editor settings.
     EditorStyle style; // Style for the editor.
     Color fadeColor = { 255, 0, 0, 255 }; // Background color.
     Image icon; // Editor icon.
@@ -49,6 +49,7 @@ struct Editor
     std::map<std::string, Tileset> tilesets; // Loaded tilesets.
     Camera2D cam; // Camera for viewing the map.
     UndoStack undoStack; // Undo stack for undo/redo actions.
+    bool levelClosed = false; // If a level was closed.
     bool quit = false; // If to quit the editor.
     float oldMouseX; // Old mouse X position.
     float oldMouseY; // Old mouse Y position.

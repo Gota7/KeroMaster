@@ -1,13 +1,17 @@
 #pragma once
 
 #include "tools/tools.h"
+#include "../types.h"
 #include <string>
 
 struct Editor;
 
 // Editor settings.
-struct SettingsNew
+struct Settings
 {
+    u16 versionMajor = 0; // Major version.
+    u16 versionMinor = 1; // Minor version.
+    u16 versionRevision = 0; // Revision version.
     int width = 1240; // Width of the window.
     int height = 720; // Height of the window.
     bool maximized = false; // If the window should be maximized.
