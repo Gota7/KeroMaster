@@ -1,4 +1,6 @@
 #include "help.h"
+#include "../rlImGui/focusData.h"
+#include "imgui.h"
 
 void ShowHelp(FocusData* focus, bool* showHelp, bool modal)
 {

@@ -1,13 +1,14 @@
 #include "scriptEditor.h"
+#include "editor.h"
+#include "../gbin/gfile.h"
 #include "../rlImGui/utils.h"
-
-using namespace std;
+#include "../tinyxml2/tinyxml2.h"
 
 bool ScriptEditor::loadedGuide = false;
 ScriptHelpData* ScriptEditor::commands;
 int ScriptEditor::numCommands = 0;
 
-ScriptEditor::ScriptEditor(Editor* ed, string scriptName)
+ScriptEditor::ScriptEditor(Editor* ed, std::string scriptName)
 {
     this->ed = ed;
     name = scriptName;
@@ -22,16 +23,16 @@ ScriptEditor::ScriptEditor(Editor* ed, string scriptName)
 
 void ScriptEditor::LoadXML()
 {
-    XMLDocument doc;
-    XMLError result;
+    tinyxml2::XMLDocument doc;
+    tinyxml2::XMLError result;
 
-    if ((result = doc.LoadFile("object_data/scriptInfo.xml")) != XML_SUCCESS)
+    if ((result = doc.LoadFile("object_data/scriptInfo.xml")) != tinyxml2::XML_SUCCESS)
     {
-        throw string("Failed to load script info file file: ") + doc.ErrorIDToName(result);
+        throw std::string("Failed to load script info file file: ") + doc.ErrorIDToName(result);
     }
 
-    XMLElement* root = doc.RootElement();
-    XMLElement* c = root->FirstChildElement();
+    tinyxml2::XMLElement* root = doc.RootElement();
+    tinyxml2::XMLElement* c = root->FirstChildElement();
     numCommands = 0;
     while (c != nullptr)
     {
@@ -46,7 +47,7 @@ void ScriptEditor::LoadXML()
         commands[currCommand].name = c->Attribute("name");
         commands[currCommand].description = c->Attribute("desc");
         commands[currCommand].numArgs = 0;
-        XMLElement* a = c->FirstChildElement();
+        tinyxml2::XMLElement* a = c->FirstChildElement();
         while (a != nullptr)
         {
             commands[currCommand].numArgs++;
@@ -128,7 +129,7 @@ void ScriptEditor::DrawUI()
         {
             continue;
         }
-        string txt = c->name + " - " + c->description;
+        std::string txt = c->name + " - " + c->description;
         if (c->numArgs == 0)
         {
             ImGui::Text("%s", (" * " + txt).c_str());
@@ -140,7 +141,7 @@ void ScriptEditor::DrawUI()
                 for (int j = 0; j < c->numArgs; j++)
                 {
                     ScriptHelpArg* a = &c->args[j];
-                    ImGui::Text("%s", (" " + to_string(j) + ": " + (a->type == ARG_TYPE_STRING ? "String: " : "Number: ") + a->description).c_str());
+                    ImGui::Text("%s", (" " + std::to_string(j) + ": " + (a->type == ARG_TYPE_STRING ? "String: " : "Number: ") + a->description).c_str());
                 }
                 ImGui::TreePop();
             }

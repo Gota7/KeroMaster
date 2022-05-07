@@ -49,3 +49,4 @@ CMakeCache.txt
 *.cmake
 imgui.ini
 settings.ini
+.cache

@@ -1,4 +1,7 @@
 #include "pxmap.h"
+#include "../conv/conv.h"
+#include "../ed/entityDisplay.h"
+#include "tileset.h"
 
 void PxMap::Read(GFile* f)
 {
@@ -10,14 +13,14 @@ void PxMap::Read(GFile* f)
     }
 
     // Check for valid data, then read.
-    if (strcmp(f->ReadStr().c_str(), "pxMAP01"))
+    if (f->ReadStr() != "pxMAP01")
     {
-        throw string("Invalid map attribute magic.");
+        throw std::string("Invalid map attribute magic.");
     }
     else
     {
-        width = oldWidth = f->ReadU16();
-        height = oldHeight = f->ReadU16();
+        width = newWidth = f->ReadU16();
+        height = newHeight = f->ReadU16();
 
         if (width * height > 0) flags = f->ReadU8();
 
@@ -76,15 +79,15 @@ void PxMap::Resize(u16 newWidth, u16 newHeight)
     u8* bak = tiles;
     tiles = new u8[newWidth * newHeight];
     memset(tiles, 0, newWidth * newHeight);
-    for (int x = 0; x < min(newWidth, width); x++)
+    for (int x = 0; x < std::min(newWidth, width); x++)
     {
-        for (int y = 0; y < min(newHeight, height); y++)
+        for (int y = 0; y < std::min(newHeight, height); y++)
         {
             tiles[x + y * newWidth] = bak[x + y * width];
         }
     }
-    width = oldWidth = newWidth;
-    height = oldHeight = newHeight;
+    width = this->newWidth = newWidth;
+    height = this->newHeight = newHeight;
     delete[] bak;
 }
 
@@ -213,18 +216,18 @@ void PxMap::Unload()
     flags = 0;
 }
 
-void Map::Load(string rsc_k, string mapName, map<string, Tileset>& tilesets)
+void Map::Load(std::string rsc_k, std::string mapName, std::map<std::string, Tileset>& tilesets)
 {
-    string mapPath = rsc_k + "/field/" + mapName + ".pxpack";
+    std::string mapPath = rsc_k + "/field/" + mapName + ".pxpack";
 
     if (!GFile::FileExists(mapPath.c_str())) {
-        throw string("File not found: ") + mapPath;
+        throw std::string("File not found: ") + mapPath;
     }
 
     GFile f = GFile(mapPath.c_str());
     if (strcmp(f.ReadStr().c_str(), "PXPACK121127a**"))
     {
-        throw string("Invalid pack attribute magic.");
+        throw std::string("Invalid pack attribute magic.");
     }
     else
     {
@@ -291,16 +294,16 @@ void Map::Load(string rsc_k, string mapName, map<string, Tileset>& tilesets)
     f.Close();
 }
 
-void Map::Unload(map<string, Tileset>& tilesets)
+void Map::Unload(std::map<std::string, Tileset>& tilesets)
 {
-    if (strcmp(this->references[RT_NPC_PALETTE].dat.c_str(), "") != 0)
+    if (this->references[RT_NPC_PALETTE].dat != "")
     {
         tilesets[this->references[RT_NPC_PALETTE].dat].Unload();
     }
 
     for (int i = 0; i < NUM_TILESETS; i++)
     {
-        if (strcmp(this->tilesets[i].dat.c_str(), "") != 0)
+        if (this->tilesets[i].dat != "")
         {
             tilesets[this->tilesets[i].dat].Unload();
         }
@@ -309,9 +312,9 @@ void Map::Unload(map<string, Tileset>& tilesets)
     entities.clear();
 }
 
-void Map::Write(string rsc_k, string mapName)
+void Map::Write(std::string rsc_k, std::string mapName)
 {
-    string mapPath = rsc_k + "/field/" + mapName + ".pxpack";
+    std::string mapPath = rsc_k + "/field/" + mapName + ".pxpack";
     GFile f = GFile(mapPath.c_str());
     f.Clear();
     f.WriteNullTerminated("PXPACK121127a**");
@@ -371,7 +374,7 @@ float Map::TileSize(int layerNum)
     return tilesetSettings1[layerNum] == 0 ? Tileset::MAP_TILE_SIZE : ((float)16 / tilesetSettings1[layerNum]);
 }
 
-void Map::DrawLayer(u8 layerNum, map<string, Tileset>& tilesets, Vector2 origin, bool showAttr)
+void Map::DrawLayer(u8 layerNum, std::map<std::string, Tileset>& tilesets, Vector2 origin, bool showAttr)
 {
     if (layerNum >= NUM_TILESETS)
     {
@@ -390,23 +393,15 @@ void Map::DrawLayer(u8 layerNum, map<string, Tileset>& tilesets, Vector2 origin,
     }
 }
 
-void Map::DrawEntities(map<u8, EntityDisplay>& entities, map<string, Tileset>& tilesets, Vector2 origin, bool debug)
+void Map::DrawEntities(std::map<u8, EntityDisplay>& entities, std::map<std::string, Tileset>& tilesets, Vector2 origin, bool debug)
 {
-    string tilesetNames[3];
+    std::string tilesetNames[3];
     tilesetNames[0] = this->tilesets[0].dat;
     tilesetNames[1] = this->tilesets[1].dat;
     tilesetNames[2] = this->tilesets[2].dat;
     for (u16 i = 0; i < this->entities.size(); i++)
     {
-        /*if (entities.find(this->entities[i].id) != entities.end())
-        {
-            entities[this->entities[i].id].Draw(this->entities[i].id, this->entities[i].parametersStr[0], this->entities[i].flags, this->entities[i].beingEdited, this->references[RT_NPC_PALETTE].dat, tilesetNames, tilesets, origin, this->entities[i].xPos, this->entities[i].yPos, 1, debug);
-        }
-        else
-        {
-            entities[0].Draw(this->entities[i].id, this->entities[i].parametersStr[0], this->entities[i].flags, this->entities[i].beingEdited, this->references[RT_NPC_PALETTE].dat, tilesetNames, tilesets, origin, this->entities[i].xPos, this->entities[i].yPos, 1, debug);
-        }*/
-
+        
         // Draw ID if found, else draw nothing which will show the box.
         if (entities.find(this->entities[i].id) != entities.end())
         {

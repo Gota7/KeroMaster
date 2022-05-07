@@ -16,31 +16,46 @@ constexpr u32 SAMPLE_RATE = 44100;
 // Background music player.
 struct BgmPlayer
 {
-    static std::string rsc;
-    static pxtnService pxtn;
-    static FILE* handle;
-    static bool playing;
-    static bool audioInitialized;
-    static float prevVolume;
-    static std::mutex audioMutex;
-    static ma_device device;
+    static std::string rsc; // Resource path.
+    static pxtnService pxtn; // PxTone service for playback.
+    static FILE* handle; // Current song file handle.
+    static bool playing; // If the audio is playing.
+    static bool audioInitialized; // If audio has been initialized.
+    static float prevVolume; // Previous volume.
+    static std::mutex audioMutex; // Mutex for locking audio resources.
+    static ma_device device; // Audio output device.
     
-    static ImVector<char*> songList;
-    static char** songNameBuf;
-    static int numSongs;
-    static float volume;
-    static std::string currSong;
-    static int currSongInd;
+    static char** songs; // Song list.
+    static int numSongs; // How many songs there are.
+    static float volume; // Current song volume.
+    static std::string currSong; // Name of the current song.
+    static int currSongInd; // Current song index.
 
+    // Initialize the BGM player given a resource path.
     static void Init(std::string rsc_k);
-    static void LoadSongList();
-    static void Play(std::string bgmName);
-    static void Pause();
-    static void Resume();
-    static void Stop();
-    static int32_t GetPos();
-    static int32_t GetEnd();
-    static void AudioCallback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount);
-};
 
-int cmpstr2(const void* a, const void* b);
+    // Load the song listing.
+    static void LoadSongList();
+
+    // Play a song.
+    static void Play(std::string bgmName);
+
+    // Pause the song.
+    static void Pause();
+
+    // Resume playback of a song.
+    static void Resume();
+
+    // Stop playback of a song.
+    static void Stop();
+    
+    // Get position in song.
+    static int32_t GetPos();
+
+    // Get how long a song is.
+    static int32_t GetEnd();
+
+    // Song buffer feeding.
+    static void AudioCallback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount);
+
+};

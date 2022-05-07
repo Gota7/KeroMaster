@@ -1,6 +1,20 @@
 #include "entityDisplay.h"
+#include "../px/tileset.h"
+#include "../tinyxml2/tinyxml2.h"
 
-map<string, vector<EntityTile>> EntityDisplay::rollYourOwnSprite;
+std::string EntityDisplay::parameterNames[3] =
+{
+    "Flag",
+    "Unknown",
+    "Data"
+};
+std::string EntityDisplay::parameterDescriptions[3] =
+{
+    "Flag for NPC to spawn/not spawn on.\nIt can also just be a flag parameter in general.",
+    "",
+    "Additional entity data.\nCan be used for \"roll your own sprites\" or accessing through a script."
+};
+std::map<std::string, std::vector<EntityTile>> EntityDisplay::rollYourOwnSprite;
 float EntityDisplay::transparency = .3f;
 
 void EntityDisplay::DrawEntityIdBox(u8 id, s32 tileX, s32 tileY, bool beingEdited, Vector2 offset)
@@ -14,7 +28,7 @@ void EntityDisplay::DrawEntityIdBox(u8 id, s32 tileX, s32 tileY, bool beingEdite
     {
         DrawRectangleRec(destRec, ColorAlpha(RED, transparency + .2f));
     }
-    DrawText(to_string(id).c_str(), (int)(destRec.x + 1), (int)(destRec.y + 1), 1, ColorAlpha(YELLOW, .8f));
+    DrawText(std::to_string(id).c_str(), (int)(destRec.x + 1), (int)(destRec.y + 1), 1, ColorAlpha(YELLOW, .8f));
 }
 
 void EntityDisplay::DrawEntityUnitType(u8 id, s32 tileX, s32 tileY, Vector2 offset)
@@ -56,11 +70,11 @@ void EntityDisplay::DrawEntityTiles(Tileset& ts, u16 x, u16 y, u16 width, u16 he
 
 }
 
-void EntityDisplay::DrawEntityTile(EntityTile* tile, map<string, Tileset>& loadedTilesets, string spriteSheet, string tilesetNames[3], s32 tileX, s32 tileY, Vector2 offset)
+void EntityDisplay::DrawEntityTile(EntityTile* tile, std::map<std::string, Tileset>& loadedTilesets, std::string spriteSheet, std::string tilesetNames[3], s32 tileX, s32 tileY, Vector2 offset)
 {
 
     // Get the tileset name.
-    string tsName = tile->tileset == "" ? spriteSheet : tile->tileset;
+    std::string tsName = tile->tileset == "" ? spriteSheet : tile->tileset;
     if (tile->tileset == "")
     {
         tsName = spriteSheet;
@@ -100,11 +114,11 @@ void EntityDisplay::DrawEntityTile(EntityTile* tile, map<string, Tileset>& loade
 
 }
 
-void EntityDisplay::Draw(Entity* entity, map<string, Tileset>& loadedTilesets, string spriteSheet, string tilesetNames[3], bool debug, Vector2 offset)
+void EntityDisplay::Draw(Entity* entity, std::map<std::string, Tileset>& loadedTilesets, std::string spriteSheet, std::string tilesetNames[3], bool debug, Vector2 offset)
 {
 
     // Get entity info.
-    string& strParam = entity->parametersStr[0].dat;
+    std::string& strParam = entity->parametersStr[0].dat;
     bool noTiles = numTiles == 0;
     bool blankSpriteParam = strParam == "";
     bool spriteExistsInRollList = rollYourOwnSprite.find(strParam) != rollYourOwnSprite.end();
@@ -199,26 +213,26 @@ void EntityDisplay::Draw(Entity* entity, map<string, Tileset>& loadedTilesets, s
 
 }
 
-map<u8, EntityDisplay> LoadXML(string game)
+std::map<u8, EntityDisplay> LoadXML(std::string game)
 {
-    map<u8, EntityDisplay> ret;
-    XMLDocument doc;
-    XMLError result;
+    std::map<u8, EntityDisplay> ret;
+    tinyxml2::XMLDocument doc;
+    tinyxml2::XMLError result;
 
-    if ((result = doc.LoadFile(("object_data/" + game + ".xml").c_str())) != XML_SUCCESS) {
-        throw string("Failed to load object data definition file: ") + doc.ErrorIDToName(result);
+    if ((result = doc.LoadFile(("object_data/" + game + ".xml").c_str())) != tinyxml2::XML_SUCCESS) {
+        throw std::string("Failed to load object data definition file: ") + doc.ErrorIDToName(result);
     }
 
-    XMLElement* root = doc.RootElement();
-    XMLElement* entities = root->FirstChildElement("entities");
-    XMLElement* e = entities->FirstChildElement();
+    tinyxml2::XMLElement* root = doc.RootElement();
+    tinyxml2::XMLElement* entities = root->FirstChildElement("entities");
+    tinyxml2::XMLElement* e = entities->FirstChildElement();
 
     while (e != nullptr)
     {
         EntityDisplay d;
         d.name = e->Attribute("name");
         d.description = e->Attribute("description");
-        XMLElement* t = e->FirstChildElement();
+        tinyxml2::XMLElement* t = e->FirstChildElement();
 
         while (t != nullptr)
         {
@@ -254,8 +268,8 @@ map<u8, EntityDisplay> LoadXML(string game)
         e = e->NextSiblingElement();
     }
 
-    XMLElement* rollSprites = root->FirstChildElement("rollYourOwnSprites");
-    XMLElement* r = rollSprites->FirstChildElement();
+    tinyxml2::XMLElement* rollSprites = root->FirstChildElement("rollYourOwnSprites");
+    tinyxml2::XMLElement* r = rollSprites->FirstChildElement();
     while (r != NULL)
     {
         EntityTile d;

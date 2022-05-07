@@ -1,8 +1,11 @@
 #include "conv.h"
-#include <string>
-#include <vector>
 
 #include "jisConvData.h"
+#include "iconv.h"
+
+#include <stdexcept>
+#include <string>
+#include <vector>
 
 struct codepoint {
     unsigned char points[4];
@@ -66,44 +69,31 @@ static unsigned short decodeCodePoint(const char** in_text, const char* in_text_
 }
 
 std::string fromShiftJIS(std::string& in_str) {
-    return fromShiftJIS(in_str.c_str(), in_str.size());
-}
-
-std::string fromShiftJIS(const char* data, unsigned int length) {
-    std::vector<char> chrs;
-    struct codepoint cp = {0};
-    chrs.reserve(length);
-
-    auto encodeU8 = [&](unsigned short c) {
-        cp.encode(c);
-        for (int i = 0; i < cp.len; i++) {
-            chrs.push_back(cp.points[i]);
-        }
-    };
-
-    for (unsigned int i = 0; i < length; i++) {
-        auto remaining = length - i;
-
-        if (remaining >= 2) {
-            auto b = (unsigned char) data[i];
-            if (b >= 0x81 && b <= 0x9f 
-                || b >= 0xe0 && b <= 0xef 
-                || b >= 0xfa && b <= 0xfc) {
-                unsigned int b2 = (unsigned char) data[++i];
-                auto c = ((unsigned int)b) << 8 | b2;
-                encodeU8(sjis2UnicodeConvData[c]);
-            } else if (b >= 0xa0 && b <= 0xdf) {
-                encodeU8((unsigned short)b + 0xfec0);
-            } else {
-                encodeU8((unsigned short)b);
-            }
-        } else {
-            auto b = (unsigned char) data[i];
-            encodeU8(b);
-        }
+    // use iconv to convert from shift-jis to utf-8
+    iconv_t cd = iconv_open("UTF-8", "SHIFT-JIS");
+    if (cd == (iconv_t)-1)
+    {
+        throw std::runtime_error("iconv_open failed");
     }
 
-    return std::string(chrs.begin(), chrs.end());
+    char *out_buf = new char[in_str.size() * 4];
+    size_t out_size = in_str.size() * 4;
+    char *out_ptr = out_buf;
+    size_t in_size = in_str.size();
+    char *in_ptr = (char *)in_str.c_str();
+    size_t r = iconv(cd, &in_ptr, &in_size, &out_ptr, &out_size);
+
+    if (r == (size_t)-1)
+    {
+        delete[] out_buf;
+        iconv_close(cd);
+        throw std::runtime_error("iconv failed");
+    }
+
+    std::string result(out_buf, out_buf + (in_str.size() * 4 - out_size));
+    delete[] out_buf;
+    iconv_close(cd);
+    return result;
 }
 
 std::string toShiftJIS(std::string& in_str) {
