@@ -1,6 +1,9 @@
 #include "tools.h"
 
+#include "entityHand.h"
+#include "eraser.h"
 #include "hand.h"
+#include "tileBrush.h"
 #include "zoom.h"
 #include "../editorNew.h"
 
@@ -25,18 +28,18 @@ const ToolBasicFunction Tools::initFunctions[] =
 const ToolActivateFunction Tools::activateFunctions[] =
 {
     HandToolActivate,
-    nullptr,
-    nullptr,
-    nullptr,
+    TileBrushToolActivate,
+    EraserToolActivate,
+    EntityHandToolActivate,
     ZoomToolActivate
 };
 
 const ToolBasicFunction Tools::updateFunctions[] =
 {
     HandToolUpdate,
-    nullptr,
-    nullptr,
-    nullptr,
+    TileBrushToolUpdate,
+    EraserToolUpdate,
+    EntityHandToolUpdate,
     ZoomToolUpdate
 };
 
@@ -45,7 +48,7 @@ const ToolBasicFunction Tools::closeFunctions[] =
     nullptr,
     nullptr,
     nullptr,
-    nullptr,
+    EntityHandToolClose,
     nullptr
 };
 

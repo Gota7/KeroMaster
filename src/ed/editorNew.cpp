@@ -235,6 +235,7 @@ void EditorNew::DrawUI()
     }
 
     // Misc. windows.
+    entityEditor.DrawUI();
     levelEditor.DrawUI();
     profileEditor.DrawUI();
     styleEditor.DrawUI();
@@ -982,6 +983,7 @@ void EditorNew::DoDefaultToolRoutine()
 {
     CheckScroll();
     CheckZoom();
+    CheckEntityDelete();
 }
 
 void EditorNew::CheckScroll()
@@ -1026,4 +1028,22 @@ void EditorNew::CheckZoom()
         Zoom({ mouseX, mouseY }, GetZoomSpeed() * zoom / fabs(zoom), true);
     }
 
+}
+
+void EditorNew::CheckEntityDelete()
+{
+    if (entityEditor.editingEntity && IsKeyPressed(KEY_DELETE))
+    {
+        entityEditor.editingEntity->beingEdited = false;
+        Entity* e = entityEditor.editingEntity;
+        entityEditor.editingEntity = nullptr;
+        for (int i = 0; i < map.entities.size(); i++)
+        {
+            if (&map.entities[i] == e)
+            {
+                //undoStack->PushEntityDeleted(this, i, map.entities[i]);
+                map.entities.erase(map.entities.begin() + i);
+            }
+        }
+    }
 }

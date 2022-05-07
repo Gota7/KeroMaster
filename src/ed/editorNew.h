@@ -208,4 +208,7 @@ struct EditorNew
     // Check for default zooming with mouse wheel.
     void CheckZoom();
 
+    // Check for entity deleting.
+    void CheckEntityDelete();
+
 };
