@@ -4,10 +4,11 @@
 #include "../gbin/gfile.h"
 #include "../rlImGui/fileBrowser.h"
 #include "../rlImGui/utils.h"
-#include "../bgm/bgm.h"
-#include "raylib.h"
+#include "imgui.h"
+#include <string>
+#include <vector>
 
-void Settings::Load()
+void SettingsNew::Load()
 {
     if (GFile::FileExists("settings.ini"))
     {
@@ -18,19 +19,24 @@ void Settings::Load()
         maximized = f["Settings"]["Maximized"].as<bool>();
         rscPath = f["Settings"]["RscPath"].as<std::string>();
         lastLevel = f["Settings"]["LastLevel"].as<std::string>();
-        leftClick = (EditorTool)f["Settings"]["LeftClick"].as<int>();
-        rightClick = (EditorTool)f["Settings"]["RightClick"].as<int>();
-        middleClick = (EditorTool)f["Settings"]["MiddleClick"].as<int>();
+        leftClick = (ToolItem)f["Settings"]["LeftClick"].as<int>();
+        rightClick = (ToolItem)f["Settings"]["RightClick"].as<int>();
+        middleClick = (ToolItem)f["Settings"]["MiddleClick"].as<int>();
         usePalette = f["Settings"]["UsePalette"].as<bool>();
-        style.Load(f["Settings"]["Style"].as<std::string>());
+        currStyle = f["Settings"]["Style"].as<std::string>();
     }
     else
     {
-        style.Load("Cat & Frog");
+        currStyle = "Cat & Frog";
     }
+
+    // Test to see if the settings window needs to be shown.
+    if (rscPath == "" || lastLevel == "") show = true;
+    else if (!GFile::FileExists((rscPath + "/field/" + lastLevel + ".pxpack").c_str())) show = true;
+
 }
 
-void Settings::Save()
+void SettingsNew::Save()
 {
     ini::IniFile f;
     f["Settings"]["Width"] = width;
@@ -42,25 +48,27 @@ void Settings::Save()
     f["Settings"]["RightClick"] = (int)rightClick;
     f["Settings"]["MiddleClick"] = (int)middleClick;
     f["Settings"]["UsePalette"] = usePalette;
-    f["Settings"]["Style"] = style.name;
+    f["Settings"]["Style"] = currStyle;
     f.save("settings.ini");
 }
 
-const char* ActionTypes[] = {
-    "Hand",
-    "Tile Brush",
-    "Eraser",
-    "Entity Hand"
-};
-
-void Settings::ShowWindow(Editor* ed)
+void SettingsNew::DrawUI(Editor* ed)
 {
+
+    // Open check.
+    if (!show && !softShow) return;
+
+    // Settings data.
     static imgui_addons::ImGuiFileBrowser fB;
     static int numFiles;
-    static char** files;
+    static char** files = nullptr;
     static int actionMouse = 0;
+
+    // Show the settings popup.
     if (ImGui::BeginPopupModal("Editor Settings", nullptr, ImGuiWindowFlags_AlwaysAutoResize | (show ? 0/*ImGuiWindowFlags_MenuBar*/ : 0)))
     {
+
+        // Resource path choosing.
         ed->focus.ObserveFocus();
         ed->focus.isModal |= true;
         if (show)
@@ -76,18 +84,26 @@ void Settings::ShowWindow(Editor* ed)
         {
             ImGui::OpenPopup("Open Resource Path");
         }
-        if (strcmp(rscPath.c_str(), "") != 0)
+
+        // Resource path available.
+        if (rscPath != "")
         {
             ImGui::Text("%s", ("Level To Open: " + lastLevel).c_str());
             ImGui::SameLine();
+
+            // Get the level list.
             if (ImGui::SmallButton("...##Last Level"))
             {
                 ImGui::OpenPopup("Level Select");
-                files = GetDirectoryFiles((rscPath + "/field").c_str(), &numFiles);
-                qsort(files, numFiles, sizeof(char*), cmpstr);
+                std::vector<std::string> levelFiles = ReadFilesFromDir(rscPath + "/field");
+                std::sort(levelFiles.begin(), levelFiles.end());
+                if (files != nullptr) DelImGuiStringList(files, numFiles);
+                files = GenImGuiStringList(levelFiles, &numFiles);
                 ImVec2 center = ImGui::GetMainViewport()->GetCenter();
                 ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
             }
+
+            // Level selection box.
             if (ImGui::BeginPopupModal("Level Select", NULL, ImGuiWindowFlags_AlwaysAutoResize))
             {
                 ed->focus.ObserveFocus();
@@ -106,6 +122,8 @@ void Settings::ShowWindow(Editor* ed)
                 ImGui::EndListBox();
                 ImGui::EndPopup();
             }
+
+            // Updating.
             if (ImGui::Button("Update Object Data Folder"))
             {
                 system("curl https://raw.githubusercontent.com/Gota7/KeroMaster/main/object_data/all.xml -o object_data/all.xml");
@@ -127,42 +145,44 @@ void Settings::ShowWindow(Editor* ed)
                 }
                 ImGui::EndPopup();
             }
-            if (strcmp(lastLevel.c_str(), "") != 0 && GFile::FileExists((rscPath + "/field/" + lastLevel + ".pxpack").c_str()))
+
+            // Since level is available, get the actions set up.
+            if (lastLevel != "" && GFile::FileExists((rscPath + "/field/" + lastLevel + ".pxpack").c_str()))
             {
                 ImGui::Separator();
                 ImGui::Text("Action Button:");
                 if (ImGui::RadioButton("Left Click", &actionMouse, 0))
                 {
-                    if (rightClick == (EditorTool)4) { rightClick = (EditorTool)0; }
-                    if (middleClick == (EditorTool)4) { middleClick = (EditorTool)0; }
-                    leftClick = (EditorTool)4;
+                    if (rightClick == ToolItem::CurrentTool) { rightClick = ToolItem::Hand; }
+                    if (middleClick == ToolItem::CurrentTool) { middleClick = ToolItem::Hand; }
+                    leftClick = ToolItem::CurrentTool;
                 }
                 ImGuiTooltip("The mouse button that will do the current tool's action.");
                 ImGui::SameLine();
                 if (ImGui::RadioButton("Right Click", &actionMouse, 1))
                 {
-                    if (leftClick == (EditorTool)4) { leftClick = (EditorTool)0; }
-                    if (middleClick == (EditorTool)4) { middleClick = (EditorTool)0; }
-                    rightClick = (EditorTool)4;
+                    if (leftClick == ToolItem::CurrentTool) { leftClick = ToolItem::Hand; }
+                    if (middleClick == ToolItem::CurrentTool) { middleClick = ToolItem::Hand; }
+                    rightClick = ToolItem::CurrentTool;
                 }
                 ImGui::SameLine();
                 if (ImGui::RadioButton("Middle Click", &actionMouse, 2))
                 {
-                    if (leftClick == (EditorTool)4) { leftClick = (EditorTool)0; }
-                    if (rightClick == (EditorTool)4) { rightClick = (EditorTool)0; }
-                    middleClick = (EditorTool)4;
+                    if (leftClick == ToolItem::CurrentTool) { leftClick = ToolItem::Hand; }
+                    if (rightClick == ToolItem::CurrentTool) { rightClick = ToolItem::Hand; }
+                    middleClick = ToolItem::CurrentTool;
                 }
                 if (actionMouse != 0)
                 {
-                    ImGui::Combo("Left Click Action", (int*)&leftClick, ActionTypes, IM_ARRAYSIZE(ActionTypes));
+                    ImGui::Combo("Left Click Action", (int*)&leftClick, Tools::toolNames, (int)ToolItem::NumTools);
                 }
                 if (actionMouse != 1)
                 {
-                    ImGui::Combo("Right Click Action", (int*)&rightClick, ActionTypes, IM_ARRAYSIZE(ActionTypes));
+                    ImGui::Combo("Right Click Action", (int*)&rightClick, Tools::toolNames, (int)ToolItem::NumTools);
                 }
                 if (actionMouse != 2)
                 {
-                    ImGui::Combo("Middle Click Action", (int*)&middleClick, ActionTypes, IM_ARRAYSIZE(ActionTypes));
+                    ImGui::Combo("Middle Click Action", (int*)&middleClick, Tools::toolNames, (int)ToolItem::NumTools);
                 }
                 ImGui::Separator();
                 ImGui::Checkbox("Use Tile Palette", &usePalette);
@@ -171,15 +191,16 @@ void Settings::ShowWindow(Editor* ed)
                 if (ImGui::Button("Save And Close"))
                 {
                     Save();
-                    ed->SetPath(rscPath);
-                    if (strcmp(ed->mapName.c_str(), lastLevel.c_str()) != 0)
-                    {
-                        ed->LoadLevel(lastLevel);
-                    }
-                    BgmPlayer::rsc = rscPath;
-                    BgmPlayer::LoadSongList();
-                    ed->LoadFixedTilesets();
+                    ed->InitEditor();
                     show = false;
+                    softShow = false;
+                    ImGui::CloseCurrentPopup();
+                }
+                if (softShow && (ImGui::SameLine(), true) && ImGui::Button("Cancel"))
+                {
+                    Load();
+                    show = false;
+                    softShow = false;
                     ImGui::CloseCurrentPopup();
                 }
             }
@@ -191,105 +212,5 @@ void Settings::ShowWindow(Editor* ed)
         }
         ImGui::EndPopup();
     }
-    
-}
 
-bool Settings::ButtonDown(EditorTool tool)
-{
-    if (leftClick == tool)
-    {
-        return IsMouseButtonDown(MOUSE_LEFT_BUTTON);
-    }
-    else if (rightClick == tool)
-    {
-        return IsMouseButtonDown(MOUSE_RIGHT_BUTTON);
-    }
-    else if (middleClick == tool)
-    {
-        return IsMouseButtonDown(MOUSE_MIDDLE_BUTTON);
-    }
-    else
-    {
-        return false;
-    }
-}
-
-bool Settings::ButtonUp(EditorTool tool)
-{
-    if (leftClick == tool)
-    {
-        return IsMouseButtonUp(MOUSE_LEFT_BUTTON);
-    }
-    else if (rightClick == tool)
-    {
-        return IsMouseButtonUp(MOUSE_RIGHT_BUTTON);
-    }
-    else if (middleClick == tool)
-    {
-        return IsMouseButtonUp(MOUSE_MIDDLE_BUTTON);
-    }
-    else
-    {
-        return true;
-    }
-}
-
-bool Settings::ButtonPressed(EditorTool tool)
-{
-    if (leftClick == tool)
-    {
-        return IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
-    }
-    else if (rightClick == tool)
-    {
-        return IsMouseButtonPressed(MOUSE_RIGHT_BUTTON);
-    }
-    else if (middleClick == tool)
-    {
-        return IsMouseButtonPressed(MOUSE_MIDDLE_BUTTON);
-    }
-    else
-    {
-        return false;
-    }
-}
-
-bool Settings::ButtonReleased(EditorTool tool)
-{
-    if (leftClick == tool)
-    {
-        return IsMouseButtonReleased(MOUSE_LEFT_BUTTON);
-    }
-    else if (rightClick == tool)
-    {
-        return IsMouseButtonReleased(MOUSE_RIGHT_BUTTON);
-    }
-    else if (middleClick == tool)
-    {
-        return IsMouseButtonReleased(MOUSE_MIDDLE_BUTTON);
-    }
-    else
-    {
-        return false;
-    }
-}
-
-bool Settings::ButtonClicked(EditorTool tool, bool repeat)
-{
-    if (leftClick == tool)
-    {
-        return ImGui::IsMouseClicked(ImGuiMouseButton_Left, repeat);
-    }
-    else if (rightClick == tool)
-    {
-        return ImGui::IsMouseClicked(ImGuiMouseButton_Right, repeat);
-    }
-    else if (middleClick == tool)
-    {
-        return ImGui::IsMouseClicked(ImGuiMouseButton_Middle, repeat);
-    }
-    else
-    {
-        return false;
-    }
 }

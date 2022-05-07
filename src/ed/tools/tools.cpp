@@ -5,7 +5,7 @@
 #include "hand.h"
 #include "tileBrush.h"
 #include "zoom.h"
-#include "../editorNew.h"
+#include "../editor.h"
 
 const char* Tools::toolNames[] =
 {
@@ -52,7 +52,7 @@ const ToolBasicFunction Tools::closeFunctions[] =
     nullptr
 };
 
-void Tools::Init(EditorNew* ed, int toolItem)
+void Tools::Init(Editor* ed, int toolItem)
 {
     if (toolItem >= 0 && toolItem < (int)ToolItem::NumTools && initFunctions[toolItem] != nullptr)
     {
@@ -60,7 +60,7 @@ void Tools::Init(EditorNew* ed, int toolItem)
     }
 }
 
-void Tools::Activate(EditorNew* ed, int toolItem, Vector2 pos1, Vector2 pos2)
+void Tools::Activate(Editor* ed, int toolItem, Vector2 pos1, Vector2 pos2)
 {
     if (toolItem >= 0 && toolItem < (int)ToolItem::NumTools && activateFunctions[toolItem] != nullptr)
     {
@@ -68,7 +68,7 @@ void Tools::Activate(EditorNew* ed, int toolItem, Vector2 pos1, Vector2 pos2)
     }
 }
 
-void Tools::Update(EditorNew* ed, int toolItem)
+void Tools::Update(Editor* ed, int toolItem)
 {
     if (toolItem >= 0 && toolItem < (int)ToolItem::NumTools && updateFunctions[toolItem] != nullptr)
     {
@@ -76,7 +76,7 @@ void Tools::Update(EditorNew* ed, int toolItem)
     }
 }
 
-void Tools::Close(EditorNew* ed, int toolItem)
+void Tools::Close(Editor* ed, int toolItem)
 {
     if (toolItem >= 0 && toolItem < (int)ToolItem::NumTools && closeFunctions[toolItem] != nullptr)
     {
@@ -84,7 +84,7 @@ void Tools::Close(EditorNew* ed, int toolItem)
     }
 }
 
-void Tools::SetActive(EditorNew* ed, int toolItem, std::vector<int>& buttons)
+void Tools::SetActive(Editor* ed, int toolItem, std::vector<int>& buttons)
 {
 
     // Safety check.
@@ -114,7 +114,7 @@ void Tools::SetActive(EditorNew* ed, int toolItem, std::vector<int>& buttons)
 
 }
 
-void Tools::Update(EditorNew* ed)
+void Tools::Update(Editor* ed)
 {
     for (int i = 0; i < (int)ToolItem::NumTools; i++)
     {

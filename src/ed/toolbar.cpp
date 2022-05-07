@@ -1,10 +1,10 @@
 #include "toolbar.h"
 
-#include "editorNew.h"
+#include "editor.h"
 #include "raylib.h"
 #include <imgui.h>
 
-Toolbar::Toolbar(EditorNew* ed)
+Toolbar::Toolbar(Editor* ed)
 {
     this->ed = ed;
 }

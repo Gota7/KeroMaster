@@ -2,7 +2,7 @@
 
 #include "raylib.h"
 
-struct EditorNew;
+struct Editor;
 
-void TileBrushToolActivate(EditorNew* ed, Vector2 pos1, Vector2 pos2);
-void TileBrushToolUpdate(EditorNew* ed);
+void TileBrushToolActivate(Editor* ed, Vector2 pos1, Vector2 pos2);
+void TileBrushToolUpdate(Editor* ed);

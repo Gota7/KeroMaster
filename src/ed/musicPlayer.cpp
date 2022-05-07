@@ -1,9 +1,9 @@
 #include "musicPlayer.h"
-#include "editorNew.h"
+#include "editor.h"
 #include "../bgm/bgm.h"
 #include "imgui.h"
 
-MusicPlayer::MusicPlayer(EditorNew* ed)
+MusicPlayer::MusicPlayer(Editor* ed)
 {
     this->ed = ed;
 }

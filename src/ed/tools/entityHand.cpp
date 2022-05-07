@@ -1,5 +1,5 @@
 #include "entityHand.h"
-#include "../editorNew.h"
+#include "../editor.h"
 
 u16 bakMoveX;
 u16 bakMoveY;
@@ -8,7 +8,7 @@ u16 newMoveY;
 u16 movingIndex;
 u8 movingType;
 
-void EntityHandToolActivate(EditorNew* ed, Vector2 pos1, Vector2 pos2)
+void EntityHandToolActivate(Editor* ed, Vector2 pos1, Vector2 pos2)
 {
 
     // Get coordinates.
@@ -84,12 +84,12 @@ void EntityHandToolActivate(EditorNew* ed, Vector2 pos1, Vector2 pos2)
 
 }
 
-void EntityHandToolUpdate(EditorNew* ed)
+void EntityHandToolUpdate(Editor* ed)
 {
     EntityHandToolActivate(ed, { (float)ed->GetTileX(), (float)ed->GetTileY() }, { 0, 0 });
 }
 
-void EntityHandToolClose(EditorNew* ed)
+void EntityHandToolClose(Editor* ed)
 {
     ed->doingEntityMove = false;
     if (newMoveX != bakMoveX || newMoveY != bakMoveY)

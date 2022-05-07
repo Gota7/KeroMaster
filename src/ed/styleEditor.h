@@ -2,11 +2,11 @@
 
 #include <string>
 
-struct EditorNew;
+struct Editor;
 
 struct StyleEditor
 {
-    EditorNew* ed; // Parent editor.
+    Editor* ed; // Parent editor.
     bool open = false; // Style editor is open.
     char** themes = nullptr; // Themes for ImGui to select.
     int numThemes; // Number of themes.
@@ -14,7 +14,7 @@ struct StyleEditor
     bool scanDirs = true; // Scan for directories in the next draw.
 
     // Constructor. Does not open the editor by default.
-    StyleEditor(EditorNew* ed);
+    StyleEditor(Editor* ed);
 
     // Scan for themes.
     void ScanForThemes();

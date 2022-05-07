@@ -1,8 +1,8 @@
-#include "ed/editorNew.h"
+#include "ed/editor.h"
 
 int main(int argc, char* argv[])
 {
-    EditorNew editor;
+    Editor editor;
     editor.Init();
     return editor.EditorLoop();
 }

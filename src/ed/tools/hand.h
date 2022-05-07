@@ -2,7 +2,7 @@
 
 #include "raylib.h"
 
-struct EditorNew;
+struct Editor;
 
-void HandToolActivate(EditorNew* ed, Vector2 pos1, Vector2 pos2);
-void HandToolUpdate(EditorNew* ed);
+void HandToolActivate(Editor* ed, Vector2 pos1, Vector2 pos2);
+void HandToolUpdate(Editor* ed);

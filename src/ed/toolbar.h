@@ -1,14 +1,14 @@
 #pragma once
 
-struct EditorNew;
+struct Editor;
 
 // Toolbar for housing all the different tools.
 struct Toolbar
 {
-    EditorNew* ed; // Base editor.
+    Editor* ed; // Base editor.
 
     // Create a new toolbar.
-    Toolbar(EditorNew* ed);
+    Toolbar(Editor* ed);
 
     // Draw the toolbar UI.
     void DrawUI();

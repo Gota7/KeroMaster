@@ -1,9 +1,9 @@
 #include "attributeEditor.h"
-#include "editorNew.h"
+#include "editor.h"
 #include "../px/tileset.h"
 #include "../rlImGui/rlImGui.h"
 
-AttributeEditor::AttributeEditor(EditorNew* ed, std::string name, float tileSize)
+AttributeEditor::AttributeEditor(Editor* ed, std::string name, float tileSize)
 {
     open = true;
     this->ed = ed;

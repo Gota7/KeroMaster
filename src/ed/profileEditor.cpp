@@ -1,5 +1,5 @@
 #include "profileEditor.h"
-#include "editorNew.h"
+#include "editor.h"
 #include "../px/profile.h"
 #include "../rlImGui/dateChooser.h"
 #include "../rlImGui/utils.h"
@@ -264,7 +264,7 @@ const char* WIN_KEYCODES[] =
     "OEM_CLEAR"
 };
 
-ProfileEditor::ProfileEditor(EditorNew* ed)
+ProfileEditor::ProfileEditor(Editor* ed)
 {
     this->ed = ed;
     profile = &ed->profile;

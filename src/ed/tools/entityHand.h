@@ -2,8 +2,8 @@
 
 #include "raylib.h"
 
-struct EditorNew;
+struct Editor;
 
-void EntityHandToolActivate(EditorNew* ed, Vector2 pos1, Vector2 pos2);
-void EntityHandToolUpdate(EditorNew* ed);
-void EntityHandToolClose(EditorNew* ed);
+void EntityHandToolActivate(Editor* ed, Vector2 pos1, Vector2 pos2);
+void EntityHandToolUpdate(Editor* ed);
+void EntityHandToolClose(Editor* ed);

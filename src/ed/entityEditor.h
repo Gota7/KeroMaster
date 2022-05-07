@@ -5,21 +5,21 @@
 #include <string>
 #include "../types.h"
 
-struct EditorNew;
+struct Editor;
 struct Entity;
 struct EntityDisplay;
 
 // For editing the currently selected entity.
 struct EntityEditor
 {
-    EditorNew* ed; // Original editor instance.
+    Editor* ed; // Original editor instance.
     std::map<u8, EntityDisplay> entities; // Loaded entities.
     Entity* editingEntity = nullptr; // Entity to currently edit.
     char** entityListing = nullptr; // List of entities to display.
     int numEntities = 0; // Size of entity listing.
 
     // Create a new entity editor.
-    EntityEditor(EditorNew* ed);
+    EntityEditor(Editor* ed);
 
     // Load the entity listing.
     void LoadEntityListing(std::string xmlName);

@@ -2,7 +2,7 @@
 
 #include "raylib.h"
 
-struct EditorNew;
+struct Editor;
 
-void EraserToolActivate(EditorNew* ed, Vector2 pos1, Vector2 pos2);
-void EraserToolUpdate(EditorNew* ed);
+void EraserToolActivate(Editor* ed, Vector2 pos1, Vector2 pos2);
+void EraserToolUpdate(Editor* ed);

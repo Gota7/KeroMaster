@@ -1,33 +1,42 @@
 #pragma once
 
-#include "style.h"
+#include "tools/tools.h"
 #include <string>
-#include <cstring>
 
 struct Editor;
-enum class EditorTool;
-struct FocusData;
 
-struct Settings
+// Editor settings.
+struct SettingsNew
 {
-    int width = 1240;
-    int height = 720;
-    bool maximized = false;
-    std::string rscPath = "";
-    std::string lastLevel = "";
-    bool usePalette = true;
-    EditorTool leftClick = (EditorTool)4;
-    EditorTool rightClick = (EditorTool)0;
-    EditorTool middleClick = (EditorTool)3;
-    EditorStyle style;
-    bool show = false;
+    int width = 1240; // Width of the window.
+    int height = 720; // Height of the window.
+    bool maximized = false; // If the window should be maximized.
+    std::string rscPath = ""; // Resource path.
+    std::string lastLevel = ""; // Name of the last level loaded.
+    bool usePalette = true; // If to use the tile palette.
+    ToolItem leftClick = ToolItem::CurrentTool; // Left click tool.
+    ToolItem rightClick = ToolItem::Hand; // Right click tool.
+    ToolItem middleClick = ToolItem::EntityHand; // Middle click tool.
+    std::string currStyle; // Current style.
+    bool show = false; // If to show the settings window.
+    bool softShow = false; // If to show the settings window but its controlled and not from a problem.
+    bool showPlayArea = true; // If to show bounds of each map.
+    bool showGrid = false; // Show the grid.
+    bool viewLayers[3] = { true, true, true }; // What layers can be seen.
+    bool viewEntityImages = true; // If to show entity images, if not, show the images from unit type.
+    bool viewEntityBoxes = true; // Show the boxes for entities.
+    bool viewEntities = true; // Show entities.
+    bool viewTileAttributes = false; // If to view tile attributes.
+    bool openTilesetsOnLoad = false; // Open tilesets on load.
+    int maxUndoDepth = 100; // Maximum undo depth.
 
+    // Load the settings.
     void Load();
+
+    // Save the settings.
     void Save();
-    void ShowWindow(Editor* ed);
-    bool ButtonUp(EditorTool tool);
-    bool ButtonDown(EditorTool tool);
-    bool ButtonPressed(EditorTool tool);
-    bool ButtonReleased(EditorTool tool);
-    bool ButtonClicked(EditorTool tool, bool repeat = false);
+
+    // Show the settings window.
+    void DrawUI(Editor* ed);
+
 };

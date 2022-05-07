@@ -5,11 +5,11 @@
 #include <imgui.h>
 #include <string>
 
-struct EditorNew;
+struct Editor;
 
 struct AttributeEditor
 {
-    EditorNew* ed; // Referenced editor.
+    Editor* ed; // Referenced editor.
     RenderTexture2D target; // Target to draw displayed image to.
     RenderTexture2D finalTarget; // Final flipped image hack.
     std::string name; // Tileset name.
@@ -25,7 +25,7 @@ struct AttributeEditor
     bool isFocused; // If the attribute editor is focused.
 
     // Create an attribute editor given an editor and a tileset name.
-    AttributeEditor(EditorNew* ed, std::string name, float tileSize);
+    AttributeEditor(Editor* ed, std::string name, float tileSize);
 
     // Draw the tile graphics.
     void Draw();

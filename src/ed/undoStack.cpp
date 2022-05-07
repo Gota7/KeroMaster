@@ -1,5 +1,5 @@
 #include "undoStack.h"
-#include "editorNew.h"
+#include "editor.h"
 
 void UndoStack::SetMaxLen(int maxSize)
 {
@@ -35,7 +35,7 @@ void UndoStack::PushUndoAction(UndoAction& a)
     }
 }
 
-void UndoStack::PushTilePlaced(EditorNew* ed, u8 layer, u8 oldTile, u8 newTile, u16 xPos, u16 yPos)
+void UndoStack::PushTilePlaced(Editor* ed, u8 layer, u8 oldTile, u8 newTile, u16 xPos, u16 yPos)
 {
     UndoAction a;
     a.type = UndoActionType::TilePlaced;
@@ -47,12 +47,12 @@ void UndoStack::PushTilePlaced(EditorNew* ed, u8 layer, u8 oldTile, u8 newTile, 
     PushUndoAction(a);
 }
 
-void UndoStack::PushTileErased(EditorNew* ed, u8 layer, u8 oldTile, u16 xPos, u16 yPos)
+void UndoStack::PushTileErased(Editor* ed, u8 layer, u8 oldTile, u16 xPos, u16 yPos)
 {
     PushTilePlaced(ed, layer, oldTile, 0, xPos, yPos);
 }
 
-void UndoStack::PushEntityMoved(EditorNew* ed, int entityIndex, u16 xPos, u16 yPos, u16 newXPos, u16 newYPos)
+void UndoStack::PushEntityMoved(Editor* ed, int entityIndex, u16 xPos, u16 yPos, u16 newXPos, u16 newYPos)
 {
     UndoAction a;
     a.type = UndoActionType::EntityMoved;
@@ -64,7 +64,7 @@ void UndoStack::PushEntityMoved(EditorNew* ed, int entityIndex, u16 xPos, u16 yP
     PushUndoAction(a);
 }
 
-void UndoStack::PushEntityPlaced(EditorNew* ed, int entityIndex, u8 type, u16 xPos, u16 yPos)
+void UndoStack::PushEntityPlaced(Editor* ed, int entityIndex, u8 type, u16 xPos, u16 yPos)
 {
     UndoAction a;
     a.type = UndoActionType::EntityPlaced;
@@ -75,7 +75,7 @@ void UndoStack::PushEntityPlaced(EditorNew* ed, int entityIndex, u8 type, u16 xP
     PushUndoAction(a);
 }
 
-void UndoStack::PushEntityDeleted(EditorNew* ed, int entityIndex, Entity e)
+void UndoStack::PushEntityDeleted(Editor* ed, int entityIndex, Entity e)
 {
     UndoAction a;
     a.type = UndoActionType::EntityDeleted;
@@ -92,7 +92,7 @@ void UndoStack::SetLastChained()
     }
 }
 
-void UndoStack::Undo(EditorNew* ed)
+void UndoStack::Undo(Editor* ed)
 {
     if (!CanUndo()) return;
     UndoAction a = undoStack.front();
@@ -120,7 +120,7 @@ void UndoStack::Undo(EditorNew* ed)
     if (a.chained) Undo(ed); // Undo until no longer chained.
 }
 
-void UndoStack::Redo(EditorNew* ed)
+void UndoStack::Redo(Editor* ed)
 {
     if (!CanRedo()) return;
     UndoAction a = redoStack.front();

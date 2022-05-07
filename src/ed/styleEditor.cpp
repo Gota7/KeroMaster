@@ -1,11 +1,11 @@
 #include "styleEditor.h"
 
-#include "editorNew.h"
+#include "editor.h"
 #include "../rlImGui/utils.h"
 
 #include <algorithm>
 
-StyleEditor::StyleEditor(EditorNew* ed)
+StyleEditor::StyleEditor(Editor* ed)
 {
     this->ed = ed;
 }

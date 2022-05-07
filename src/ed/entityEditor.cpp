@@ -1,11 +1,11 @@
 #include "entityEditor.h"
 #include <vector>
 #include "entityDisplay.h"
-#include "editorNew.h"
+#include "editor.h"
 #include "../rlImGui/utils.h"
 #include "imgui.h"
 
-EntityEditor::EntityEditor(EditorNew* ed)
+EntityEditor::EntityEditor(Editor* ed)
 {
     this->ed = ed;
 }

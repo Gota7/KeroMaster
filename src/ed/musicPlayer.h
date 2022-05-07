@@ -1,15 +1,15 @@
 #pragma once
 
-struct EditorNew;
+struct Editor;
 
 // For music playback.
 struct MusicPlayer
 {
-    EditorNew* ed; // Main editor program.
+    Editor* ed; // Main editor program.
     bool open; // If the player is open.
 
     // Create a new music player.
-    MusicPlayer(EditorNew* ed);
+    MusicPlayer(Editor* ed);
 
     // Draw the interface.
     void DrawUI();

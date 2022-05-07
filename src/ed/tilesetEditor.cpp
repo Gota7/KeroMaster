@@ -1,10 +1,10 @@
 #include "tilesetEditor.h"
 
-#include "editorNew.h"
+#include "editor.h"
 #include "../rlImGui/rlImGui.h"
 #include "../px/tileset.h"
 
-TilesetEditor::TilesetEditor(EditorNew* ed, std::string name, float tileSize)
+TilesetEditor::TilesetEditor(Editor* ed, std::string name, float tileSize)
 {
     open = true;
     this->ed = ed;

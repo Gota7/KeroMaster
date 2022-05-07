@@ -3,7 +3,7 @@
 #include <string>
 #include "imgui.h"
 
-struct EditorNew;
+struct Editor;
 
 enum ScriptArgType
 {
@@ -27,7 +27,7 @@ struct ScriptHelpData
 
 struct ScriptEditor
 {
-    EditorNew* ed;
+    Editor* ed;
     std::string name;
     ImVector<char> buf;
     static bool loadedGuide;
@@ -36,7 +36,7 @@ struct ScriptEditor
     static int numCommands;
     char search[5] = { 0, 0, 0, 0, 0 };
 
-    ScriptEditor(EditorNew* ed, std::string scriptName);
+    ScriptEditor(Editor* ed, std::string scriptName);
     void LoadXML();
     void LoadScript();
     void SaveScript();

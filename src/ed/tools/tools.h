@@ -3,7 +3,7 @@
 #include "../../rlImGui/focusData.h"
 #include <vector>
 
-struct EditorNew;
+struct Editor;
 
 // Tool item.
 enum class ToolItem : int {
@@ -17,10 +17,10 @@ enum class ToolItem : int {
 };
 
 // Init, update, or close function.
-typedef void (*ToolBasicFunction)(EditorNew* ed);
+typedef void (*ToolBasicFunction)(Editor* ed);
 
 // Tool activate function.
-typedef void (*ToolActivateFunction)(EditorNew* ed, Vector2 pos1, Vector2 pos2);
+typedef void (*ToolActivateFunction)(Editor* ed, Vector2 pos1, Vector2 pos2);
 
 // Tool that can be used by the editor.
 struct Tools
@@ -33,21 +33,21 @@ struct Tools
     static const ToolBasicFunction closeFunctions[(int)ToolItem::NumTools]; // Tool close functions.
 
     // Tool is selected, do its initial routine.
-    void Init(EditorNew* ed, int toolItem);
+    void Init(Editor* ed, int toolItem);
 
     // Activate the tool on a position.
-    void Activate(EditorNew* ed, int toolItem, Vector2 pos1 = { 0, 0 }, Vector2 pos2 = { 0, 0 });
+    void Activate(Editor* ed, int toolItem, Vector2 pos1 = { 0, 0 }, Vector2 pos2 = { 0, 0 });
 
     // Update the tool.
-    void Update(EditorNew* ed, int toolItem);
+    void Update(Editor* ed, int toolItem);
 
     // Do things the editor needs to close up on.
-    void Close(EditorNew* ed, int toolItem);
+    void Close(Editor* ed, int toolItem);
 
     // Set the tool to be active depending on the mouse buttons.
-    void SetActive(EditorNew* ed, int toolItem, std::vector<int>& buttons);
+    void SetActive(Editor* ed, int toolItem, std::vector<int>& buttons);
 
     // Run general tool update function.
-    void Update(EditorNew* ed);
+    void Update(Editor* ed);
 
 };

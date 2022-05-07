@@ -1,7 +1,7 @@
 #include "tileBrush.h"
-#include "../editorNew.h"
+#include "../editor.h"
 
-void TileBrushToolActivate(EditorNew* ed, Vector2 pos1, Vector2 pos2)
+void TileBrushToolActivate(Editor* ed, Vector2 pos1, Vector2 pos2)
 {
     if (ed->tilesToPaint.validSelection)
     {
@@ -31,7 +31,7 @@ void TileBrushToolActivate(EditorNew* ed, Vector2 pos1, Vector2 pos2)
     }
 }
 
-void TileBrushToolUpdate(EditorNew* ed)
+void TileBrushToolUpdate(Editor* ed)
 {
     TileBrushToolActivate(ed, { (float)ed->GetTileX(), (float)ed->GetTileY() }, { 0, 0 });
 }

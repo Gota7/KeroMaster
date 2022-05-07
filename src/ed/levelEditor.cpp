@@ -1,5 +1,5 @@
 #include "levelEditor.h"
-#include "editorNew.h"
+#include "editor.h"
 #include "../rlImGui/utils.h"
 #include "imgui.h"
 
@@ -36,7 +36,7 @@ const char* tileScales[] = {
     "16 (1x1)"
 };
 
-LevelEditor::LevelEditor(EditorNew* ed)
+LevelEditor::LevelEditor(Editor* ed)
 {
     this->ed = ed;
 }
