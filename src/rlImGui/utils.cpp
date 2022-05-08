@@ -75,11 +75,11 @@ void ImGuiTooltip(std::string tip)
     }
 }
 
-bool ImGuiStringEdit(const char* label, std::string* toEdit)
+bool ImGuiStringEdit(const char* label, std::string* toEdit, ImGuiInputTextFlags flags)
 {
     char buf[128];
     strcpy(buf, &(*toEdit)[0]);
-    bool ret = ImGui::InputText(label, buf, 128);
+    bool ret = ImGui::InputText(label, buf, 128, flags);
     *toEdit = std::string(buf);
     return ret;
 }

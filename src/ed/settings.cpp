@@ -96,17 +96,13 @@ void Settings::DrawUI(Editor* ed)
     static int actionMouse = 0;
 
     // Show the settings popup.
-    if (ImGui::BeginPopupModal("Editor Settings", nullptr, ImGuiWindowFlags_AlwaysAutoResize | (show ? 0/*ImGuiWindowFlags_MenuBar*/ : 0)))
+    if (ImGui::BeginPopupModal("Editor Settings", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
     {
 
         // Resource path choosing.
         ed->focus.ObserveFocus();
         ed->focus.isModal |= true;
-        if (show)
-        {
-            //ed->DrawMainMenu(true);
-        }
-        if (ImGuiStringEdit("Resource Path", &rscPath))
+        if (ImGuiStringEdit("Resource Path", &rscPath, ImGuiInputTextFlags_ReadOnly))
         {
             lastLevel = "";
         }
@@ -244,8 +240,30 @@ void Settings::DrawUI(Editor* ed)
         {
             rscPath = fB.selected_path;
             lastLevel = "";
+            if (!IsRscPathValid(rscPath))
+            {
+                ImGui::OpenPopup("Invalid Resource Path!");
+            }
+        }
+        if (ImGui::BeginPopupModal("Invalid Resource Path!"))
+        {
+            ImGui::Text(("The selected path, \"" + rscPath + "\" is invalid.").c_str());
+            if (ImGui::Button("Ok"))
+            {
+                rscPath = "";
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::EndPopup();
         }
         ImGui::EndPopup();
     }
 
+}
+
+bool Settings::IsRscPathValid(std::string path)
+{
+    return DirectoryExists((path + "/bgm").c_str())
+    && DirectoryExists((path + "/field").c_str())
+    && DirectoryExists((path + "/img").c_str())
+    && DirectoryExists((path + "/text").c_str());
 }

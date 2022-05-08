@@ -43,4 +43,7 @@ struct Settings
     // Show the settings window.
     void DrawUI(Editor* ed);
 
+    // If a selected path is valid.
+    bool IsRscPathValid(std::string path);
+
 };

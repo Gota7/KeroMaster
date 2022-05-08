@@ -24,7 +24,7 @@ void ImGuiNumEdit(std::string name, s64& data, size_t min, size_t max, std::stri
 void ImGuiTooltip(std::string tip);
 
 // Edit a string.
-bool ImGuiStringEdit(const char* label, std::string* toEdit);
+bool ImGuiStringEdit(const char* label, std::string* toEdit, ImGuiInputTextFlags flags = ImGuiInputTextFlags_None);
 
 // Edit a color.
 void ImGuiColorEdit(const char* label, u8* toEdit);
