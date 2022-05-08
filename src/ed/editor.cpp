@@ -354,10 +354,10 @@ void Editor::InitEditor()
         {
             UnloadTileset(t.first);
         }
-        LoadFixedTilesets();
         rsc = settings.rscPath;
         level = settings.lastLevel;
         levelClosed = false;
+        LoadFixedTilesets();
         LoadLevel();
         InitSubeditors();
     }
@@ -375,6 +375,7 @@ void Editor::InitSubeditors()
 
 void Editor::LoadTileset(std::string tilesetName)
 {
+    printf("%s\n", tilesetName.c_str());
     Tileset t;
     t.Load(rsc, tilesetName);
     tilesets[tilesetName] = t;

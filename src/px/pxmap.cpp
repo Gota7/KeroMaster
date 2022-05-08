@@ -232,7 +232,7 @@ void Map::Load(std::string rsc_k, std::string mapName, std::map<std::string, Til
     }
 
     GFile f = GFile(mapPath.c_str());
-    if (strcmp(f.ReadStr().c_str(), "PXPACK121127a**"))
+    if (f.ReadStr() != "PXPACK121127a**")
     {
         throw std::string("Invalid pack attribute magic.");
     }
@@ -246,7 +246,7 @@ void Map::Load(std::string rsc_k, std::string mapName, std::map<std::string, Til
             references[i].Read(&f);
         }
         
-        if (strcmp(this->references[RT_NPC_PALETTE].dat.c_str(), "") != 0)
+        if (this->references[RT_NPC_PALETTE].dat != "")
         {
             Tileset t;
             t.Load(rsc_k, this->references[RT_NPC_PALETTE].dat);
@@ -261,7 +261,7 @@ void Map::Load(std::string rsc_k, std::string mapName, std::map<std::string, Til
         for (int i = 0; i < NUM_TILESETS; i++)
         {
             this->tilesets[i].Read(&f);
-            if (strcmp(this->tilesets[i].dat.c_str(), "") != 0)
+            if (this->tilesets[i].dat != "")
             {
                 tilesets[this->tilesets[i].dat].Unload();
                 Tileset t;

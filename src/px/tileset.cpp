@@ -18,7 +18,6 @@ void Tileset::Load(std::string rsc_k, std::string tilesetName)
     // Load the tileset.
     for (auto& path : lookupPaths) {
         std::string imagePath = rsc_k + path + tilesetName + ".png";
-
         if (GFile::FileExists(imagePath.c_str()))
         {
             Image image = LoadImage(imagePath.c_str());
