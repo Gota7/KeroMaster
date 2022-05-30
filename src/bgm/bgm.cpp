@@ -1,7 +1,7 @@
 #include "bgm.h"
 #include "../rlImGui/utils.h"
 
-#include <bits/stdc++.h>
+#include <algorithm>
 
 std::string BgmPlayer::rsc;
 pxtnService BgmPlayer::pxtn;

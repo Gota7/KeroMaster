@@ -6,7 +6,7 @@
 #include "imgui.h"
 #include "raylib.h"
 
-#include <bits/stdc++.h>
+#include <algorithm>
 #include <cmath>
 
 void Editor::Init()
