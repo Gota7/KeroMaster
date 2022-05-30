@@ -5,6 +5,8 @@
 #include "../rlImGui/utils.h"
 #include "imgui.h"
 #include "raylib.h"
+
+#include <bits/stdc++.h>
 #include <cmath>
 
 void Editor::Init()
@@ -375,7 +377,6 @@ void Editor::InitSubeditors()
 
 void Editor::LoadTileset(std::string tilesetName)
 {
-    printf("%s\n", tilesetName.c_str());
     Tileset t;
     t.Load(rsc, tilesetName);
     tilesets[tilesetName] = t;
@@ -1065,7 +1066,7 @@ void Editor::CheckZoom()
 
 void Editor::CheckEntityDelete()
 {
-    if (entityEditor.editingEntity && IsKeyPressed(KEY_DELETE))
+    if (entityEditor.editingEntity && (IsKeyPressed(KEY_DELETE) || IsKeyPressed(KEY_BACKSPACE)))
     {
         entityEditor.editingEntity->beingEdited = false;
         Entity* e = entityEditor.editingEntity;

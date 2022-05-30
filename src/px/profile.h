@@ -7,10 +7,106 @@
 #include "../gbin/gfile.h"
 #include "raylib.h"
 
+/*
+    00 - Header, 8
+    08 - Save year, 1
+    09 - Save month, 1
+    0A - Save day, 1
+    0B - Save hour, 1
+    0C - Save minute, 1
+    0D - Save second, 1
+    0E - Zeros, 2
+    10 - Profile icon, 4
+    14 - Total playtime in frames for menu, 4
+    18 - Display money, 4
+    1C - Display lives, 2
+    1E - Display hearts, 2
+    20 - UNKNOWN, is 2 in my Omake save but 0 for rest, 2
+    22 - Mission description, 82
+    A4 - Items to display, 4[8]
+    C4 - Total playtime in frames, 4
+    C8 - Number of flag bytes, 4
+    CC - Flags, 800
+    8CC - Items in hand, 4[4]
+    8DC - Currently held item, 1
+    8DD - Weapons in hand, Weapons[8]
+    8FD - Number of lives, 2
+    8FF - Money, 4
+    903 - UNKNOWN (0 or 2?), 2
+    905 - UNKNOWN (D, 4, 28, etc.), 2
+    907 - Current HP, 2
+    909 - Total HP, 2
+    90B - UNKNOWN (always 1?), 1
+    90C - On gameover level, 10
+    940 - Current level, C
+    94C - UNKNOWN (always 72?), 2
+    UNK
+    965 - X position of some kind, 4
+    969 - Y position of some kind, 4
+    96D - UNKNOWN (always 0?), 2
+    96F - Player facing right, 4
+    UNK
+    974 - Checkpoint stage, 10
+    984 - Shop teleporter string parameter, ?
+    UNK
+
+    struct Weapons {
+        00 - Item ID, 1
+        01 - Item level, 1
+        02 - Zeroes, 2 (Last byte may be set sometimes, but idk what to?)
+    }
+*/
+
+// A weapon.
+struct Weapon
+{
+    u8 itemId = 0;
+    u8 itemLevel = 0;
+    u8 unk1 = 0;
+    u8 unk2 = 0;
+};
+
 // Kero blaster save.
 struct ProfileSave
 {
-
+    u8 year;
+    u8 month;
+    u8 day;
+    u8 hour;
+    u8 minute;
+    u8 second;
+    u32 profileIcon;
+    u32 displayPlaytime;
+    u32 displayMoney;
+    u16 displayLives;
+    u16 displayHearts;
+    u16 unk1;
+    std::string missionDescription;
+    u32 displayItems[8];
+    u32 playtime;
+    u8 flags[0x800];
+    u32 itemsInHand[4];
+    u8 currWeapon;
+    Weapon weapons[8];
+    u16 lives;
+    u32 money;
+    u16 unk2;
+    u16 unk3;
+    u16 currentHp;
+    u16 totalHp;
+    u8 unk4;
+    std::string onGameoverLevel;
+    std::string currentLevel;
+    u16 unk5;
+    u8 unk6[0x19];
+    u32 xPos;
+    u32 yPos;
+    u16 unk7;
+    u32 facingDirection;
+    u8 unk8[5];
+    std::string checkpointStage;
+    std::string checkpointTeleporterParameter;
+    // TODO!!!
 };
 
 // Kero blaster profile.
@@ -50,7 +146,7 @@ struct Profile
     u8 joystickWeaponSwitchRight = 4;
     u8 joystickMenu = 2;
     u8 gameProfile[NUM_GAME_FLAGS];
-    std::vector<ProfileSave> saves = std::vector<ProfileSave>();
+    ProfileSave saves[NUM_SAVES];
 
     // If a file exists in the profile folder.
     bool FileExists(std::string rsc_k, std::string name);
@@ -114,7 +210,7 @@ struct Profile
 
     // Save the last time used.
     void SaveLastTime(std::string rsc_k);
-    
+
     // Load the last key config used.
     void LoadKeyConfig(std::string rsc_k);
 

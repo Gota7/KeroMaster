@@ -345,7 +345,7 @@ void ProfileEditor::DrawGeneralSettings(int itemWidth)
         profile->lastDay = time.tm_mday;
     }
     ImGuiTooltip("The date of when the user last played the game.");
-    
+
     // Last time.
     ImGui::PushItemWidth(itemWidth);
     ImGui::InputScalar("Last Play Hour", ImGuiDataType_U8, &profile->lastHour);
@@ -491,7 +491,35 @@ void ProfileEditor::DrawGameProfile(int itemWidth)
 void ProfileEditor::DrawSaveInfo(int itemWidth, int save)
 {
 
-    // Dummy.
-    ImGui::Text("Dummy");
+    // Setup.
+    ImGui::PushItemWidth(itemWidth);
+    ProfileSave& p = ed->profile.saves[save];
+
+    // Save date.
+    tm time;
+    time.tm_year = p.year - 1900;
+    time.tm_mon = p.month - 1;
+    time.tm_mday = p.day;
+    time.tm_hour = 0;
+    time.tm_min = 0;
+    time.tm_sec = 0;
+    if (ImGui::DateChooser("Save Date##GeneralSettings", time, "%m-%d-%Y"))
+    {
+        p.year = time.tm_year + 1900;
+        p.month = time.tm_mon + 1;
+        p.day = time.tm_mday;
+    }
+    ImGuiTooltip("The date of when the save was last modified.");
+
+    // Save time.
+    ImGui::InputScalar("Save Hour", ImGuiDataType_U8, &p.hour);
+    ImGuiTooltip("The hour when the game was saved.");
+    ImGui::InputScalar("Save Minute", ImGuiDataType_U8, &p.minute);
+    ImGuiTooltip("The minute when the game was saved.");
+    ImGui::InputScalar("Save Second", ImGuiDataType_U8, &p.second);
+    ImGuiTooltip("The second when the game was saved.");
+
+    // Finish.
+    ImGui::PopItemWidth();
 
 }

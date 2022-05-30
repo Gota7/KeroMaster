@@ -142,60 +142,33 @@ void Profile::SaveLastIdx(std::string rsc_k)
     f.Close();
 }
 
-// TODO: GAME SAVE CODE!!!
-
 void Profile::LoadProfileSave(std::string rsc_k, u8 num)
 {
 
-    /*
-    00 - Header, 8
-    08 - Save year, 1
-    09 - Save month, 1
-    0A - Save day, 1
-    0B - Save hour, 1
-    0C - Save minute, 1
-    0D - Save second, 1
-    0E - Zeros, 2
-    10 - Profile icon, 4
-    14 - Total playtime in frames for menu, 4
-    18 - Display money, 4
-    1C - Display lives, 2
-    1E - Display hearts, 2
-    20 - UNKNOWN, is 2 in my Omake save but 0 for rest, 2
-    22 - Mission description, 82
-    A4 - Items to display, 4[8]
-    C4 - Total playtime in frames, 4
-    C8 - Number of flag bytes, 4
-    CC - Flags, 800
-    8CC - Items in hand, 4[4]
-    8DC - Currently held item, 1
-    8DD - Weapons in hand, Weapons[8]
-    8FD - Number of lives, 2
-    8FF - Money, 4
-    903 - UNKNOWN (0 or 2?), 2
-    905 - UNKNOWN (D, 4, 28, etc.), 2
-    907 - Current HP, 2
-    909 - Total HP, 2
-    90B - UNKNOWN (always 1?), 1
-    90C - On gameover level, 10
-    940 - Current level, C
-    94C - UNKNOWN (always 72?), 2
-    UNK
-    965 - X position of some kind, 4
-    969 - Y position of some kind, 4
-    96D - UNKNOWN (always 0?), 2
-    96F - Player facing right, 4
-    UNK
-    974 - Checkpoint stage, 10
-    984 - Shop teleporter string parameter, ?
-    UNK
+    // Setup.
+    if (!FileExists(rsc_k, "profile" + std::to_string(num))) return;
+    GFile f = GetGFile(rsc_k, "profile" + std::to_string(num));
+    ProfileSave p;
 
-    struct Weapons {
-        00 - Item ID, 1
-        01 - Item level, 1
-        02 - Zeroes, 2 (Last byte may be set sometimes, but idk what to?)
-    }
-    */
+    // Read data.
+    f.ReadU64();
+    p.year = f.ReadU8();
+    p.month = f.ReadU8();
+    p.day = f.ReadU8();
+    p.hour = f.ReadU8();
+    p.minute = f.ReadU8();
+    p.second = f.ReadU8();
+    f.ReadU16();
+    p.profileIcon = f.ReadU32();
+    p.displayPlaytime = f.ReadU32();
+    p.displayMoney = f.ReadU32();
+    p.displayLives = f.ReadU16();
+    p.displayHearts = f.ReadU16();
+    p.unk1 = f.ReadU16();
+
+    // Set data.
+    saves[num] = p;
+    f.Close();
 
 }
 

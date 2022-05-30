@@ -121,7 +121,7 @@ void Toolbar::DrawUI()
         {
             ed->isPlacingEntity = !ed->isPlacingEntity;
         }
-        Tooltip("Click after hitting to place an entity or again to cancel.\nHolding shift while placing will allow you to place multiple.\nPressing the delete key will delete the selected entity.");
+        Tooltip("Click after hitting to place an entity or again to cancel.\nHolding shift while placing will allow you to place multiple.\nPressing the delete or backspace key will delete the selected entity.");
     }
     ImGui::End();
 
