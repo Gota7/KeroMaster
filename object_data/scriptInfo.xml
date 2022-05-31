@@ -8,4 +8,38 @@
     <command name="jump" desc="Jump to a label.">
         <arg type="str" desc="Which label to jump to." />
     </command>
+    <command name="plPo" desc="Teleport the player to a certain NPC.">
+        <arg type="str" desc="Which NPC with Data field filled to teleport to." />
+    </command>
+    <command name="muLd" desc="Load a music track for playing.">
+        <arg type="str" desc="The filename of the .ptcop file to load." />
+    </command>
+    <command name="muLp" desc="Play the .ptcop file loaded by a previous muLd command." />
+    <command name="soul" desc="Sound loop. Indefinitely loops a sound until the next sous command.">
+        <arg type="str" desc="The .ptnoise file to loop." />
+    </command>
+    <command name="sous" desc="Stops the sound loop. (Warning: Some sounds might be unable to be stopped, like boost)">
+        <arg type="str" desc="The .ptnoise loop to stop." />
+    </command>
+    <command name="souv" desc="Play a sound once">
+        <arg type="str" desc="The .ptnoise file to play." />
+    </command>
+    <command name="fadC" desc="Fade out towards the center of the screen." />
+    <command name="fadE" desc="Creates a white flash starting at a certain spot. The 'E' stands for explosion.">
+        <arg type="num" desc="How many tiles away from the left side of the screen the explosion starts." />
+        <arg type="num" desc="How many tiles away from the top of the screen the explosion starts." />
+        <arg type="num" desc="The type of explosion. 0 is exploding across all diagonal directions. Anything else is " />
+    </command>
+    <command name="fadF" desc="Create a window that focuses on a certain spot, that goes away after pushing a button. The 'F' stands for focus.">
+        <arg type="num" desc="How many tiles away from the left side of the screen it is." />
+        <arg type="num" desc="How many tiles away from the top of the screen it is." />
+        <arg type="num" desc="How large the window is" />
+    </command>
+    <command name="fadO" desc="Fills the screen with black." />
+    <command name="life" desc="Increase or decrease the player's health.">
+        <arg type="num" desc="The amount of health to increase, or decrease if it's negative." />
+    </command>
+    <command name="lifm" desc="Increase or decrease the player's maximum health.">
+        <arg type="num" desc="The amount of maximum health to increase, or decrease if it's negative." />
+    </command>
 </script>
