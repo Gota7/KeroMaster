@@ -8,6 +8,7 @@
     <command name="jump" desc="Jump to a label.">
         <arg type="str" desc="Which label to jump to." />
     </command>
+    <command name="exit" desc="Ends the script." />
     <command name="plPo" desc="Teleport the player to a certain NPC.">
         <arg type="str" desc="Which NPC with Data field filled to teleport to." />
     </command>
@@ -28,7 +29,7 @@
     <command name="fadE" desc="Creates a white flash starting at a certain spot. The 'E' stands for explosion.">
         <arg type="num" desc="How many tiles away from the left side of the screen the explosion starts." />
         <arg type="num" desc="How many tiles away from the top of the screen the explosion starts." />
-        <arg type="num" desc="The type of explosion. 0 is exploding across all diagonal directions. Anything else is " />
+        <arg type="num" desc="The type of explosion. 0 explodes across all diagonal directions. Anything else is a screen-wide horizontal beam." />
     </command>
     <command name="fadF" desc="Create a window that focuses on a certain spot, that goes away after pushing a button. The 'F' stands for focus.">
         <arg type="num" desc="How many tiles away from the left side of the screen it is." />
@@ -37,9 +38,27 @@
     </command>
     <command name="fadO" desc="Fills the screen with black." />
     <command name="life" desc="Increase or decrease the player's health.">
-        <arg type="num" desc="The amount of health to increase, or decrease if it's negative." />
+        <arg type="num" desc="The amount of health to add, or subtract if it's negative." />
     </command>
     <command name="lifm" desc="Increase or decrease the player's maximum health.">
-        <arg type="num" desc="The amount of maximum health to increase, or decrease if it's negative." />
+        <arg type="num" desc="The amount of maximum health to add, or subtract if it's negative." />
+    </command>
+    <command name="rema" desc="Increase or decrease the player's extra lives.">
+        <arg type="num" desc="The amount of lives to add, or subtract if it's negative." />
+    </command>
+    <command name="remD" desc="Forces the player to have three extra lives." />
+    <command name="remR" desc="Unused. Seems to do nothing." />
+    <command name="isla" desc="Unused. Enters a broken map screen.">
+        <arg type="num" desc="Unknown" />
+        <arg type="num" desc="Unknown" />
+        <arg type="num" desc="Unknown" />
+    </command>
+    <command name="chgN" desc="Changes an NPC to one of a few script-exclusive entities.">
+        <arg type="str" desc="The data label of the NPCs that are desired to be changed." />
+        <arg type="str" desc="The entity to change into. If set to '-' then it is determined by the NPC's data label." />
+    </command>
+    <command name="swtN" desc="Switches an entity's state. Freezes most NPCs, but has special properties for a few objects like bosses and cutscene characters.">
+        <arg type="str" desc="The data label of the NPCs that are desired to be changed." />
+        <arg type="num" desc="The state to change the entity to." />
     </command>
 </script>
