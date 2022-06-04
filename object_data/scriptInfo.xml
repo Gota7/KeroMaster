@@ -67,8 +67,11 @@
         <arg type="num" desc="How many spaces away from the left side of the screen the text should be printed." />
         <arg type="num" desc="How many spaces away from the top of the screen the text should be printed." />
     </command>
-    <command name="txtV" desc="Unused. Decide the sound of the voice playing." >
-        <arg type="num" desc="Which text voice sound effect should play. 0 = Unused deeper typewriter, 1 = Typewriter (1.5) or Regular (1.0.6.3), 2 = Regular (1.5) or Female (1.0.6.3), 3 = Female (1.5) or No Voice (1.0.6.3), Anything else = No voice." />
+    <command name="txtV" desc="Unused. Manually decides the sound of the voice playing." >
+        <arg type="num" desc="Which text voice sound effect should play. 0 = Unused evil-sounding voice, 1 = Typewriter (1.5) or Regular (1.0.6.3), 2 = Regular (1.5) or Female (1.0.6.3), 3 = Female (1.5) or No Voice (1.0.6.3), Anything else = No voice." />
+    </command>
+    <command name="txtW" desc="Unused. Decides how long to wait after hitting a space in text, which is halved when holding a button." >
+        <arg type="num" desc="The amount of time to wait, in 1/60ths of a second." />
     </command>
     <command name="nxtl" desc="Moves the text printing location down one line." />
     <command name="lump" desc="I'm not sure what this is for. It seems to make the text disappear on it's own? It's only used in the arms shop.">
@@ -132,11 +135,8 @@
     <command name="souv" desc="Play a sound once">
         <arg type="str" desc="The .ptnoise file to play." />
     </command>
-    <command name="fcsH" desc="Locks the screen to the first placed anchor in the level horizontally.">
-        <arg type="num" desc="Unknown." />
-    </command>
     <command name="lkFU" desc="Locks the player in place for a bit, or until set to 0.">
-        <arg type="num" desc="How to lock the player's. 0 = Unlock, 1 = Lock for a little bit, 2 = Lock for a while, 3 = seems to be a clone of 2?" />
+        <arg type="num" desc="How to lock the player's. 0 = Unlock, 1 = Lock for a little bit, 2 = Lock forever, 3 = seems to be a clone of 2?" />
     </command>
     <command name="fadC" desc="Fade out towards the center of the screen." />
     <command name="fadE" desc="Creates a white flash starting at a certain spot. The 'E' stands for explosion.">
@@ -147,9 +147,9 @@
     <command name="fadF" desc="Create a window that focuses on a certain spot, that goes away after pushing a button. The 'F' stands for focus.">
         <arg type="num" desc="How many tiles away from the left side of the screen it is." />
         <arg type="num" desc="How many tiles away from the top of the screen it is." />
-        <arg type="num" desc="How large the window is" />
+        <arg type="num" desc="How large the window should be." />
     </command>
-    <command name="fadI" desc="Empties the screen of black." />
+    <command name="fadI" desc="Empties the screen of black, such as in level transitions." />
     <command name="fadO" desc="Fills the screen with black." />
     <command name="whtI" desc="Empties the screen of white." />
     <command name="whtO" desc="Fills the screen with white, like when you obtain an item." />
@@ -218,6 +218,22 @@
         <arg type="num" desc="Unknown. Seems to have something to do with reentering a level?" />
         <arg type="num" desc="Unknown." />
     </command>
+    <command name="isPh" desc="Unused. Determines what the player's ship does on the world map.">
+        <arg type="str" desc="The player's action. The only ones used in-game are 'flight' and 'action'" />
+    </command>
+    <command name="isUn" desc="Unused. Spawns an island NPC that does something.">
+        <arg type="str" desc="The entity to spawn. Valid inputs are 'myship', 'lambark', 'saucer', 'peke', 'scope', and 'bom'." />
+        <arg type="num" desc="Which level to start at." />
+        <arg type="num" desc="Which level the NPC travels to." />
+        <arg type="num" desc="Which state to spawn the NPC with." />
+    </command>
+    <command name="isUC" desc="Unused. Clears all island NPCs."/>
+    <command name="isUF" desc="Unused. Spawns an island NPC if a flag is set.">
+        <arg type="num" desc="Which flag to check." />
+        <arg type="str" desc="The entity to spawn. Valid inputs are 'myship', 'lambark', 'saucer', 'peke', 'scope', and 'bom'." />
+        <arg type="num" desc="Which level to spawn it at." />
+        <arg type="num" desc="Which state to spawn the NPC with." />
+    </command>
     <command name="chgN" desc="Changes an NPC to one of a few script-exclusive entities.">
         <arg type="str" desc="The data label of the NPCs that are desired to be changed." />
         <arg type="str" desc="The entity to change into. If set to '-' then it is determined by the NPC's data label." />
@@ -250,6 +266,10 @@
         <arg type="str" desc="The data label of the NPCs that are desired to be changed." />
         <arg type="num" desc="What to set Variant/Param2 to." />
     </command>
+    <command name="wtNB" desc="Waits for an entity to reach a certain state. Only seems to work on story elevators(?)">
+        <arg type="str" desc="The entity to check the state of." />
+        <arg type="str" desc="The state to check for. If not this state, the game will continue waiting." />
+    </command>
     <command name="flag" desc="Sets a certain special flag, represented by a string.">
         <arg type="str" desc="The label of the flag to be changed. (list as of 1.0.6.3) Black = Omake Mode, ShowTA = Show the time attack clock, TimeAttack = Flag set by Time Attack seemingly just for internal purposes, HeartHike = Increase price of hearts in Drug Store like in stages 5-7 in the final game, Jacket = Jackets spawn in shop and hospital like in stage 5..." />
         <arg type="num" desc="What to set the flag to. 0 = Clear the flag, Anything else = Set" />
@@ -272,24 +292,28 @@
         <arg type="num" desc="The flag to read." />
         <arg type="str" desc="The label to jump to." />
     </command>
+    <command name="vflg" desc="Manually set or clear a flag.">
+        <arg type="num" desc="Which flag to modify." />
+        <arg type="num" desc="What to set it to. Either 0 or 1." />
+    </command>
     <command name="fcsH" desc="Fixes the camera's horizontal position to be centered on the first-placed anchor in the level. Can also be triggered using an event with data label 'fcsH'.">
-        <arg type="num" desc="Whether it's on or not?" />
+        <arg type="num" desc="Whether to snap immediately or not(?)" />
     </command>
     <command name="fcsV" desc="Fixes the camera's vertical position to be centered on the first-placed anchor in the level. Can also be triggered using an event with data label 'fcsV'.">
-        <arg type="num" desc="Whether it's on or not?" />
+        <arg type="num" desc="Whether to snap immediately or not(?)" />
     </command>
     <command name="fcsM" desc="The default camera. Can also be triggered using an event with data label 'fcsM'.">
-        <arg type="num" desc="Whether it's on or not?" />
+        <arg type="num" desc="Whether to snap immediately or not(?)" />
     </command>
     <command name="fcsU" desc="Forces the camera to focus underneath the player. Can also be triggered using an event with data label 'fcsU'.">
-        <arg type="num" desc="Whether it's on or not?" />
+        <arg type="num" desc="Whether to snap immediately or not(?)" />
     </command>
     <command name="fcsO" desc="The camera used in some areas with lots of slopes. Can also be triggered using an event with data label 'fcsO'.">
-        <arg type="num" desc="Whether it's on or not?" />
+        <arg type="num" desc="Whether to snap immediately or not(?)" />
     </command>
     <command name="fcsN" desc="Focus the camera on a certain labelled NPC.">
         <arg type="str" desc="The data label of the NPC you want the camera to follow." />
-        <arg type="num" desc="Whether it's on or not?" />
+        <arg type="num" desc="Whether to snap immediately or not(?)" />
     </command>
     <command name="armF" desc="Unused. Forces a weapon into an arms slot.">
         <arg type="num" desc="The slot to overwrite." />
@@ -358,17 +382,24 @@
     <command name="hide" desc="Unused. Does nothing, seems to be dummied out." />
     <command name="quie" desc="I'm not sure what this does. It's used in the scene where Mizutani-san/Kajiya activates Omake Mode." />
     <command name="cont" desc="Unused. Does nothing, seems to be dummied out." />
+    <command name="rmvB" desc="Unused. Does nothing, seems to be dummied out." />
     <command name="fcsC" desc="Unused. Completely breaks the script system, DO NOT USE.">
         <arg type="num" desc="Unknown" />
     </command>
     <command name="flgF" desc="Unused. Completely breaks the script system, DO NOT USE.">
         <arg type="num" desc="Might have been flag to set back when it still worked." />
     </command>
+    <command name="wtCr" desc="Unused. Stops running the script, but doesn't properly end it, forcing the game to be turned off by external means." />
+    <command name="wtFc" desc="Waits for the game to finish scrolling over to a focus object." />
+    <command name="vfEn" desc="Used in a few rooms that have bosses. I'm not sure what this does. Maybe something to do with the 'vflg' command?" />
     <command name="repo" desc="Prints a message in the debug log.">
         <arg type="str" desc="The message to output." />
     </command>
     <command name="skLT" desc="Presumably sets something. Only used on the title screen..">
         <arg type="num" desc="Unknown. Probably turns it on and off?" />
+    </command>
+    <command name="sign" desc="Only used in the shop, seemingly to tell the game code to upgrade the player's weapon.">
+        <arg type="num" desc="Unknown. Only set to '1' in the scripts in the vanilla game." />
     </command>
     <command name="dsSv" desc="Removes all the player's health and lives, then saves the game. When the save file is reloaded, the player has three lives." />
     <command name="home" desc="Opens the file selection menu." />
