@@ -8,4 +8,409 @@
     <command name="jump" desc="Jump to a label.">
         <arg type="str" desc="Which label to jump to." />
     </command>
+    <command name="jmpA" desc="Unused. Jumps to a label if the player has a certain weapon.">
+        <arg type="str" desc="The weapon to check for." />
+        <arg type="str" desc="Which label to jump to." />
+    </command>
+    <command name="jmpC" desc="Jumps to a label if a number of flags, starting with a certain one, are set.">
+        <arg type="num" desc="The starting flag." />
+        <arg type="num" desc="The amount of flags to check." />
+        <arg type="str" desc="Which label to jump to." />
+    </command>
+    <command name="jmpD" desc="Jump to a label if the player is dead.">
+        <arg type="str" desc="Which label to jump to." />
+    </command>
+    <command name="jmpF" desc="Jump to a label if a flag is set.">
+        <arg type="num" desc="Which flag to check." />
+        <arg type="str" desc="Which label to jump to." />
+    </command>
+    <command name="jmpG" desc="Jump to a label if a game-wide flag is set.">
+        <arg type="num" desc="Which game flag to check." />
+        <arg type="str" desc="Which label to jump to." />
+    </command>
+    <command name="jmpI" desc="Jump to a label if the player has a certain item.">
+        <arg type="str" desc="Which item to check for." />
+        <arg type="str" desc="Which label to jump to." />
+    </command>
+    <command name="jmpM" desc="Unused. Seems to be a clone of 'jump', but a number needs to be specified.">
+        <arg type="num" desc="Which flag to check." />
+        <arg type="str" desc="Which label to jump to." />
+    </command>
+    <command name="jmpP" desc="Unused. Seems to be a clone of 'jump'.">
+        <arg type="str" desc="Which label to jump to." />
+    </command>
+    <command name="jmpS" desc="Brings up a selection menu with two customizable options, then either jumps to a label or continues the script depending on your choice.">
+        <arg type="str" desc="What the first option should say." />
+        <arg type="str" desc="What the second option should say." />
+        <arg type="str" desc="Which label to jump to if you choose the second option.." />
+        <arg type="num" desc="Doesn't seem to matter. Always set to 1 in the scripts used in the vanilla game." />
+    </command>
+    <command name="taJm" desc="If the finished time attack score is a high score, jumps to a label." >
+        <arg type="str" desc="Which label to jump to." />
+    </command>
+    <command name="call" desc="Jumps to a label, then after it hits an 'exit' command it returns to right after this command.">
+        <arg type="str" desc="Which label to jump to." />
+    </command>
+    <command name="cRsv" desc="It seems like in situations where 'call' doesn't work, use this.">
+        <arg type="str" desc="Which label to jump to." />
+    </command>
+    <command name="exit" desc="Ends the script." />
+    <command name="mapR" desc="Replaces the room the player is currently in, but the entities stay the same.">
+        <arg type="str" desc="The filename of the room to enter." />
+        <arg type="str" desc="The room you're in when running this script." />
+        <arg type="num" desc="Doesn't seem to matter. Always set to 1 in the scripts used in the vanilla game." />
+    </command>
+    <command name="nodB" desc="Stops the text, then continues and clears the speech balloon after you push a button." />
+    <command name="nodc" desc="Stops the text, then continues right when you push a button." />
+    <command name="nodE" desc="Unused. Stops the text, then stops running the script when you push a button." />
+    <command name="txtP" desc="Decide the location of the text being displayed." >
+        <arg type="num" desc="How many spaces away from the left side of the screen the text should be printed." />
+        <arg type="num" desc="How many spaces away from the top of the screen the text should be printed." />
+    </command>
+    <command name="txtV" desc="Unused. Manually decides the sound of the voice playing." >
+        <arg type="num" desc="Which text voice sound effect should play. 0 = Unused evil-sounding voice, 1 = Typewriter (1.5) or Regular (1.0.6.3), 2 = Regular (1.5) or Female (1.0.6.3), 3 = Female (1.5) or No Voice (1.0.6.3), Anything else = No voice." />
+    </command>
+    <command name="txtW" desc="Unused. Decides how long to wait after hitting a space in text, which is halved when holding a button." >
+        <arg type="num" desc="The amount of time to wait, in 1/60ths of a second." />
+    </command>
+    <command name="nxtl" desc="Moves the text printing location down one line." />
+    <command name="lump" desc="I'm not sure what this is for. It seems to make the text disappear on it's own? It's only used in the arms shop.">
+        <arg type="num" desc="Unknown." />
+    </command>
+    <command name="blln" desc="Creates a speech balloon pointing towards an NPC, and makes all future text print inside the balloon.">
+        <arg type="str" desc="The data label of the NPC to point at. When set to a data label not in the level, no balloon appears." />
+        <arg type="num" desc="The type of text box. 0 = Regular, Anything else = Exclamation" />
+    </command>
+    <command name="bllR" desc="Removes the speech balloon." />
+    <command name="trns" desc="Takes the player to a room.">
+        <arg type="str" desc="The filename of the room to enter." />
+        <arg type="str" desc="The point to appear at when entering the room." />
+        <arg type="str" desc="The label in the script to run when entering the room." />
+    </command>
+    <command name="trIn" desc="Brings the player to the intro of the stage, leading to the first room." />
+    <command name="trL2" desc="Takes the player to one of the rooms defines as that room's level exit.">
+        <arg type="str" desc="The room to enter from this room's level exits. 'l' means the left exit, 'r' means the right exit, 'u' means the up exit, 'd' means the down exit." />
+        <arg type="str" desc="The point to appear at when entering the room." />
+    </command>
+    <command name="trU2" desc="Takes the player to one of the rooms defines as that room's level exit.">
+        <arg type="str" desc="The room to enter from this room's level exits. 'l' means the left exit, 'r' means the right exit, 'u' means the up exit, 'd' means the down exit." />
+        <arg type="str" desc="The point to appear at when entering the room." />
+    </command>
+    <command name="trR2" desc="Takes the player to one of the rooms defines as that room's level exit.">
+        <arg type="str" desc="The room to enter from this room's level exits. 'l' means the left exit, 'r' means the right exit, 'u' means the up exit, 'd' means the down exit." />
+        <arg type="str" desc="The point to appear at when entering the room." />
+    </command>
+    <command name="trD2" desc="Takes the player to one of the rooms defines as that room's level exit.">
+        <arg type="str" desc="The room to enter from this room's level exits. 'l' means the left exit, 'r' means the right exit, 'u' means the up exit, 'd' means the down exit." />
+        <arg type="str" desc="The point to appear at when entering the room." />
+    </command>
+    <command name="cler" desc="Erases all text onscreen." />
+    <command name="stgS" desc="Sets the current stage number."/>
+        <arg type="num" desc="The stage number to change to." />
+    </command>
+    <command name="stgR" desc="Restarts the stage(?)" />
+    <command name="cage" desc="Prevents the player from going off-screen.">
+        <arg type="num" desc="How it should work. 0 = Turn off cage, 1 = Stop the player slightly off-screen, 2 = Prevent the player from going off-screen at all." />
+    </command>
+    <command name="muLd" desc="Load a music track for playing.">
+        <arg type="str" desc="The filename of the .ptcop file to load." />
+    </command>
+    <command name="muLp" desc="Play the .ptcop file loaded by a previous muLd command." />
+    <command name="muOc" desc="Plays the .ptcop file loaded by a muLd once." />
+    <command name="muWS" desc="Similar to 'dely', but only while playing a music track.">
+        <arg type="num" desc="Time measured in 1/60th of a second." />
+    </command>
+    <command name="muCo" desc="Continues a music track from when it was stopped with 'muSt', fading in across a certain number of frames.">
+        <arg type="num" desc="The time to fade in the music, measured in 1/60th of a second." />
+    </command>
+    <command name="muFO" desc="Fades out a music track across a certain number of frames.">
+        <arg type="num" desc="The time to fade out the music, measured in 1/60th of a second." />
+    </command>
+    <command name="soul" desc="Sound loop. Indefinitely loops a sound until the next sous command.">
+        <arg type="str" desc="The .ptnoise file to loop." />
+    </command>
+    <command name="sous" desc="Stops the sound loop. (Warning: Some sounds might be unable to be stopped, like boost)">
+        <arg type="str" desc="The .ptnoise loop to stop." />
+    </command>
+    <command name="souv" desc="Play a sound once">
+        <arg type="str" desc="The .ptnoise file to play." />
+    </command>
+    <command name="lkFU" desc="Locks the player in place for a bit, or until set to 0.">
+        <arg type="num" desc="How to lock the player's. 0 = Unlock, 1 = Lock for a little bit, 2 = Lock forever, 3 = seems to be a clone of 2?" />
+    </command>
+    <command name="fadC" desc="Fade out towards the center of the screen." />
+    <command name="fadE" desc="Creates a white flash starting at a certain spot. The 'E' stands for explosion.">
+        <arg type="num" desc="How many tiles away from the left side of the screen the explosion starts." />
+        <arg type="num" desc="How many tiles away from the top of the screen the explosion starts." />
+        <arg type="num" desc="The type of explosion. 0 explodes across all diagonal directions. Anything else is a screen-wide horizontal beam." />
+    </command>
+    <command name="fadF" desc="Create a window that focuses on a certain spot, that goes away after pushing a button. The 'F' stands for focus.">
+        <arg type="num" desc="How many tiles away from the left side of the screen it is." />
+        <arg type="num" desc="How many tiles away from the top of the screen it is." />
+        <arg type="num" desc="How large the window should be." />
+    </command>
+    <command name="fadI" desc="Empties the screen of black, such as in level transitions." />
+    <command name="fadO" desc="Fills the screen with black." />
+    <command name="whtI" desc="Empties the screen of white." />
+    <command name="whtO" desc="Fills the screen with white, like when you obtain an item." />
+    <command name="flsh" desc="Flashes the screen white rapidly twice." />
+    <command name="fldQ" desc="Makes an earthquake.">
+        <arg type="num" desc="The duration of the tremor, in 1/60ths of a second." />
+        <arg type="num" desc="Not sure. Maybe the resistance?." />
+    </command>
+    <command name="fldS" desc="Automatically scrolls a layer horizontally, like on the train in Stage 6.">
+        <arg type="num" desc="The layer to scroll. 0 = Foreground, 1 = Middleground, 2 = Background" />
+        <arg type="num" desc="The scrolling speed. Positive numbers scroll left, while negative numbers scroll right." />
+    </command>
+    <command name="mapc" desc="Loads (tileset)-.png instead of (tileset).png when loaded with a special flag set. This is only used in Stage 7 with Omake mode in the final game.">
+        <arg type="str" desc="The flag to load. Not a number, but rather a string from a hardcoded list of flags." />
+    </command>
+    <command name="chkP" desc="Unkown. Seems to be used to send the player to a hospital when the player gets a game over?">
+        <arg type="str" desc="The filename of the room to enter." />
+        <arg type="str" desc="The point to appear at when entering the room." />
+        <arg type="num" desc="Unknown. Always set to '1' in the game's scripts." />
+    </command>
+    <command name="bnsD" desc="Makes it so that coins now fall through semi-solid platforms." />
+    <command name="life" desc="Increase or decrease the player's health.">
+        <arg type="num" desc="The amount of health to add, or subtract if it's negative." />
+    </command>
+    <command name="govr" desc="Triggers a game over." />
+    <command name="lifm" desc="Increase or decrease the player's maximum health.">
+        <arg type="num" desc="The amount of maximum health to add, or subtract if it's negative." />
+    </command>
+    <command name="mony" desc="Increase or decrease the player's money.">
+        <arg type="num" desc="The amount of money to add, or subtract if it's negative." />
+    </command>
+    <command name="pkup" desc="Gives the player an item or weapon. If the player already has a weapon, it gets upgraded.">
+        <arg type="str" desc="The item or weapon you want to obtain." />
+        <arg type="num" desc="Doesn't seem to matter." />
+    </command>
+    <command name="grUp" desc="Enter the weapon upgrade shop.">
+        <arg type="str" desc="Which script label to jump to after exiting the shop." />
+    </command>
+    <command name="drug" desc="Enter the health shop.">
+        <arg type="str" desc="Which script label to jump to after exiting the shop." />
+    </command>
+    <command name="camp" desc="Takes the player to a temporary room, usually a shop. When the player leaves that room, they come back to where they entered.">
+        <arg type="str" desc="The filename of the room to enter." />
+        <arg type="str" desc="The point to appear at when entering the room." />
+        <arg type="str" desc="The label in the script to run when entering the room." />
+    </command>
+    <command name="shoR" desc="Return to the map and position you last entered the shop.">
+        <arg type="str" desc="Which script label to jump to." />
+    </command>
+    <command name="skip" desc="When the Skip flag is set (i.e. after beating the game), jumps to an event after pressing the escape key.">
+        <arg type="str" desc="Which label to jump to." />
+    </command>
+    <command name="skpE" desc="Jumps to an event set by a 'skip' command, even when the Skip flag isn't set.">
+        <arg type="str" desc="Which label to jump to." />
+    </command>
+    <command name="ldIm" desc="Loads an image into the NPC palette.">
+        <arg type="str" desc="Which indexed palette .PNG image to load." />
+    </command>
+    <command name="rema" desc="Increase or decrease the player's extra lives.">
+        <arg type="num" desc="The amount of lives to add, or subtract if it's negative." />
+    </command>
+    <command name="remD" desc="Forces the player to have three extra lives total." />
+    <command name="remR" desc="Unused. Seems to do nothing." />
+    <command name="isla" desc="Unused. Enters the stage select.">
+        <arg type="str" desc="The script from 'island.pxeve' to run." />
+        <arg type="num" desc="Unknown. Seems to have something to do with reentering a level?" />
+        <arg type="num" desc="Unknown." />
+    </command>
+    <command name="isPh" desc="Unused. Determines what the player's ship does on the world map.">
+        <arg type="str" desc="The player's action. The only ones used in-game are 'flight' and 'action'" />
+    </command>
+    <command name="isUn" desc="Unused. Spawns an island NPC that does something.">
+        <arg type="str" desc="The entity to spawn. Valid inputs are 'myship', 'lambark', 'saucer', 'peke', 'scope', and 'bom'." />
+        <arg type="num" desc="Which level to start at." />
+        <arg type="num" desc="Which level the NPC travels to." />
+        <arg type="num" desc="Which state to spawn the NPC with." />
+    </command>
+    <command name="isUC" desc="Unused. Clears all island NPCs."/>
+    <command name="isUF" desc="Unused. Spawns an island NPC if a flag is set.">
+        <arg type="num" desc="Which flag to check." />
+        <arg type="str" desc="The entity to spawn. Valid inputs are 'myship', 'lambark', 'saucer', 'peke', 'scope', and 'bom'." />
+        <arg type="num" desc="Which level to spawn it at." />
+        <arg type="num" desc="Which state to spawn the NPC with." />
+    </command>
+    <command name="chgN" desc="Changes an NPC to one of a few script-exclusive entities.">
+        <arg type="str" desc="The data label of the NPCs that are desired to be changed." />
+        <arg type="str" desc="The entity to change into. If set to '-' then it is determined by the NPC's data label." />
+    </command>
+    <command name="swtN" desc="Switches an entity's state/animation. Freezes most NPCs, but has special properties for a few objects like bosses and cutscene characters.">
+        <arg type="str" desc="The data label of the NPCs that are desired to be changed." />
+        <arg type="num" desc="The state to change the entity to." />
+    </command>
+    <command name="dirN" desc="Changes the alternate direction/skin flag of all NPCs with a certain data label.">
+        <arg type="str" desc="The data label of the NPCs that are desired to be changed." />
+        <arg type="num" desc="The direction to choose. 0 = Left/Normal, 1 = Right/Alternate" />
+    </command>
+    <command name="posN" desc="Teleports all NPCs of a certain data label to an NPC of another label">
+        <arg type="str" desc="The data label of the NPCs that are desired to be moved." />
+        <arg type="str" desc="The data label of the NPC that serves as the teleport location." />
+        <arg type="num" desc="Doesn't seem to matter." />
+    </command>
+    <command name="sftN" desc="Shift all NPCs with a certain data label a certain amount of tiles horizonatlly and vertically.">
+        <arg type="str" desc="The data label of the NPCs that are desired to be moved." />
+        <arg type="num" desc="The amount to shift horizontally. Negative numbers are left, positive numbers are right." />
+        <arg type="num" desc="The amount to shift vertically. Negative numbers are up, positive numbers are down." />
+    </command>
+    <command name="rmvN" desc="Delete all NPCs with a certain label.">
+        <arg type="str" desc="The data label of the unwanted NPCs." />
+    </command>
+    <command name="curN" desc="Select an NPC label, which can be used later in another NPC-related command by using '-' as the label.">
+        <arg type="str" desc="The NPC label to select." />
+    </command>
+    <command name="prm2" desc="Changes the Parameter 2/Variant of an NPC.">
+        <arg type="str" desc="The data label of the NPCs that are desired to be changed." />
+        <arg type="num" desc="What to set Variant/Param2 to." />
+    </command>
+    <command name="wtNB" desc="Waits for an entity to reach a certain state. Only seems to work on story elevators(?)">
+        <arg type="str" desc="The entity to check the state of." />
+        <arg type="str" desc="The state to check for. If not this state, the game will continue waiting." />
+    </command>
+    <command name="flag" desc="Sets a certain special flag, represented by a string.">
+        <arg type="str" desc="The label of the flag to be changed. (list as of 1.0.6.3) Black = Omake Mode, ShowTA = Show the time attack clock, TimeAttack = Flag set by Time Attack seemingly just for internal purposes, HeartHike = Increase price of hearts in Drug Store like in stages 5-7 in the final game, Jacket = Jackets spawn in shop and hospital like in stage 5..." />
+        <arg type="num" desc="What to set the flag to. 0 = Clear the flag, Anything else = Set" />
+    </command>
+    <command name="flgC" desc="Clears a certain number of flags, starting with a particular one.">
+        <arg type="num" desc="The amount of flags to clear." />
+        <arg type="num" desc="The flag to start at." />
+    </command>
+    <command name="flgI" desc="Clears all flags." />
+    <command name="flgP" desc="Sets a flag, unless it is already set.">
+        <arg type="num" desc="The flag to set." />
+    </command>
+    <command name="flgM" desc="Clears a flag, unless it is already cleared.">
+        <arg type="num" desc="The flag to clear." />
+    </command>
+    <command name="flgR" desc="Flips a flag.">
+        <arg type="num" desc="The flag to flip. 0 becomes 1, and 1 becomes 0." />
+    </command>
+    <command name="flgO" desc="Jumps to a label based off whether a flag is set.">
+        <arg type="num" desc="The flag to read." />
+        <arg type="str" desc="The label to jump to." />
+    </command>
+    <command name="vflg" desc="Manually set or clear a flag.">
+        <arg type="num" desc="Which flag to modify." />
+        <arg type="num" desc="What to set it to. Either 0 or 1." />
+    </command>
+    <command name="fcsH" desc="Fixes the camera's horizontal position to be centered on the first-placed anchor in the level. Can also be triggered using an event with data label 'fcsH'.">
+        <arg type="num" desc="Whether to snap immediately or not(?)" />
+    </command>
+    <command name="fcsV" desc="Fixes the camera's vertical position to be centered on the first-placed anchor in the level. Can also be triggered using an event with data label 'fcsV'.">
+        <arg type="num" desc="Whether to snap immediately or not(?)" />
+    </command>
+    <command name="fcsM" desc="The default camera. Can also be triggered using an event with data label 'fcsM'.">
+        <arg type="num" desc="Whether to snap immediately or not(?)" />
+    </command>
+    <command name="fcsU" desc="Forces the camera to focus underneath the player. Can also be triggered using an event with data label 'fcsU'.">
+        <arg type="num" desc="Whether to snap immediately or not(?)" />
+    </command>
+    <command name="fcsO" desc="The camera used in some areas with lots of slopes. Can also be triggered using an event with data label 'fcsO'.">
+        <arg type="num" desc="Whether to snap immediately or not(?)" />
+    </command>
+    <command name="fcsN" desc="Focus the camera on a certain labelled NPC.">
+        <arg type="str" desc="The data label of the NPC you want the camera to follow." />
+        <arg type="num" desc="Whether to snap immediately or not(?)" />
+    </command>
+    <command name="armF" desc="Unused. Forces a weapon into an arms slot.">
+        <arg type="num" desc="The slot to overwrite." />
+        <arg type="str" desc="The weapon to change the slot into. Valid inputs are 'Bean', 'Wide', 'Bubble', 'Fire', 'Kurob', 'Rocket' (unused), and 'ArmsX' (unused, crashes the game when fired)." />
+        <arg type="num" desc="The level of the weapon, minus 1. 0 = Level 1, 1 = Level 2, etc." />
+    </command>
+    <command name="armS" desc="Unused. Forces a weapon into an arms slot, and forces the player to select it.">
+        <arg type="num" desc="The slot to overwrite." />
+        <arg type="str" desc="The weapon to change the slot into. Valid inputs are 'Bean', 'Wide', 'Bubble', 'Fire', 'Kurob', 'Rocket' (unused), and 'ArmsX' (unused, crashes the game when fired)." />
+        <arg type="num" desc="The level of the weapon, minus 1. 0 = Level 1, 1 = Level 2, etc." />
+    </command>
+    <command name="gaug" desc="Creates a boss health bar for a single NPC. Running this command while one is already out will make it disappear">
+        <arg type="str" desc="The data label of the NPC." />
+        <arg type="num" desc="The type of boss bar. 0 = No health bar. 1 = Top of the screen. 2 = Bottom of the screen. 3 = Bottom left of the screen. (used in Clock Man fight) Anything else = Top right of the screen, barely visible." />
+    </command>
+    <command name="plAc" desc="Changes the player's action. For most actions, they must be reverted to the 'nrml' action to be stopped.">
+        <arg type="str" desc="The action the player character does, from a hard-coded list of strings." />
+    </command>
+    <command name="plDi" desc="Changes the player's direction.">
+        <arg type="num" desc="The direction to look. 0 = Left, 1 = Right, Anything else = Player faces right, jetpack faces left" />
+    </command>
+    <command name="plEq" desc="Toggles whether the player's weapon disappears and become unusable, i.e. in the hospital. Resets after entering another room">
+        <arg type="num" desc="0 = No weapon, Anything else = Weapon" />
+    </command>
+    <command name="plMv" desc="Pushes the player with a certain horizontal force and vertical force.">
+        <arg type="num" desc="The horizontal force. Negative numbers push you left, positive numbers push you right." />
+        <arg type="num" desc="The vertical force. Negative numbers push you up, positive numbers push you down." />
+    </command>
+    <command name="plPo" desc="Puts the player at the position of a certain entity.">
+        <arg type="str" desc="The data label of the entity to teleport the player to." />
+    </command>
+    <command name="plSt" desc="Stops the player's momentum." />
+    <command name="slPo" desc="Forces the player to face right. Meant for elevator doors." />
+    <command name="slPu" desc="Unknown usage. Meant for exiting elevator doors, but I don't see any difference with or without this." />
+    <command name="scrF" desc="Turns off the UI and shifts the view downward to fill the space."/>
+        <arg type="num" desc="0 = Show UI, Anything else = Hide UI" />
+    </command>
+    <command name="shwS" desc="Makes the player's lives, coins, weapons, etc. on the UI invisible, and puts a white Kero Blaster logo on the corner." >
+        <arg type="num" desc="0 = On, 1 = Off." />
+    </command>
+    <command name="namA" desc="Unused, seemingly does nothing.">
+        <arg type="num" desc="Unknown." />
+    </command>
+    <command name="regT" desc="Displays a special string from memory. Only uses in the arms shop.">
+        <arg type="num" desc="Which number string to display." />
+    </command>
+    <command name="newA" desc="Gives the player a new weapon or item, shows its description, then jumps to a label.">
+        <arg type="str" desc="The weapon to give the player, from a hardcoded list." />
+        <arg type="str" desc="The label to jump to in the script." />
+    </command>
+    <command name="namI" desc="Displays the name of an item. Seems to only work properly in the shop script.">
+        <arg type="str" desc="The name of the item." />
+    </command>
+    <command name="newE" desc="Usage unknown. Prevents the level from loading." />
+    <command name="crdG" desc="Displays a section of the credits.">
+        <arg type="num" desc="The section of the credits to display. 0 = The mini Kero Blaster logo." />
+    </command>
+    <command name="crdt" desc="Displays credits, scrolling them from the bottom to the top of the screen.">
+        <arg type="num" desc="Which credits to display. Only 1 works." />
+    </command>
+    <command name="free" desc="When run, releases the player from the frez command. Only used in shop scripts, which are forced to be run by the game itself." />
+    <command name="frez" desc="Prevents the text and script from progressing. Do not use outside of a shop script, as there is no way to get out of it other than quitting the game." />
+    <command name="ncon" desc="Unused except in Pink Hour and Pink Heaven. Makes it so that the file select screen doesn't bring up the last loaded save file." />
+    <command name="hito" desc="Used only in the 'parking' rooms of Stage 4 in Normal and Zangyou mode. Seems to do nothing." />
+    <command name="full" desc="Only used in a single cutscene. Doesn't seem to do anything." />
+    <command name="hide" desc="Unused. Does nothing, seems to be dummied out." />
+    <command name="quie" desc="I'm not sure what this does. It's used in the scene where Mizutani-san/Kajiya activates Omake Mode." />
+    <command name="cont" desc="Unused. Does nothing, seems to be dummied out." />
+    <command name="rmvB" desc="Unused. Does nothing, seems to be dummied out." />
+    <command name="fcsC" desc="Unused. Completely breaks the script system, DO NOT USE.">
+        <arg type="num" desc="Unknown" />
+    </command>
+    <command name="flgF" desc="Unused. Completely breaks the script system, DO NOT USE.">
+        <arg type="num" desc="Might have been flag to set back when it still worked." />
+    </command>
+    <command name="wtCr" desc="Unused. Stops running the script, but doesn't properly end it, forcing the game to be turned off by external means." />
+    <command name="wtFc" desc="Waits for the game to finish scrolling over to a focus object." />
+    <command name="vfEn" desc="Used in a few rooms that have bosses. I'm not sure what this does. Maybe something to do with the 'vflg' command?" />
+    <command name="repo" desc="Prints a message in the debug log.">
+        <arg type="str" desc="The message to output." />
+    </command>
+    <command name="skLT" desc="Presumably sets something. Only used on the title screen..">
+        <arg type="num" desc="Unknown. Probably turns it on and off?" />
+    </command>
+    <command name="sign" desc="Only used in the shop, seemingly to tell the game code to upgrade the player's weapon.">
+        <arg type="num" desc="Unknown. Only set to '1' in the scripts in the vanilla game." />
+    </command>
+    <command name="dsSv" desc="Removes all the player's health and lives, then saves the game. When the save file is reloaded, the player has three lives." />
+    <command name="home" desc="Opens the file selection menu." />
+    <command name="save" desc="Saves the game right then and there." />
+    <command name="taBe" desc="Start the time attack timer from 0." />
+    <command name="taSt" desc="Pauses the time attack timer." />
+    <command name="taRe" desc="Resumes the time attack timer." />
+    <command name="taFi" desc="Finishes the time attack timer." />
+    <command name="taZe" desc="Blanks out the time attack timer." />
+    <command name="taSv" desc="Saves the time attack high score to the save file" />
+    <command name="titl" desc="Enters the title screen. In other words, reset the game." />
+    <command name="stop" desc="Stops running any and all scripts. Not recommended to be used, as the game still thinks it's running a script so it won't let you pause, forcing you to turn the game off through other means." />
+    <command name="qOK_" desc="Pauses the game and makes a selection box that says 'OK' appear. It only shows up properly in a shop screen." />
 </script>
