@@ -18,6 +18,7 @@ void Editor::Init()
     // Then set up the main window.
     SetConfigFlags(FLAG_WINDOW_RESIZABLE | (settings.maximized ? FLAG_WINDOW_MAXIMIZED : 0));
     InitWindow(settings.width, settings.height, "Kero Master");
+    SetExitKey(0);
     icon = LoadImage("icon.png");
     SetWindowIcon(icon);
     SetTargetFPS(60);
@@ -762,7 +763,7 @@ void Editor::DrawOpenLevelUI()
         focus.ObserveFocus();
         focus.isModal |= true;
         ImGui::BeginListBox("Levels", ImVec2(300, 500));
-        for (int i = 2; i < numLevelFiles; i++)
+        for (int i = 0; i < numLevelFiles; i++)
         {
             bool dummy = false;
             const char* name = GetFileNameWithoutExt(levelFiles[i]);

@@ -4,22 +4,24 @@
 std::vector<std::string> ReadFilesFromDir(std::string path, bool includeExt)
 {
     int numFiles;
-    char** files = GetDirectoryFiles(path.c_str(), &numFiles);
+    FilePathList files = LoadDirectoryFiles(path.c_str());
+    numFiles = files.count;
     std::vector<std::string> ret;
     for (int i = 0; i < numFiles; i++)
     {
-        if (strcmp(files[i], ".") != 0 && strcmp(files[i], "..") != 0)
+        if (files.paths[i] != "." && files.paths[i] != "..")
         {
             if (includeExt)
             {
-                ret.push_back(files[i]);
+                ret.push_back(files.paths[i]);
             }
             else
             {
-                ret.push_back(GetFileNameWithoutExt(files[i]));
+                ret.push_back(GetFileNameWithoutExt(files.paths[i]));
             }
         }
     }
+    UnloadDirectoryFiles(files);
     return ret;
 }
 
