@@ -2,18 +2,6 @@
 #include "../px/tileset.h"
 #include "../tinyxml2/tinyxml2.h"
 
-std::string EntityDisplay::parameterNames[3] =
-{
-    "Flag",
-    "Unknown",
-    "Data"
-};
-std::string EntityDisplay::parameterDescriptions[3] =
-{
-    "Flag for NPC to spawn/not spawn on.\nIt can also just be a flag parameter in general.",
-    "",
-    "Additional entity data.\nCan be used for \"roll your own sprites\" or accessing through a script."
-};
 std::map<std::string, std::vector<EntityTile>> EntityDisplay::rollYourOwnSprite;
 float EntityDisplay::transparency = .3f;
 
@@ -118,7 +106,7 @@ void EntityDisplay::Draw(Entity* entity, std::map<std::string, Tileset>& loadedT
 {
 
     // Get entity info.
-    std::string& strParam = entity->parametersStr[0].dat;
+    std::string& strParam = entity->data.dat;
     bool noTiles = numTiles == 0;
     bool blankSpriteParam = strParam == "";
     bool spriteExistsInRollList = rollYourOwnSprite.find(strParam) != rollYourOwnSprite.end();
@@ -141,8 +129,8 @@ void EntityDisplay::Draw(Entity* entity, std::map<std::string, Tileset>& loadedT
                 }
             }
 
-            // Check to see if we don't draw on this unknown parameter.
-            if (t->unkDraw && t->unkDraw - 1 != entity->unk)
+            // Check to see if we don't draw on this variant parameter.
+            if (t->variantDraw && t->variantDraw - 1 != entity->variant)
             {
                 continue;
             }
@@ -158,7 +146,7 @@ void EntityDisplay::Draw(Entity* entity, std::map<std::string, Tileset>& loadedT
                 offset
             );
             drewSomething = true;
-            
+
         }
     }
 
@@ -179,8 +167,8 @@ void EntityDisplay::Draw(Entity* entity, std::map<std::string, Tileset>& loadedT
                 }
             }
 
-            // Check to see if we don't draw on this unknown parameter.
-            if (t->unkDraw && t->unkDraw - 1 != entity->unk)
+            // Check to see if we don't draw on this variant parameter.
+            if (t->variantDraw && t->variantDraw - 1 != entity->variant)
             {
                 continue;
             }
@@ -239,7 +227,7 @@ std::map<u8, EntityDisplay> LoadXML(std::string game)
             d.numTiles++;
             t = t->NextSiblingElement();
         }
-        
+
         d.tiles = new EntityTile[d.numTiles];
         t = e->FirstChildElement();
         int num = 0;
@@ -258,7 +246,7 @@ std::map<u8, EntityDisplay> LoadXML(std::string game)
             dt.numTilesY = (u16)t->IntAttribute("numYTiles");
             dt.flagMode = t->BoolAttribute("flagMode");
             dt.flagBit = (u8)t->IntAttribute("flagBit");
-            dt.unkDraw = (u16)t->IntAttribute("unkDraw");
+            dt.variantDraw = (u16)t->IntAttribute("variantDraw");
             d.tiles[num] = dt;
             num++;
             t = t->NextSiblingElement();
@@ -284,10 +272,10 @@ std::map<u8, EntityDisplay> LoadXML(std::string game)
         d.numTilesY = (u16)r->IntAttribute("numYTiles");
         d.flagMode = r->BoolAttribute("flagMode");
         d.flagBit = (u8)r->IntAttribute("flagBit");
-        d.unkDraw = (u16)r->IntAttribute("unkDraw");
+        d.variantDraw = (u16)r->IntAttribute("variantDraw");
         EntityDisplay::rollYourOwnSprite[r->Attribute("name")].push_back(d);
         r = r->NextSiblingElement();
     }
-    
+
     return ret;
 }

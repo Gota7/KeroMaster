@@ -144,10 +144,9 @@ void UndoStack::Redo(Editor* ed)
                 e->yPos = a.data.entityExPosition.lastY;
                 e->beingEdited = false;
                 e->flags = 1;
-                e->parametersByte[0] = 0;
-                e->parametersByte[1] = 0;
-                e->parametersStr[0].dat = "";
-                e->unk = 0;
+                e->flag = 0;
+                e->data.dat = "";
+                e->variant = 0;
                 break;
             }
         case UndoActionType::EntityDeleted:

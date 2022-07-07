@@ -26,10 +26,9 @@ void EntityHandToolActivate(Editor* ed, Vector2 pos1, Vector2 pos2)
         e.beingEdited = false;
         e.flags = 1;
         e.id = ed->placeEntityId;
-        e.parametersByte[0] = 0;
-        e.parametersByte[1] = 0;
-        e.parametersStr[0].dat = "";
-        e.unk = 0;
+        e.flag = 0;
+        e.data.dat = "";
+        e.variant = 0;
         e.xPos = tileX;
         e.yPos = tileY;
         ed->map.entities.push_back(e);

@@ -64,30 +64,18 @@ void EntityEditor::DrawUI()
 
     // Unknown parameter.
     ImGui::PushItemWidth(itemWidth);
-    ImGui::InputScalar("Variant", ImGuiDataType_U8, &editingEntity->unk);
+    ImGui::InputScalar("Variant", ImGuiDataType_U8, &editingEntity->variant);
     ImGuiTooltip("Used for different skins of entities.");
 
     // Byte parameters.
-    for (int i = 0; i < NUM_BYTE_PARAMETERS; i++)
-    {
-        ImGui::PushItemWidth(itemWidth);
-        ImGui::InputScalar(d->parameterNames[i].c_str(), ImGuiDataType_U8, &editingEntity->parametersByte[i]);
-        if (d->parameterDescriptions[i] != "")
-        {
-            ImGuiTooltip(d->parameterDescriptions[i]);
-        }
-    }
+    ImGui::PushItemWidth(itemWidth);
+    ImGui::InputScalar("Flag", ImGuiDataType_U16, &editingEntity->flag);
+    ImGuiTooltip("Flag for NPC to spawn/not spawn on.\nIt can also just be a flag parameter in general.");
 
     //String parameter.
-    for (int i = 0; i < NUM_PARAMETERS - NUM_BYTE_PARAMETERS; i++)
-    {
-        ImGui::PushItemWidth(itemWidth);
-        ImGuiStringEdit(d->parameterNames[i + NUM_BYTE_PARAMETERS].c_str(), &editingEntity->parametersStr[i].dat);
-        if (d->parameterDescriptions[i + NUM_BYTE_PARAMETERS] != "")
-        {
-            ImGuiTooltip(d->parameterDescriptions[i + NUM_BYTE_PARAMETERS]);
-        }
-    }
+    ImGui::PushItemWidth(itemWidth);
+    ImGuiStringEdit("Data", &editingEntity->data.dat);
+    ImGuiTooltip("Additional entity data.\nCan be used for \"roll your own sprites\" or accessing through a script.");
     ImGui::End();
 
 }

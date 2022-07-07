@@ -157,10 +157,10 @@
             <tile tileset="/0" x="0" y="44" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4"/>
         </entity>
         <entity id="67" name="Creeper" description="">
-            <tile tileset="" x="0" y="0" xOffPixels="-6" yOffPixels="-5" numXTiles="6" numYTiles="4" unkDraw="1" flagBit="5" flagMode="false"/>
-            <tile tileset="" x="6" y="0" xOffPixels="-6" yOffPixels="-5" numXTiles="6" numYTiles="4" unkDraw="1" flagBit="5" flagMode="true"/>
-            <tile tileset="" x="12" y="0" xOffPixels="-6" yOffPixels="-3" numXTiles="6" numYTiles="4" unkDraw="2" flagBit="5" flagMode="false"/>
-            <tile tileset="" x="18" y="0" xOffPixels="-6" yOffPixels="-3" numXTiles="6" numYTiles="4" unkDraw="2" flagBit="5" flagMode="true"/>
+            <tile tileset="" x="0" y="0" xOffPixels="-6" yOffPixels="-5" numXTiles="6" numYTiles="4" variantDraw="1" flagBit="5" flagMode="false"/>
+            <tile tileset="" x="6" y="0" xOffPixels="-6" yOffPixels="-5" numXTiles="6" numYTiles="4" variantDraw="1" flagBit="5" flagMode="true"/>
+            <tile tileset="" x="12" y="0" xOffPixels="-6" yOffPixels="-3" numXTiles="6" numYTiles="4" variantDraw="2" flagBit="5" flagMode="false"/>
+            <tile tileset="" x="18" y="0" xOffPixels="-6" yOffPixels="-3" numXTiles="6" numYTiles="4" variantDraw="2" flagBit="5" flagMode="true"/>
         </entity>
         <entity id="68" name="Shacho Act stage 7 office" description="">
             <tile tileset="" x="24" y="0" xOffPixels="-6" yOff="2" numXTiles="6" numYTiles="8"/>
@@ -178,10 +178,10 @@
             <tile tileset="fuFixNPC" x="12" y="108" xOffPixels="-4" yOffPixels="-6" numXTiles="4" numYTiles="4"/>
         </entity>
         <entity id="73" name="Uzo Tank" description="">
-            <tile tileset="fuFixNPC" x="64" y="116" xOff="-1" xOffPixels="1" yOff="-1" numXTiles="6" numYTiles="6" unkDraw="1"/>
-            <tile tileset="fuFixNPC" x="70" y="116" xOff="-1" xOffPixels="1" yOff="-1" numXTiles="6" numYTiles="6" unkDraw="2"/>
-            <tile tileset="fuFixNPC" x="76" y="116" xOff="-1" xOffPixels="1" yOff="-1" numXTiles="6" numYTiles="6" unkDraw="3"/>
-            <tile tileset="fuFixNPC" x="82" y="116" xOff="-1" xOffPixels="1" yOff="-1" numXTiles="6" numYTiles="6" unkDraw="4"/>
+            <tile tileset="fuFixNPC" x="64" y="116" xOff="-1" xOffPixels="1" yOff="-1" numXTiles="6" numYTiles="6" variantDraw="1"/>
+            <tile tileset="fuFixNPC" x="70" y="116" xOff="-1" xOffPixels="1" yOff="-1" numXTiles="6" numYTiles="6" variantDraw="2"/>
+            <tile tileset="fuFixNPC" x="76" y="116" xOff="-1" xOffPixels="1" yOff="-1" numXTiles="6" numYTiles="6" variantDraw="3"/>
+            <tile tileset="fuFixNPC" x="82" y="116" xOff="-1" xOffPixels="1" yOff="-1" numXTiles="6" numYTiles="6" variantDraw="4"/>
         </entity>
         <entity id="75" name="Kani" description="">
             <tile tileset="" x="8" y="36" xOffPixels="-4" yOff="-1" numXTiles="4" numYTiles="4"/>
@@ -206,9 +206,9 @@
             <tile tileset="" x="24" y="48" xOffPixels="-4" yOff="-1" numXTiles="4" numYTiles="4"/>
         </entity>
         <entity id="89" name="Uzo Slime" description="">
-            <tile tileset="fuFixChar" x="0" y="96" xOff="-1" yOff="-1" yOffPixels="-7" numXTiles="6" numYTiles="6" flagBit="5" flagMode="false" unkDraw="1"/>
-            <tile tileset="fuFixChar" x="0" y="96" xOff="-1" yOff="-1" yOffPixels="-7" numXTiles="6" numYTiles="6" flagBit="5" flagMode="true" unkDraw="1"/>
-            <tile tileset="fuFixChar" x="0" y="108" xOff="-1" yOffPixels="-1" numXTiles="6" numYTiles="6" flagBit="5" flagMode="false" unkDraw="2"/>
+            <tile tileset="fuFixChar" x="0" y="96" xOff="-1" yOff="-1" yOffPixels="-7" numXTiles="6" numYTiles="6" flagBit="5" flagMode="false" variantDraw="1"/>
+            <tile tileset="fuFixChar" x="0" y="96" xOff="-1" yOff="-1" yOffPixels="-7" numXTiles="6" numYTiles="6" flagBit="5" flagMode="true" variantDraw="1"/>
+            <tile tileset="fuFixChar" x="0" y="108" xOff="-1" yOffPixels="-1" numXTiles="6" numYTiles="6" flagBit="5" flagMode="false" variantDraw="2"/>
         </entity>
         <entity id="93" name="Uzo Gray (layer0)" description="">
             <tile tileset="/0" x="56" y="0" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" flagBit="5" flagMode="false"/>
@@ -218,10 +218,10 @@
             <tile tileset="/0" x="16" y="32" xOffPixels="-4" yOffPixels="-6" numXTiles="4" numYTiles="4"/>
         </entity>
         <entity id="97" name="Uzo Red" description="">
-            <tile tileset="fuFixNPC" x="16" y="82" xOffPixels="-2" yOff="-1" yOffPixels="-4" numXTiles="4" numYTiles="6" flagBit="5" flagMode="false" unkDraw="1" />
-            <tile tileset="fuFixNPC" x="20" y="82" xOffPixels="-4" yOff="-1" yOffPixels="-6" numXTiles="4" numYTiles="6" flagBit="5" flagMode="true" unkDraw="1" />
-            <tile tileset="fuFixNPC" x="24" y="82" xOffPixels="-4" yOffPixels="-2" numXTiles="4" numYTiles="6" flagBit="5" flagMode="false" unkDraw="2" />
-            <tile tileset="fuFixNPC" x="28" y="82" xOffPixels="-4" yOffPixels="-2" numXTiles="4" numYTiles="6" flagBit="5" flagMode="true" unkDraw="2" />
+            <tile tileset="fuFixNPC" x="16" y="82" xOffPixels="-2" yOff="-1" yOffPixels="-4" numXTiles="4" numYTiles="6" flagBit="5" flagMode="false" variantDraw="1" />
+            <tile tileset="fuFixNPC" x="20" y="82" xOffPixels="-4" yOff="-1" yOffPixels="-6" numXTiles="4" numYTiles="6" flagBit="5" flagMode="true" variantDraw="1" />
+            <tile tileset="fuFixNPC" x="24" y="82" xOffPixels="-4" yOffPixels="-2" numXTiles="4" numYTiles="6" flagBit="5" flagMode="false" variantDraw="2" />
+            <tile tileset="fuFixNPC" x="28" y="82" xOffPixels="-4" yOffPixels="-2" numXTiles="4" numYTiles="6" flagBit="5" flagMode="true" variantDraw="2" />
         </entity>
         <entity id="99" name="Uzo Over Fence" description="">
             <tile tileset="/2" x="24" y="0" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" flagBit="5" flagMode="false"/>
@@ -243,10 +243,10 @@
             <tile tileset="fuFixNPC" x="38" y="16" xOff="-1" yOff="-2" numXTiles="6" numYTiles="8" flagBit="5" flagMode="true"/>
         </entity>
         <entity id="113" name="Egg Worm" description="(prm2: 0 = upper left 1 = upper right 2 = lower left 3 = lower right)">
-            <tile tileset="" x="24" y="32" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" unkDraw="1"/>
-            <tile tileset="" x="28" y="32" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" unkDraw="2"/>
-            <tile tileset="" x="24" y="40" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" unkDraw="3"/>
-            <tile tileset="" x="28" y="40" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" unkDraw="4"/>
+            <tile tileset="" x="24" y="32" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" variantDraw="1"/>
+            <tile tileset="" x="28" y="32" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" variantDraw="2"/>
+            <tile tileset="" x="24" y="40" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" variantDraw="3"/>
+            <tile tileset="" x="28" y="40" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" variantDraw="4"/>
         </entity>
         <entity id="115" name="Frog Plant" description="">
             <tile tileset="" x="0" y="0" xOffPixels="-4" yOff="-1" numXTiles="4" numYTiles="4"/>
@@ -269,16 +269,16 @@
             <tile tileset="fuFixNPC" x="28" y="70" xOffPixels="-6" yOffPixels="-2" numXTiles="4" numYTiles="4" flagBit="5" flagMode="true"/>
         </entity>
         <entity id="122" name="Flower Vase" description="">
-            <tile tileset="fuFixNPC" x="96" y="116" xOff="-1" xOffPixels="-1" yOff="-1" yOffPixels="-1" numXTiles="6" numYTiles="6" flagBit="5" flagMode="false" unkDraw="1"/>
-            <tile tileset="fuFixNPC" x="102" y="116" xOff="-1" xOffPixels="-1" yOff="-1" yOffPixels="-1" numXTiles="6" numYTiles="6" flagBit="5" flagMode="false" unkDraw="2"/>
-            <tile tileset="fuFixNPC" x="108" y="116" xOff="-1" xOffPixels="-1" yOff="-1" yOffPixels="-1" numXTiles="6" numYTiles="6" flagBit="5" flagMode="false" unkDraw="3"/>
-            <tile tileset="fuFixNPC" x="114" y="116" xOff="-1" xOffPixels="-1" yOff="-1" yOffPixels="-1" numXTiles="6" numYTiles="6" flagBit="5" flagMode="false" unkDraw="4"/>
-            <tile tileset="fuFixNPC" x="120" y="116" xOff="-1" xOffPixels="-1" yOff="-1" yOffPixels="-1" numXTiles="6" numYTiles="6" flagBit="5" flagMode="false" unkDraw="5"/>
-            <tile tileset="fuFixNPC" x="96" y="122" xOff="-1" xOffPixels="-1" yOff="-2" numXTiles="6" numYTiles="6" flagBit="5" flagMode="true" unkDraw="1"/>
-            <tile tileset="fuFixNPC" x="102" y="122" xOff="-1" xOffPixels="-1" yOff="-2" numXTiles="6" numYTiles="6" flagBit="5" flagMode="true" unkDraw="2"/>
-            <tile tileset="fuFixNPC" x="108" y="122" xOff="-1" xOffPixels="-1" yOff="-2" numXTiles="6" numYTiles="6" flagBit="5" flagMode="true" unkDraw="3"/>
-            <tile tileset="fuFixNPC" x="114" y="122" xOff="-1" xOffPixels="-1" yOff="-2" numXTiles="6" numYTiles="6" flagBit="5" flagMode="true" unkDraw="4"/>
-            <tile tileset="fuFixNPC" x="120" y="122" xOff="-1" xOffPixels="-1" yOff="-2" numXTiles="6" numYTiles="6" flagBit="5" flagMode="true" unkDraw="5"/>
+            <tile tileset="fuFixNPC" x="96" y="116" xOff="-1" xOffPixels="-1" yOff="-1" yOffPixels="-1" numXTiles="6" numYTiles="6" flagBit="5" flagMode="false" variantDraw="1"/>
+            <tile tileset="fuFixNPC" x="102" y="116" xOff="-1" xOffPixels="-1" yOff="-1" yOffPixels="-1" numXTiles="6" numYTiles="6" flagBit="5" flagMode="false" variantDraw="2"/>
+            <tile tileset="fuFixNPC" x="108" y="116" xOff="-1" xOffPixels="-1" yOff="-1" yOffPixels="-1" numXTiles="6" numYTiles="6" flagBit="5" flagMode="false" variantDraw="3"/>
+            <tile tileset="fuFixNPC" x="114" y="116" xOff="-1" xOffPixels="-1" yOff="-1" yOffPixels="-1" numXTiles="6" numYTiles="6" flagBit="5" flagMode="false" variantDraw="4"/>
+            <tile tileset="fuFixNPC" x="120" y="116" xOff="-1" xOffPixels="-1" yOff="-1" yOffPixels="-1" numXTiles="6" numYTiles="6" flagBit="5" flagMode="false" variantDraw="5"/>
+            <tile tileset="fuFixNPC" x="96" y="122" xOff="-1" xOffPixels="-1" yOff="-2" numXTiles="6" numYTiles="6" flagBit="5" flagMode="true" variantDraw="1"/>
+            <tile tileset="fuFixNPC" x="102" y="122" xOff="-1" xOffPixels="-1" yOff="-2" numXTiles="6" numYTiles="6" flagBit="5" flagMode="true" variantDraw="2"/>
+            <tile tileset="fuFixNPC" x="108" y="122" xOff="-1" xOffPixels="-1" yOff="-2" numXTiles="6" numYTiles="6" flagBit="5" flagMode="true" variantDraw="3"/>
+            <tile tileset="fuFixNPC" x="114" y="122" xOff="-1" xOffPixels="-1" yOff="-2" numXTiles="6" numYTiles="6" flagBit="5" flagMode="true" variantDraw="4"/>
+            <tile tileset="fuFixNPC" x="120" y="122" xOff="-1" xOffPixels="-1" yOff="-2" numXTiles="6" numYTiles="6" flagBit="5" flagMode="true" variantDraw="5"/>
         </entity>
         <entity id="123" name="Gray Spiral" description="">
             <tile tileset="fuFixNPC" x="0" y="24" xOffPixels="-4" yOffPixels="-6" numXTiles="4" numYTiles="4"/>
@@ -378,10 +378,10 @@
             <tile tileset="fuFixChar" x="4" xOffPixels="-4" yOff="-1" numXTiles="4" numYTiles="4" />
         </entity>
         <entity id="160" name="Uzouzo" description="">
-            <tile tileset="fuFixNPC" x="0" y="82" yOff="-1" xOffPixels="-4" yOffPixels="-6" numXTiles="4" numYTiles="6" flagBit="5" flagMode="false" unkDraw="1"/>
-            <tile tileset="fuFixNPC" x="4" y="82" yOff="-1" xOffPixels="-6" yOffPixels="-6" numXTiles="4" numYTiles="6" flagBit="5" flagMode="true" unkDraw="1"/>
-            <tile tileset="fuFixNPC" x="8" y="82" xOffPixels="-4" yOffPixels="-2" numXTiles="4" numYTiles="6" flagBit="5" flagMode="false" unkDraw="2"/>
-            <tile tileset="fuFixNPC" x="12" y="82" xOffPixels="-4" yOffPixels="-2" numXTiles="4" numYTiles="6" flagBit="5" flagMode="true" unkDraw="2"/>
+            <tile tileset="fuFixNPC" x="0" y="82" yOff="-1" xOffPixels="-4" yOffPixels="-6" numXTiles="4" numYTiles="6" flagBit="5" flagMode="false" variantDraw="1"/>
+            <tile tileset="fuFixNPC" x="4" y="82" yOff="-1" xOffPixels="-6" yOffPixels="-6" numXTiles="4" numYTiles="6" flagBit="5" flagMode="true" variantDraw="1"/>
+            <tile tileset="fuFixNPC" x="8" y="82" xOffPixels="-4" yOffPixels="-2" numXTiles="4" numYTiles="6" flagBit="5" flagMode="false" variantDraw="2"/>
+            <tile tileset="fuFixNPC" x="12" y="82" xOffPixels="-4" yOffPixels="-2" numXTiles="4" numYTiles="6" flagBit="5" flagMode="true" variantDraw="2"/>
         </entity>
         <entity id="161" name="Office Fly" description="">
             <tile tileset="" x="60" y="48" numXTiles="2" numYTiles="2" flagBit="5" flagMode="false"/>
@@ -412,8 +412,8 @@
             <tile tileset="" x="12" y="0" xOffPixels="-4" yOff="-1" yOffPixels="-6" numXTiles="4" numYTiles="6" flagBit="5" flagMode="true"/>
         </entity>
         <entity id="169" name="Ice Hillock" description="">
-            <tile tileset="" x="8" y="36" xOffPixels="-4" yOffPixels="-6" numXTiles="4" numYTiles="4" unkDraw="1"/>
-            <tile tileset="" x="16" y="36" xOffPixels="-4" yOffPixels="-2" numXTiles="4" numYTiles="4" unkDraw="2"/>
+            <tile tileset="" x="8" y="36" xOffPixels="-4" yOffPixels="-6" numXTiles="4" numYTiles="4" variantDraw="1"/>
+            <tile tileset="" x="16" y="36" xOffPixels="-4" yOffPixels="-2" numXTiles="4" numYTiles="4" variantDraw="2"/>
         </entity>
         <entity id="170" name="Bear Core" description="">
             <tile tileset="" x="12" y="54" xOff="-1" xOffPixels="-4" yOff="-2" numXTiles="8" numYTiles="6"/>
@@ -428,8 +428,8 @@
             <tile tileset="/0" x="38" y="48" xOff="-1" yOff="-1" numXTiles="4" numYTiles="4"/>
         </entity>
         <entity id="175" name="Broken Plant" description="">
-            <tile tileset="/0" x="56" y="54" xOff="-1" xOffPixels="-4" numXTiles="8" numYTiles="2" unkDraw="1"/>
-            <tile tileset="/0" x="56" y="56" xOff="-1" xOffPixels="-4" numXTiles="8" numYTiles="2" unkDraw="2"/>
+            <tile tileset="/0" x="56" y="54" xOff="-1" xOffPixels="-4" numXTiles="8" numYTiles="2" variantDraw="1"/>
+            <tile tileset="/0" x="56" y="56" xOff="-1" xOffPixels="-4" numXTiles="8" numYTiles="2" variantDraw="2"/>
         </entity>
         <entity id="178" name="Spike Plant Fly" description="">
             <tile tileset="/0" x="16" y="32" xOffPixels="-4" yOffPixels="-6" numXTiles="4" numYTiles="4" flagBit="5" flagMode="false"/>
@@ -522,12 +522,12 @@
             <tile tileset="/0" x="8" y="58" xOff="-1" xOffPixels="-4" numXTiles="8" numYTiles="2" flagBit="5" flagMode="true"/>
         </entity>
         <entity id="206" name="Carry (Color)" description="">
-            <tile tileset="fuFixNPC" x="74" y="96" xOffPixels="-4" yOffPixels="-6" numXTiles="4" numYTiles="4" flagBit="5" flagMode="false" unkDraw="1"/>
-            <tile tileset="fuFixNPC" x="78" y="96" xOffPixels="-4" yOffPixels="-6" numXTiles="4" numYTiles="4" flagBit="5" flagMode="true" unkDraw="1"/>
-            <tile tileset="fuFixNPC" x="74" y="104" xOffPixels="-4" yOffPixels="-6" numXTiles="4" numYTiles="4" flagBit="5" flagMode="false" unkDraw="2"/>
-            <tile tileset="fuFixNPC" x="76" y="32" xOffPixels="-4" yOff="-1" yOffPixels="-3" numXTiles="4" numYTiles="4" flagBit="5" flagMode="false" unkDraw="2"/>
-            <tile tileset="fuFixNPC" x="78" y="104" xOffPixels="-4" yOffPixels="-6" numXTiles="4" numYTiles="4" flagBit="5" flagMode="true" unkDraw="2"/>
-            <tile tileset="fuFixNPC" x="80" y="32" xOffPixels="-4" yOff="-1" yOffPixels="-3" numXTiles="4" numYTiles="4" flagBit="5" flagMode="true" unkDraw="2"/>
+            <tile tileset="fuFixNPC" x="74" y="96" xOffPixels="-4" yOffPixels="-6" numXTiles="4" numYTiles="4" flagBit="5" flagMode="false" variantDraw="1"/>
+            <tile tileset="fuFixNPC" x="78" y="96" xOffPixels="-4" yOffPixels="-6" numXTiles="4" numYTiles="4" flagBit="5" flagMode="true" variantDraw="1"/>
+            <tile tileset="fuFixNPC" x="74" y="104" xOffPixels="-4" yOffPixels="-6" numXTiles="4" numYTiles="4" flagBit="5" flagMode="false" variantDraw="2"/>
+            <tile tileset="fuFixNPC" x="76" y="32" xOffPixels="-4" yOff="-1" yOffPixels="-3" numXTiles="4" numYTiles="4" flagBit="5" flagMode="false" variantDraw="2"/>
+            <tile tileset="fuFixNPC" x="78" y="104" xOffPixels="-4" yOffPixels="-6" numXTiles="4" numYTiles="4" flagBit="5" flagMode="true" variantDraw="2"/>
+            <tile tileset="fuFixNPC" x="80" y="32" xOffPixels="-4" yOff="-1" yOffPixels="-3" numXTiles="4" numYTiles="4" flagBit="5" flagMode="true" variantDraw="2"/>
         </entity>
         <entity id="207" name="Sheaf (Color)" description="">
             <tile tileset="fuFixNPC" x="76" y="32" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" flagBit="5" flagMode="false"/>
@@ -589,28 +589,28 @@
             <tile tileset="fuFixNPC" x="70" y="32" xOff="-1" yOff="-1" yOffPixels="-5" numXTiles="6" numYTiles="6" flagBit="5" flagMode="true"/>
         </entity>
         <entity id="240" name="Work Books (Color)" description="">
-            <tile tileset="fuFixChar" x="14" y="112" xOffPixels="-4" numXTiles="4" numYTiles="2" unkDraw="2" flagBit="5" flagMode="false"/>
-            <tile tileset="fuFixChar" x="14" y="110" yOff="-1" xOffPixels="-4" numXTiles="4" numYTiles="4" unkDraw="3" flagBit="5" flagMode="false"/>
-            <tile tileset="fuFixChar" x="14" y="108" yOff="-2" xOffPixels="-4" numXTiles="4" numYTiles="6" unkDraw="4" flagBit="5" flagMode="false"/>
-            <tile tileset="fuFixChar" x="14" y="106" yOff="-3" xOffPixels="-4" numXTiles="4" numYTiles="8" unkDraw="5" flagBit="5" flagMode="false"/>
-            <tile tileset="fuFixChar" x="14" y="104" yOff="-4" xOffPixels="-4" numXTiles="4" numYTiles="10" unkDraw="6" flagBit="5" flagMode="false"/>
-            <tile tileset="fuFixChar" x="18" y="112" xOffPixels="-4" numXTiles="4" numYTiles="2" unkDraw="2" flagBit="5" flagMode="true"/>
-            <tile tileset="fuFixChar" x="18" y="110" yOff="-1" xOffPixels="-4" numXTiles="4" numYTiles="4" unkDraw="3" flagBit="5" flagMode="true"/>
-            <tile tileset="fuFixChar" x="18" y="108" yOff="-2" xOffPixels="-4" numXTiles="4" numYTiles="6" unkDraw="4" flagBit="5" flagMode="true"/>
-            <tile tileset="fuFixChar" x="18" y="106" yOff="-3" xOffPixels="-4" numXTiles="4" numYTiles="8" unkDraw="5" flagBit="5" flagMode="true"/>
-            <tile tileset="fuFixChar" x="18" y="104" yOff="-4" xOffPixels="-4" numXTiles="4" numYTiles="10" unkDraw="6" flagBit="5" flagMode="true"/>
+            <tile tileset="fuFixChar" x="14" y="112" xOffPixels="-4" numXTiles="4" numYTiles="2" variantDraw="2" flagBit="5" flagMode="false"/>
+            <tile tileset="fuFixChar" x="14" y="110" yOff="-1" xOffPixels="-4" numXTiles="4" numYTiles="4" variantDraw="3" flagBit="5" flagMode="false"/>
+            <tile tileset="fuFixChar" x="14" y="108" yOff="-2" xOffPixels="-4" numXTiles="4" numYTiles="6" variantDraw="4" flagBit="5" flagMode="false"/>
+            <tile tileset="fuFixChar" x="14" y="106" yOff="-3" xOffPixels="-4" numXTiles="4" numYTiles="8" variantDraw="5" flagBit="5" flagMode="false"/>
+            <tile tileset="fuFixChar" x="14" y="104" yOff="-4" xOffPixels="-4" numXTiles="4" numYTiles="10" variantDraw="6" flagBit="5" flagMode="false"/>
+            <tile tileset="fuFixChar" x="18" y="112" xOffPixels="-4" numXTiles="4" numYTiles="2" variantDraw="2" flagBit="5" flagMode="true"/>
+            <tile tileset="fuFixChar" x="18" y="110" yOff="-1" xOffPixels="-4" numXTiles="4" numYTiles="4" variantDraw="3" flagBit="5" flagMode="true"/>
+            <tile tileset="fuFixChar" x="18" y="108" yOff="-2" xOffPixels="-4" numXTiles="4" numYTiles="6" variantDraw="4" flagBit="5" flagMode="true"/>
+            <tile tileset="fuFixChar" x="18" y="106" yOff="-3" xOffPixels="-4" numXTiles="4" numYTiles="8" variantDraw="5" flagBit="5" flagMode="true"/>
+            <tile tileset="fuFixChar" x="18" y="104" yOff="-4" xOffPixels="-4" numXTiles="4" numYTiles="10" variantDraw="6" flagBit="5" flagMode="true"/>
         </entity>
         <entity id="244" name="Work Books(gray)" description="">
-            <tile tileset="fuFixChar" x="14" y="122" xOffPixels="-4" numXTiles="4" numYTiles="2" unkDraw="2" flagBit="5" flagMode="false"/>
-            <tile tileset="fuFixChar" x="14" y="120" yOff="-1" xOffPixels="-4" numXTiles="4" numYTiles="4" unkDraw="3" flagBit="5" flagMode="false"/>
-            <tile tileset="fuFixChar" x="14" y="118" yOff="-2" xOffPixels="-4" numXTiles="4" numYTiles="6" unkDraw="4" flagBit="5" flagMode="false"/>
-            <tile tileset="fuFixChar" x="14" y="116" yOff="-3" xOffPixels="-4" numXTiles="4" numYTiles="8" unkDraw="5" flagBit="5" flagMode="false"/>
-            <tile tileset="fuFixChar" x="14" y="114" yOff="-4" xOffPixels="-4" numXTiles="4" numYTiles="10" unkDraw="6" flagBit="5" flagMode="false"/>
-            <tile tileset="fuFixChar" x="18" y="122" xOffPixels="-4" numXTiles="4" numYTiles="2" unkDraw="2" flagBit="5" flagMode="true"/>
-            <tile tileset="fuFixChar" x="18" y="120" yOff="-1" xOffPixels="-4" numXTiles="4" numYTiles="4" unkDraw="3" flagBit="5" flagMode="true"/>
-            <tile tileset="fuFixChar" x="18" y="118" yOff="-2" xOffPixels="-4" numXTiles="4" numYTiles="6" unkDraw="4" flagBit="5" flagMode="true"/>
-            <tile tileset="fuFixChar" x="18" y="116" yOff="-3" xOffPixels="-4" numXTiles="4" numYTiles="8" unkDraw="5" flagBit="5" flagMode="true"/>
-            <tile tileset="fuFixChar" x="18" y="114" yOff="-4" xOffPixels="-4" numXTiles="4" numYTiles="10" unkDraw="6" flagBit="5" flagMode="true"/>
+            <tile tileset="fuFixChar" x="14" y="122" xOffPixels="-4" numXTiles="4" numYTiles="2" variantDraw="2" flagBit="5" flagMode="false"/>
+            <tile tileset="fuFixChar" x="14" y="120" yOff="-1" xOffPixels="-4" numXTiles="4" numYTiles="4" variantDraw="3" flagBit="5" flagMode="false"/>
+            <tile tileset="fuFixChar" x="14" y="118" yOff="-2" xOffPixels="-4" numXTiles="4" numYTiles="6" variantDraw="4" flagBit="5" flagMode="false"/>
+            <tile tileset="fuFixChar" x="14" y="116" yOff="-3" xOffPixels="-4" numXTiles="4" numYTiles="8" variantDraw="5" flagBit="5" flagMode="false"/>
+            <tile tileset="fuFixChar" x="14" y="114" yOff="-4" xOffPixels="-4" numXTiles="4" numYTiles="10" variantDraw="6" flagBit="5" flagMode="false"/>
+            <tile tileset="fuFixChar" x="18" y="122" xOffPixels="-4" numXTiles="4" numYTiles="2" variantDraw="2" flagBit="5" flagMode="true"/>
+            <tile tileset="fuFixChar" x="18" y="120" yOff="-1" xOffPixels="-4" numXTiles="4" numYTiles="4" variantDraw="3" flagBit="5" flagMode="true"/>
+            <tile tileset="fuFixChar" x="18" y="118" yOff="-2" xOffPixels="-4" numXTiles="4" numYTiles="6" variantDraw="4" flagBit="5" flagMode="true"/>
+            <tile tileset="fuFixChar" x="18" y="116" yOff="-3" xOffPixels="-4" numXTiles="4" numYTiles="8" variantDraw="5" flagBit="5" flagMode="true"/>
+            <tile tileset="fuFixChar" x="18" y="114" yOff="-4" xOffPixels="-4" numXTiles="4" numYTiles="10" variantDraw="6" flagBit="5" flagMode="true"/>
         </entity>
         <entity id="248" name="Uzo (Car3)" description="">
             <tile tileset="fuFixChar" x="108" y="84" yOff="-1" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="6"/>
@@ -665,18 +665,18 @@
         <rollYourOwnSprite name="N577" tileset="" x="22" y="44" xOff="-6" xOffPixels="-4" yOff="-2" numXTiles="10" numYTiles="10"/>
         <rollYourOwnSprite name="OfficeBoss" tileset="" x="0" y="0" xOff="-1" xOffPixels="-4" yOff="-2" numXTiles="8" numYTiles="8"/>
         <rollYourOwnSprite name="OfficeBoss2" tileset="" x="0" y="28" xOff="-1" xOffPixels="-4" yOff="-2" numXTiles="8" numYTiles="10"/>
-        <rollYourOwnSprite name="OfficeBoss3" tileset="" x="52" y="0" xOff="-2" xOffPixels="-4" yOff="-3" numXTiles="12" numYTiles="12" unkDraw="1"/>
-        <rollYourOwnSprite name="OfficeBoss3" tileset="" x="52" y="24" xOff="-2" xOffPixels="-4" yOff="-3" numXTiles="12" numYTiles="12" unkDraw="2"/>
-        <rollYourOwnSprite name="OfficeBoss3" tileset="" x="56" y="56" xOff="1" xOffPixels="-1" yOff="-2" yOffPixels="-1" numXTiles="4" numYTiles="4" unkDraw="2"/>
+        <rollYourOwnSprite name="OfficeBoss3" tileset="" x="52" y="0" xOff="-2" xOffPixels="-4" yOff="-3" numXTiles="12" numYTiles="12" variantDraw="1"/>
+        <rollYourOwnSprite name="OfficeBoss3" tileset="" x="52" y="24" xOff="-2" xOffPixels="-4" yOff="-3" numXTiles="12" numYTiles="12" variantDraw="2"/>
+        <rollYourOwnSprite name="OfficeBoss3" tileset="" x="56" y="56" xOff="1" xOffPixels="-1" yOff="-2" yOffPixels="-1" numXTiles="4" numYTiles="4" variantDraw="2"/>
         <rollYourOwnSprite name="Panels" tileset="fuFixNPC" x="88" y="64" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4"/>
         <rollYourOwnSprite name="PixelLogo" tileset="localize" xOff="-4" xOffPixels="-4" yOffPixels="-4" numXTiles="20" numYTiles="4"/>
-        <rollYourOwnSprite name="PopItem" tileset="fuFixChar" x="96" y="76" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" unkDraw="1" />
-        <rollYourOwnSprite name="PopItem" tileset="fuFixChar" x="100" y="76" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" unkDraw="2" />
-        <rollYourOwnSprite name="PopItem" tileset="fuFixChar" x="104" y="76" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" unkDraw="3" />
-        <rollYourOwnSprite name="PopItem" tileset="fuFixChar" x="108" y="76" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" unkDraw="4" />
-        <rollYourOwnSprite name="PopItem" tileset="fuFixChar" x="112" y="76" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" unkDraw="5" />
-        <rollYourOwnSprite name="PopItem" tileset="fuFixChar" x="116" y="76" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" unkDraw="6" />
-        <rollYourOwnSprite name="PopItem" tileset="fuFixChar" x="120" y="76" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" unkDraw="7" />
+        <rollYourOwnSprite name="PopItem" tileset="fuFixChar" x="96" y="76" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" variantDraw="1" />
+        <rollYourOwnSprite name="PopItem" tileset="fuFixChar" x="100" y="76" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" variantDraw="2" />
+        <rollYourOwnSprite name="PopItem" tileset="fuFixChar" x="104" y="76" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" variantDraw="3" />
+        <rollYourOwnSprite name="PopItem" tileset="fuFixChar" x="108" y="76" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" variantDraw="4" />
+        <rollYourOwnSprite name="PopItem" tileset="fuFixChar" x="112" y="76" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" variantDraw="5" />
+        <rollYourOwnSprite name="PopItem" tileset="fuFixChar" x="116" y="76" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" variantDraw="6" />
+        <rollYourOwnSprite name="PopItem" tileset="fuFixChar" x="120" y="76" xOffPixels="-4" yOffPixels="-4" numXTiles="4" numYTiles="4" variantDraw="7" />
         <rollYourOwnSprite name="Printer" tileset="" x="0" y="26" xOff="-5" xOffPixels="-4" yOff="1" yOffPixels="3" numXTiles="8" numYTiles="6"/>
         <rollYourOwnSprite name="Printer" tileset="" x="16" y="48" xOff="-3" xOffPixels="-5" yOff="-2" numXTiles="16" numYTiles="8"/>
         <rollYourOwnSprite name="Printer" tileset="" x="0" y="4" xOff="-4" yOff="-2" yOffPixels="1" numXTiles="18" numYTiles="4"/>

@@ -11,20 +11,16 @@
 
 struct Tileset;
 
-// Entity data constants.
-const int NUM_PARAMETERS = 3;
-const int NUM_BYTE_PARAMETERS = 2;
-
 // Information on how to spawn entities.
 struct Entity
 {
     u8 flags; // Entity flags.
     u8 id; // Id to spawn.
-    u8 unk; // Unknown value.
+    u8 variant; // Different entity skins.
     u16 xPos; // X position.
     u16 yPos; // Y position.
-    u8 parametersByte[NUM_BYTE_PARAMETERS]; // Number parameters.
-    Str parametersStr[NUM_PARAMETERS - NUM_BYTE_PARAMETERS]; // String parameters.
+    u16 flag; // Entity flag ID.
+    Str data; // String data.
     bool beingEdited = false; // Editor param.
 };
 
@@ -42,7 +38,7 @@ struct EntityTile
     std::string tileset = ""; // Tileset to use. It can be a fixed one, blank for the NPC sheet, or /0, /1, or /2 for corresponding map tilesets.
     u8 flagMode = true; // If this tile only appears if a bit in flags is set.
     u8 flagBit = 0; // The bit in flags to be set to show this tile if in flag mode. 1 is added, as 0 means disabled.
-    u16 unkDraw = 0; // Draw using the unknown parameter. 1 is added to this as 0 means disabled.
+    u16 variantDraw = 0; // Draw using the variant parameter. 1 is added to this as 0 means disabled.
 };
 
 // Entity display information.
@@ -53,8 +49,6 @@ struct EntityDisplay
     int numTiles = 0; // Number of entity tiles.
     EntityTile* tiles; // Entity tiles to display.
     bool allowRollYourOwnSprite = true; // Allow for custom sprites to show specified by a parameter.
-    static std::string parameterNames[3]; // Names of each parameter.
-    static std::string parameterDescriptions[3]; // How the parameters work.
     static std::map<std::string, std::vector<EntityTile>> rollYourOwnSprite; // Maps strings to sprites that can be shown in game.
     static float transparency; // Transparency of the entity to display.
 

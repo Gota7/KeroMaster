@@ -47,7 +47,7 @@ void PxMap::Write(GFile* f)
     f->Write(height);
 
     if (width * height > 0) f->Write(flags);
-    
+
     for (int i = 0; i < width * height; i++)
     {
         f->Write(tiles[i]);
@@ -240,24 +240,24 @@ void Map::Load(std::string rsc_k, std::string mapName, std::map<std::string, Til
     {
         levelTitle.Read(&f);
         levelTitle.dat = fromShiftJIS(levelTitle.dat);
-        
+
         for (int i = 0; i < NUM_REFERENCES; i++)
         {
             references[i].Read(&f);
         }
-        
+
         if (this->references[RT_NPC_PALETTE].dat != "")
         {
             Tileset t;
             t.Load(rsc_k, this->references[RT_NPC_PALETTE].dat);
             tilesets[this->references[RT_NPC_PALETTE].dat] = t;
         }
-        
+
         for (int i = 0; i < NUM_SETTINGS; i++)
         {
             levelSettings[i] = f.ReadU8();
         }
-        
+
         for (int i = 0; i < NUM_TILESETS; i++)
         {
             this->tilesets[i].Read(&f);
@@ -276,24 +276,18 @@ void Map::Load(std::string rsc_k, std::string mapName, std::map<std::string, Til
         {
             maps[i].Read(&f);
         }
-        
+
         u16 numEntities = f.ReadU16();
         for (u16 i = 0; i < numEntities; i++)
         {
             Entity e;
             e.flags = f.ReadU8();
             e.id = f.ReadU8();
-            e.unk = f.ReadU8();
+            e.variant = f.ReadU8();
             e.xPos = f.ReadU16();
             e.yPos = f.ReadU16();
-            for (int i = 0; i < NUM_BYTE_PARAMETERS; i++)
-            {
-                e.parametersByte[i] = f.ReadU8();
-            }
-            for (int i = 0; i < NUM_PARAMETERS - NUM_BYTE_PARAMETERS; i++)
-            {
-                e.parametersStr[i].Read(&f);
-            }
+            e.flag = f.ReadU16();
+            e.data.Read(&f);
             entities.push_back(e);
         }
     }
@@ -315,7 +309,7 @@ void Map::Unload(std::map<std::string, Tileset>& tilesets)
             tilesets[this->tilesets[i].dat].Unload();
         }
     }
-    
+
     entities.clear();
 }
 
@@ -349,24 +343,18 @@ void Map::Write(std::string rsc_k, std::string mapName)
     {
         maps[i].Write(&f);
     }
-    
+
     f.Write((u16)entities.size());
     for (u16 i = 0; i < entities.size(); i++)
     {
         Entity* e = &entities[i];
         f.Write(e->flags);
         f.Write(e->id);
-        f.Write(e->unk);
+        f.Write(e->variant);
         f.Write(e->xPos);
         f.Write(e->yPos);
-        for (int i = 0; i < NUM_BYTE_PARAMETERS; i++)
-        {
-            f.Write(e->parametersByte[i]);
-        }
-        for (int i = 0; i < NUM_PARAMETERS - NUM_BYTE_PARAMETERS; i++)
-        {
-            e->parametersStr[i].Write(&f);
-        }
+        f.Write(e->flag);
+        e->data.Write(&f);
     }
     f.Close();
 }
@@ -408,7 +396,7 @@ void Map::DrawEntities(std::map<u8, EntityDisplay>& entities, std::map<std::stri
     tilesetNames[2] = this->tilesets[2].dat;
     for (u16 i = 0; i < this->entities.size(); i++)
     {
-        
+
         // Draw ID if found, else draw nothing which will show the box.
         if (entities.find(this->entities[i].id) != entities.end())
         {

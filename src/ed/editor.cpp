@@ -199,10 +199,9 @@ void Editor::DrawEntityPlacePreview()
             e.beingEdited = false;
             e.flags = 0;
             e.id = placeEntityId;
-            e.parametersByte[0] = 0;
-            e.parametersByte[1] = 0;
-            e.parametersStr[0].dat = "";
-            e.unk = 0;
+            e.flag = 0;
+            e.data.dat = "";
+            e.variant = 0;
             e.xPos = tileX;
             e.yPos = tileY;
             entityEditor.entities[placeEntityId].Draw(
@@ -1067,7 +1066,7 @@ void Editor::CheckZoom()
 
 void Editor::CheckEntityDelete()
 {
-    if (entityEditor.editingEntity && (IsKeyPressed(KEY_DELETE) || IsKeyPressed(KEY_BACKSPACE)))
+    if (entityEditor.editingEntity && (IsKeyPressed(KEY_DELETE) || KeyboardShortcut(false, false, true, KEY_BACKSPACE)))
     {
         entityEditor.editingEntity->beingEdited = false;
         Entity* e = entityEditor.editingEntity;
