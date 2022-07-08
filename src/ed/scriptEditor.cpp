@@ -3,6 +3,7 @@
 #include "../gbin/gfile.h"
 #include "../rlImGui/utils.h"
 #include "../tinyxml2/tinyxml2.h"
+#include "../conv/conv.h"
 
 bool ScriptEditor::loadedGuide = false;
 ScriptHelpData* ScriptEditor::commands;
@@ -58,7 +59,7 @@ void ScriptEditor::LoadXML()
         a = c->FirstChildElement();
         while (a != nullptr)
         {
-            commands[currCommand].args[currArg].type = strcmp(a->Attribute("type"), "str") == 0 ? ARG_TYPE_STRING : ARG_TYPE_NUMBER;
+            commands[currCommand].args[currArg].type = a->Attribute("type") == "str" ? ARG_TYPE_STRING : ARG_TYPE_NUMBER;
             commands[currCommand].args[currArg].description = a->Attribute("desc");
             currArg++;
             a = a->NextSiblingElement();
@@ -79,9 +80,11 @@ void ScriptEditor::LoadScript()
     {
         f = GFile(ed->settings.defaultCutscenePath.c_str());
     }
-    buf.resize(f.Size() + 1);
-    f.Read(buf.begin(), buf.size() - 1);
-    buf[buf.size() - 1] = 0;
+    std::string raw = f.ReadStrFixed(f.Size());
+    isShiftJIS = !raw.starts_with("//ＵＴＦ８");
+    if (isShiftJIS) raw = fromShiftJIS(raw);
+    buf.resize(raw.size() + 1);
+    strcpy(buf.begin(), &raw[0]);
     f.Close();
 }
 
@@ -89,7 +92,9 @@ void ScriptEditor::SaveScript()
 {
     GFile f = GFile((ed->rsc + "/text/" + name + ".pxeve").c_str());
     f.Clear();
-    f.Write(buf.begin(), strlen(buf.begin()));
+    std::string toWrite = std::string(buf.begin());
+    if (isShiftJIS) toWrite = toShiftJIS(toWrite);
+    f.Write(toWrite);
     f.Close();
 }
 
@@ -134,7 +139,7 @@ void ScriptEditor::DrawUI()
         {
             ImGui::Text("%s", (" * " + txt).c_str());
         }
-        else 
+        else
         {
             if (ImGui::TreeNodeEx(txt.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
             {

@@ -105,7 +105,7 @@
         <arg type="str" desc="The point to appear at when entering the room." />
     </command>
     <command name="cler" desc="Erases all text onscreen." />
-    <command name="stgS" desc="Sets the current stage number."/>
+    <command name="stgS" desc="Sets the current stage number.">
         <arg type="num" desc="The stage number to change to." />
     </command>
     <command name="stgR" desc="Restarts the stage(?)" />
@@ -348,7 +348,7 @@
     <command name="plSt" desc="Stops the player's momentum." />
     <command name="slPo" desc="Forces the player to face right. Meant for elevator doors." />
     <command name="slPu" desc="Unknown usage. Meant for exiting elevator doors, but I don't see any difference with or without this." />
-    <command name="scrF" desc="Turns off the UI and shifts the view downward to fill the space."/>
+    <command name="scrF" desc="Turns off the UI and shifts the view downward to fill the space.">
         <arg type="num" desc="0 = Show UI, Anything else = Hide UI" />
     </command>
     <command name="shwS" desc="Makes the player's lives, coins, weapons, etc. on the UI invisible, and puts a white Kero Blaster logo on the corner." >
