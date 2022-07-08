@@ -826,8 +826,9 @@ void Editor::DrawAboutPopup()
         );
         ImGui::TextColored(ImVec4(1, .1, .5, 1), "\tAn editor for Kero Blaster, Pink Hour, and Pink Heaven.");
         ImGui::Separator();
-        ImGui::TextColored(ImVec4(0, 1, 1, 1), "Alula - Windows & SHIFT-JIS support, tile editing, palette, various fixes/improvements.");
         ImGui::TextColored(ImVec4(1, 0, 1, 1), "Gota7 - UI design, format support, entity editing, script editing, tileset editing, editor data.");
+        ImGui::TextColored(ImVec4(0, 1, 1, 1), "Alula - Windows & SHIFT-JIS support, tile editing, palette, various fixes/improvements.");
+        ImGui::TextColored(ImVec4(1, 1, 0, 1), "Dripping Yellow - Script command info, bug reports, feature suggestions.");
         ImGui::Separator();
         if (ImGui::Button("Ok"))
         {

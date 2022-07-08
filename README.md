@@ -80,4 +80,4 @@ The editor source composes of multiple subdirectories for various purposes:
 * tinyxml2 - Tiny XML 2 library for reading editor XML files.
 
 ## Credits
-Kero Master is created by Gota7 and Alula.
+Kero Master is created by Gota7, Alula, and DrippingYelow.
