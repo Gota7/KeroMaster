@@ -21,7 +21,7 @@ void StyleEditor::ScanForThemes()
     ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
 
     // Update theme list.
-    std::vector<std::string> themeList = ReadFilesFromDir("object_data/themes");
+    std::vector<std::string> themeList = ReadFilesFromDir(ed->settings.themesPath);
     sort(themeList.begin(), themeList.end());
     themes = GenImGuiStringList(themeList, &numThemes);
     scanDirs = false;
@@ -58,24 +58,24 @@ void StyleEditor::DrawUI()
     ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.50f);
     if (ImGui::Combo("Current Style", &currTheme, themes, numThemes))
     {
-        ed->style.Load(themes[currTheme]);
+        ed->style.Load(themes[currTheme], &ed->settings);
         ed->settings.Save();
     }
     std::string oldName = ed->style.name;
     if (ImGuiStringEdit("Style Name", &ed->style.name))
     {
         ed->settings.currStyle = ed->style.name;
-        ed->style.Save();
+        ed->style.Save(&ed->settings);
         ed->settings.Save();
         scanDirs = true;
-        remove(("object_data/themes/" + oldName + ".ini").c_str());
+        remove((ed->settings.themesPath + "/" + oldName + ".ini").c_str());
     }
     if (ed->style.name != "New Theme" && ImGui::Button("New Theme"))
     {
         ed->style.name = "New Theme";
         ed->settings.currStyle = ed->style.name;
         scanDirs = true;
-        ed->style.Save();
+        ed->style.Save(&ed->settings);
         ed->settings.Save();
     }
     if (numThemes > 1)
@@ -83,8 +83,8 @@ void StyleEditor::DrawUI()
         if (ed->style.name != "New Theme") { ImGui::SameLine(); }
         if (ImGui::Button("Delete Theme"))
         {
-            remove(("object_data/themes/" + ed->style.name + ".ini").c_str());
-            ed->style.Load(themes[0]);
+            remove((ed->settings.themesPath + "/" + ed->style.name + ".ini").c_str());
+            ed->style.Load(themes[0], &ed->settings);
             ed->settings.currStyle = themes[0];
             ed->settings.Save();
             scanDirs = true;
@@ -95,7 +95,7 @@ void StyleEditor::DrawUI()
     if (ImGui::Button("Save Style"))
     {
         ed->style.style = ref_saved_style = style;
-        ed->style.Save();
+        ed->style.Save(&ed->settings);
     }
     ImGui::SameLine();
     if (ImGui::Button("Revert Style"))

@@ -10,7 +10,7 @@ struct Editor;
 struct Settings
 {
     u16 versionMajor = 0; // Major version.
-    u16 versionMinor = 1; // Minor version.
+    u16 versionMinor = 2; // Minor version.
     u16 versionRevision = 0; // Revision version.
     int width = 1240; // Width of the window.
     int height = 720; // Height of the window.
@@ -33,6 +33,14 @@ struct Settings
     bool viewTileAttributes = false; // If to view tile attributes.
     bool openTilesetsOnLoad = false; // Open tilesets on load.
     int maxUndoDepth = 1000; // Maximum undo depth.
+    std::string entityDataPath = "object_data/all.xml"; // Path for entity data.
+    std::string scriptInfoPath = "object_data/scriptInfo.xml"; // Path for script info.
+    std::string alwaysLoadedTilesetsPath = "object_data/alwaysLoaded.txt"; // Path for always loaded tilesets.
+    std::string defaultCutscenePath = "object_data/default.pxeve"; // Path for the default cutscene.
+    std::string tileAttributePath = "object_data/attribute.png"; // Path for tile attributes.
+    std::string unitTypePath = "object_data/unittype.png"; // Path for the unit type image.
+    std::string unitTypeListPath = "object_data/unittype.txt"; // Path for the unit type listing.
+    std::string themesPath = "object_data/themes"; // Path for the theme folder.
 
     // Load the settings.
     void Load();

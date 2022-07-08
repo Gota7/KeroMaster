@@ -26,7 +26,7 @@ void ScriptEditor::LoadXML()
     tinyxml2::XMLDocument doc;
     tinyxml2::XMLError result;
 
-    if ((result = doc.LoadFile("object_data/scriptInfo.xml")) != tinyxml2::XML_SUCCESS)
+    if ((result = doc.LoadFile(ed->settings.scriptInfoPath.c_str())) != tinyxml2::XML_SUCCESS)
     {
         throw std::string("Failed to load script info file file: ") + doc.ErrorIDToName(result);
     }
@@ -77,7 +77,7 @@ void ScriptEditor::LoadScript()
     }
     else
     {
-        f = GFile("object_data/default.pxeve");
+        f = GFile(ed->settings.defaultCutscenePath.c_str());
     }
     buf.resize(f.Size() + 1);
     f.Read(buf.begin(), buf.size() - 1);

@@ -10,12 +10,12 @@ EntityEditor::EntityEditor(Editor* ed)
     this->ed = ed;
 }
 
-void EntityEditor::LoadEntityListing(std::string xmlName)
+void EntityEditor::LoadEntityListing()
 {
-    entities = LoadXML(xmlName);
+    entities = LoadXML(&ed->settings);
     std::vector<std::string> defaultListing;
     std::fstream f;
-    f.open("object_data/unittype.txt", std::ios::in);
+    f.open(ed->settings.unitTypeListPath, std::ios::in);
     for (u16 i = 0; i <= 255; i++)
     {
         std::string defaultStr;

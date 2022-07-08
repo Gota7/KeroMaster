@@ -40,6 +40,20 @@ void Settings::Load()
         //viewTileAttributes = f["Settings"]["ViewTileAttributes"].as<bool>();
         openTilesetsOnLoad = f["Settings"]["OpenTilesetsOnLoad"].as<bool>();
         maxUndoDepth = f["Settings"]["MaxUndoDepth"].as<int>();
+
+        // 0.2 added custom XML paths.
+        if (ldMajor > 0 || ldMinor >= 2)
+        {
+            entityDataPath = f["Settings"]["EntityDataPath"].as<std::string>();
+            scriptInfoPath = f["Settings"]["ScriptInfoPath"].as<std::string>();
+            alwaysLoadedTilesetsPath = f["Settings"]["AlwaysLoadedTilesetsPath"].as<std::string>();
+            defaultCutscenePath = f["Settings"]["DefaultCutscenePath"].as<std::string>();
+            tileAttributePath = f["Settings"]["TileAttributePath"].as<std::string>();
+            unitTypePath = f["Settings"]["UnitTypePath"].as<std::string>();
+            unitTypeListPath = f["Settings"]["UnitTypeListPath"].as<std::string>();
+            themesPath = f["Settings"]["ThemesPath"].as<std::string>();
+        }
+
     }
     else
     {
@@ -49,7 +63,6 @@ void Settings::Load()
     // Test to see if the settings window needs to be shown.
     if (rscPath == "" || lastLevel == "") show = true;
     else if (!GFile::FileExists((rscPath + "/field/" + lastLevel + ".pxpack").c_str())) show = true;
-
 
 }
 
@@ -80,6 +93,14 @@ void Settings::Save()
     //f["Settings"]["ViewTileAttributes"] = viewTileAttributes;
     f["Settings"]["OpenTilesetsOnLoad"] = openTilesetsOnLoad;
     f["Settings"]["MaxUndoDepth"] = maxUndoDepth;
+    f["Settings"]["EntityDataPath"] = entityDataPath;
+    f["Settings"]["ScriptInfoPath"] = scriptInfoPath;
+    f["Settings"]["AlwaysLoadedTilesetsPath"] = alwaysLoadedTilesetsPath;
+    f["Settings"]["DefaultCutscenePath"] = defaultCutscenePath;
+    f["Settings"]["TileAttributePath"] = tileAttributePath;
+    f["Settings"]["UnitTypePath"] = unitTypePath;
+    f["Settings"]["UnitTypeListPath"] = unitTypeListPath;
+    f["Settings"]["ThemesPath"] = themesPath;
     f.save("settings.ini");
 }
 
@@ -218,6 +239,37 @@ void Settings::DrawUI(Editor* ed)
                 ImGuiTooltip("When loading a level, open all of its tilesets.");
                 ImGui::InputScalar("Undo Stack Size", ImGuiDataType_S32, &maxUndoDepth);
                 ImGuiTooltip("How many individual allow actions to allow (bigger stack is more RAM usage).");
+                ImGui::Separator();
+                ImGui::Text("Editor Paths:");
+                ImGuiTooltip("Paths for some editor files. Will require a restart to take effect.");
+                ImGuiStringEdit("Entity Data", &entityDataPath);
+                ImGuiTooltip("Path for the entity data XML.");
+                ImGuiStringEdit("Script Info", &scriptInfoPath);
+                ImGuiTooltip("Path for the script info XML.");
+                ImGuiStringEdit("Always Loaded Tilesets", &alwaysLoadedTilesetsPath);
+                ImGuiTooltip("Path for a file that contains a list of tilesets that are always loaded.");
+                ImGuiStringEdit("Default Cutscene", &defaultCutscenePath);
+                ImGuiTooltip("Path for the default cutscene file.");
+                ImGuiStringEdit("Tile Attribute", &tileAttributePath);
+                ImGuiTooltip("Path for the tile attribute image.");
+                ImGuiStringEdit("Unit Type", &unitTypePath);
+                ImGuiTooltip("Path for the image of enemy types.");
+                ImGuiStringEdit("Unit Type List", &unitTypeListPath);
+                ImGuiTooltip("Path for the default list of enemies.");
+                ImGuiStringEdit("Themes", &themesPath);
+                ImGuiTooltip("Path for the theme folder.");
+                if (ImGui::Button("Reset"))
+                {
+                    entityDataPath = "object_data/all.xml";
+                    scriptInfoPath = "object_data/scriptInfo.xml";
+                    alwaysLoadedTilesetsPath = "object_data/alwaysLoaded.txt";
+                    defaultCutscenePath = "object_data/default.pxeve";
+                    tileAttributePath = "object_data/attribute.png";
+                    unitTypePath = "object_data/unittype.png";
+                    unitTypeListPath = "object_data/unittype.txt";
+                    themesPath = "object_data/themes";
+                }
+                ImGuiTooltip("Reset the paths back to their defaults.");
                 ImGui::Separator();
                 if (ImGui::Button("Save And Close"))
                 {

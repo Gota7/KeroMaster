@@ -3,6 +3,9 @@
 #include "imgui.h"
 #include <string>
 
+// Settings.
+struct Settings;
+
 // For styling the editor.
 struct EditorStyle
 {
@@ -10,9 +13,9 @@ struct EditorStyle
     ImGuiStyle style; // Actual style data.
 
     // Load a style from a style name.
-    void Load(std::string name);
+    void Load(std::string name, Settings* settings);
 
     // Save the style data.
-    void Save();
+    void Save(Settings* settings);
 
 };

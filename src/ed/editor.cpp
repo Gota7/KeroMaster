@@ -1,6 +1,7 @@
 #include "editor.h"
 #include "../bgm/bgm.h"
 #include "../px/tileset.h"
+#include "../rlImGui/fileBrowser.h"
 #include "../rlImGui/rlImGui.h"
 #include "../rlImGui/utils.h"
 #include "imgui.h"
@@ -23,7 +24,7 @@ void Editor::Init()
     SetWindowIcon(icon);
     SetTargetFPS(60);
     SetupRLImGui(true);
-    style.Load(settings.currStyle);
+    style.Load(settings.currStyle, &settings);
 
     // Initialize editor.
     InitEditor();
@@ -255,6 +256,9 @@ void Editor::DrawUI()
     // Draw the open level UI.
     DrawOpenLevelUI();
 
+    // Screenshot popup.
+    DrawSaveScreenshotPopup();
+
     // About popup.
     DrawAboutPopup();
 
@@ -351,7 +355,7 @@ void Editor::InitEditor()
 {
     if (settings.rscPath != rsc || settings.lastLevel != level || levelClosed)
     {
-        entityEditor.LoadEntityListing("all");
+        entityEditor.LoadEntityListing();
         for (auto& t : tilesets)
         {
             UnloadTileset(t.first);
@@ -393,15 +397,15 @@ void Editor::UnloadTileset(std::string tilesetName)
 void Editor::LoadFixedTilesets()
 {
     std::fstream f;
-    f.open("object_data/alwaysLoaded.txt", std::ios::in);
+    f.open(settings.alwaysLoadedTilesetsPath, std::ios::in);
     std::string s;
     while (std::getline(f, s))
     {
         LoadTileset(s);
     }
     f.close();
-    Tileset::attrTex = LoadTexture("object_data/attribute.png");
-    Tileset::unitType = LoadTexture("object_data/unittype.png");
+    Tileset::attrTex = LoadTexture(settings.tileAttributePath.c_str());
+    Tileset::unitType = LoadTexture(settings.unitTypePath.c_str());
 }
 
 void Editor::LoadLevel()
@@ -501,6 +505,7 @@ void Editor::DrawMainMenu()
     bool doQuit = KeyboardShortcut(true, false, true, KEY_Q);
     bool doUndo = undoStack.CanUndo() && KeyboardShortcut(true, false, false, KEY_Z);
     bool doRedo = undoStack.CanRedo() && (KeyboardShortcut(true, false, false, KEY_Y) || KeyboardShortcut(true, false, true, KEY_Z));
+    bool doScreenshot = KeyboardShortcut(true, false, false, KEY_P);
     bool isFullscreening = false;
     bool openNewLevelPopup = false;
     bool openAboutPopup = false;
@@ -546,6 +551,11 @@ void Editor::DrawMainMenu()
             if (undoStack.CanRedo() && ImGui::MenuItem("Redo", "Ctrl+Y"))
             {
                 doRedo = true;
+            }
+
+            if (ImGui::MenuItem("Screenshot", "Ctrl+P"))
+            {
+                doScreenshot = true;
             }
 
             if (ImGui::MenuItem("Settings"))
@@ -642,6 +652,12 @@ void Editor::DrawMainMenu()
         ImGui::OpenPopup("Editor Settings");
         openSettings = false;
         settings.softShow = true;
+    }
+
+    // Screenshot.
+    if (doScreenshot)
+    {
+        ImGui::OpenPopup("Save Screenshot");
     }
 
     // Update focus for menu.
@@ -1079,5 +1095,78 @@ void Editor::CheckEntityDelete()
                 map.entities.erase(map.entities.begin() + i);
             }
         }
+    }
+}
+
+RenderTexture2D Editor::Screenshot()
+{
+
+    // Setup render texture.
+    u16 maxWidth = 0;
+    u16 maxHeight = 0;
+    for (int i = 0; i < NUM_TILESETS; i++)
+    {
+        if (settings.viewLayers[i])
+        {
+            if (map.maps[i].width > maxWidth) maxWidth = map.maps[i].width;
+            if (map.maps[i].height > maxHeight) maxHeight = map.maps[i].height;
+        }
+    }
+    RenderTexture2D ret = LoadRenderTexture(maxWidth * Tileset::EDITOR_TILE_SIZE, maxHeight * Tileset::EDITOR_TILE_SIZE);
+    BeginTextureMode(ret);
+
+    // Save camera and set position.
+    Camera2D bak = cam;
+    cam.offset = { 0, 0 };
+    cam.zoom = 1;
+
+    // Draw background.
+    map.Clear();
+    BeginMode2D(cam);
+
+    // Draw map.
+    if (settings.viewLayers[(u8)MapLayer::BG]) map.DrawLayer((u8)MapLayer::BG, tilesets, { 0, 0 }, settings.viewTileAttributes);
+    if (settings.viewLayers[(u8)MapLayer::MG]) map.DrawLayer((u8)MapLayer::MG, tilesets, { 0, 0 }, settings.viewTileAttributes);
+    if (settings.viewLayers[(u8)MapLayer::FG]) map.DrawLayer((u8)MapLayer::FG, tilesets, { 0, 0 }, settings.viewTileAttributes);
+
+    // Draw entities.
+    if (settings.viewEntities) map.DrawEntities(entityEditor.entities, tilesets, { 0, 0 }, settings.viewEntityBoxes);
+
+    // Show the map play area.
+    if (settings.showPlayArea)
+    {
+        if (settings.viewLayers[(u8)MapLayer::BG]) DrawRectangleLinesEx({ 0, 0, map.maps[(u8)MapLayer::BG].width * Tileset::EDITOR_TILE_SIZE, map.maps[(u8)MapLayer::BG].height * Tileset::EDITOR_TILE_SIZE }, 1, RED);
+        if (settings.viewLayers[(u8)MapLayer::MG]) DrawRectangleLinesEx({ 0, 0, map.maps[(u8)MapLayer::MG].width * Tileset::EDITOR_TILE_SIZE, map.maps[(u8)MapLayer::MG].height * Tileset::EDITOR_TILE_SIZE }, 1, RED);
+        if (settings.viewLayers[(u8)MapLayer::FG]) DrawRectangleLinesEx({ 0, 0, map.maps[(u8)MapLayer::FG].width * Tileset::EDITOR_TILE_SIZE, map.maps[(u8)MapLayer::FG].height * Tileset::EDITOR_TILE_SIZE }, 1, RED);
+    }
+
+    // Show the grid.
+    DrawGrid();
+    EndMode2D();
+
+    // Restore camera.
+    cam = bak;
+
+    // Return the finished image.
+    EndTextureMode();
+    return ret;
+
+}
+
+void Editor::DrawSaveScreenshotPopup()
+{
+    static imgui_addons::ImGuiFileBrowser fB;
+    if (fB.showFileDialog("Save Screenshot", imgui_addons::ImGuiFileBrowser::DialogMode::SAVE, { 0, 0 }, ".png"))
+    {
+        if (!fB.selected_path.ends_with(".png"))
+        {
+            fB.selected_path += ".png";
+        }
+        RenderTexture2D screenshot = Screenshot();
+        Image img = LoadImageFromTexture(screenshot.texture);
+        ImageFlipVertical(&img);
+        ExportImage(img, fB.selected_path.c_str());
+        UnloadImage(img);
+        UnloadRenderTexture(screenshot);
     }
 }

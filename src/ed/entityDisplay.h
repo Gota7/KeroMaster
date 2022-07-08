@@ -10,6 +10,7 @@
 #include "../types.h"
 
 struct Tileset;
+struct Settings;
 
 // Information on how to spawn entities.
 struct Entity
@@ -70,4 +71,4 @@ struct EntityDisplay
 };
 
 // Load an XML map for all entities.
-std::map<u8, EntityDisplay> LoadXML(std::string game);
+std::map<u8, EntityDisplay> LoadXML(Settings* settings);

@@ -1,4 +1,5 @@
 #include "entityDisplay.h"
+#include "settings.h"
 #include "../px/tileset.h"
 #include "../tinyxml2/tinyxml2.h"
 
@@ -201,13 +202,13 @@ void EntityDisplay::Draw(Entity* entity, std::map<std::string, Tileset>& loadedT
 
 }
 
-std::map<u8, EntityDisplay> LoadXML(std::string game)
+std::map<u8, EntityDisplay> LoadXML(Settings* settings)
 {
     std::map<u8, EntityDisplay> ret;
     tinyxml2::XMLDocument doc;
     tinyxml2::XMLError result;
 
-    if ((result = doc.LoadFile(("object_data/" + game + ".xml").c_str())) != tinyxml2::XML_SUCCESS) {
+    if ((result = doc.LoadFile(settings->entityDataPath.c_str())) != tinyxml2::XML_SUCCESS) {
         throw std::string("Failed to load object data definition file: ") + doc.ErrorIDToName(result);
     }
 

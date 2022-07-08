@@ -214,4 +214,10 @@ struct Editor
     // Check for entity deleting.
     void CheckEntityDelete();
 
+    // Take a screenshot. Note that it has to be unloaded later.
+    RenderTexture2D Screenshot();
+
+    // Draw the save screenshot popup.
+    void DrawSaveScreenshotPopup();
+
 };

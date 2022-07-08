@@ -1,8 +1,9 @@
 #include "style.h"
 #include "inicpp.h"
+#include "settings.h"
 #include "../rlImGui/rlImGui.h"
 
-void EditorStyle::Load(std::string name)
+void EditorStyle::Load(std::string name, Settings* settings)
 {
     this->name = name;
     if (name == "default")
@@ -10,7 +11,7 @@ void EditorStyle::Load(std::string name)
         ImGui::StyleColorsClassic(&style);
         return;
     }
-    ini::IniFile t = ini::IniFile("object_data/themes/" + name + ".ini");
+    ini::IniFile t = ini::IniFile(settings->themesPath + "/" + name + ".ini");
     style.Alpha = t["Theme"]["Alpha"].as<float>();
     style.AntiAliasedFill = t["Theme"]["AntiAliasedFill"].as<bool>();
     style.AntiAliasedLines = t["Theme"]["AntiAliasedLines"].as<bool>();
@@ -72,7 +73,7 @@ void EditorStyle::Load(std::string name)
     ImGui::GetStyle() = style;
 }
 
-void EditorStyle::Save()
+void EditorStyle::Save(Settings* settings)
 {
     if (name == "default")
     {
@@ -137,5 +138,5 @@ void EditorStyle::Save()
     t["Theme"]["WindowRounding"] = style.WindowRounding;
     t["Theme"]["WindowTitleAlignX"] = style.WindowTitleAlign.x;
     t["Theme"]["WindowTitleAlignY"] = style.WindowTitleAlign.y;
-    t.save("object_data/themes/" + name + ".ini");
+    t.save(settings->themesPath + "/" + name + ".ini");
 }

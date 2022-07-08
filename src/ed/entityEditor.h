@@ -22,7 +22,7 @@ struct EntityEditor
     EntityEditor(Editor* ed);
 
     // Load the entity listing.
-    void LoadEntityListing(std::string xmlName);
+    void LoadEntityListing();
 
     // Draw the interface for the editor.
     void DrawUI();
