@@ -79,6 +79,15 @@ void LevelEditor::DrawUI()
     ImGui::PushItemWidth(itemWidth);
     ImGuiStringEdit("NPC Palette", &ed->map.references[RT_NPC_PALETTE].dat);
     ImGuiTooltip("Name of the .png in the img folder for NPCs to use (that depend on the NPC palette).");
+    ImGui::SameLine();
+    if (ImGui::Button("View##NpcPalette"))
+    {
+        std::string imgPath = Tileset::GetPath(ed->rsc, ed->map.references[RT_NPC_PALETTE].dat);
+        if (GFile::FileExists(imgPath.c_str()))
+        {
+            ed->imageViewers.push_back(ImageViewer(ed, imgPath));
+        }
+    }
     ImGui::Separator();
     ImGui::PushItemWidth(itemWidth);
     ImGui::InputScalar("Area X", ImGuiDataType_U16, &ed->map.levelSettings[0]);

@@ -24,6 +24,9 @@ struct Tileset
     constexpr static float ATTR_TILE_SIZE = 16;
     constexpr static float UNIT_TYPE_TILE_SIZE = 16;
 
+    // Get the path of a tileset.
+    static std::string GetPath(std::string rsc_k, std::string tilesetName);
+
     // Load a tileset from the tileset section of the resource folder.
     void Load(std::string rsc_k, std::string tilesetName);
 

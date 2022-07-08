@@ -151,7 +151,7 @@ void TilesetEditor::DrawUI()
     ImGui::SetCursorPos(tmp);
     ImGui::InvisibleButton("NoDrag", ImVec2((int)w, (int)h));
     ImGui::End();
-    
+
 }
 
 void TilesetEditor::Update()

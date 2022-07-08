@@ -3,6 +3,7 @@
 #include "attributeEditor.h"
 #include "entityDisplay.h"
 #include "entityEditor.h"
+#include "imageViewer.h"
 #include "levelEditor.h"
 #include "musicPlayer.h"
 #include "palette.h"
@@ -40,6 +41,7 @@ struct Editor
     ProfileEditor profileEditor = ProfileEditor(this); // Profile editor.
     StyleEditor styleEditor = StyleEditor(this); // Style editor.
     MusicPlayer musicPlayer = MusicPlayer(this); // Music player.
+    std::vector<ImageViewer> imageViewers = std::vector<ImageViewer>(); // Image viewers.
     std::vector<TilesetEditor> tilesetEditors = std::vector<TilesetEditor>(); // Tileset editors.
     std::vector<AttributeEditor> attrEditors = std::vector<AttributeEditor>(); // Attribute editors.
     std::vector<ScriptEditor> scriptEditors = std::vector<ScriptEditor>(); // Script editors.

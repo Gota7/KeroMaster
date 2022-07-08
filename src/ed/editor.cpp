@@ -230,6 +230,10 @@ void Editor::DrawUI()
     palette.DrawUI();
 
     // Other windows.
+    for (int i = 0; i < imageViewers.size(); i++)
+    {
+        imageViewers[i].DrawUI();
+    }
     for (int i = 0; i < tilesetEditors.size(); i++)
     {
         tilesetEditors[i].DrawUI();
@@ -278,6 +282,14 @@ void Editor::Update()
     palette.Update();
 
     // Other editors.
+    for (int i = imageViewers.size() - 1; i >= 0; i--)
+    {
+        if (!imageViewers[i].open)
+        {
+            imageViewers[i].Close();
+            imageViewers.erase(imageViewers.begin() + i);
+        }
+    }
     for (int i = tilesetEditors.size() - 1; i >= 0; i--)
     {
         if (!tilesetEditors[i].open)

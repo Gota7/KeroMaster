@@ -5,14 +5,14 @@
 Texture2D Tileset::attrTex;
 Texture2D Tileset::unitType;
 
-void Tileset::Load(std::string rsc_k, std::string tilesetName)
+std::string Tileset::GetPath(std::string rsc_k, std::string tilesetName)
 {
 
     // Where to search for tilesets.
     static std::vector<std::string> lookupPaths = {
-        "/img/",
-        "/localize/en.lproj/",
-        "/localize/ja.lproj/",
+        "img/",
+        "localize/en.lproj/",
+        "localize/ja.lproj/",
     };
 
     // Load the tileset.
@@ -20,14 +20,26 @@ void Tileset::Load(std::string rsc_k, std::string tilesetName)
         std::string imagePath = rsc_k + path + tilesetName + ".png";
         if (GFile::FileExists(imagePath.c_str()))
         {
-            Image image = LoadImage(imagePath.c_str());
+            return imagePath;
+        }
+    }
+    return rsc_k + lookupPaths[0] + tilesetName + ".png";
 
-            if (image.data != nullptr)
-            {
-                tex = LoadTextureFromImage(image);
-                UnloadImage(image);
-                break;
-            }
+}
+
+void Tileset::Load(std::string rsc_k, std::string tilesetName)
+{
+
+
+    // Load the tileset.
+    std::string imagePath = GetPath(rsc_k, tilesetName);
+    if (GFile::FileExists(imagePath.c_str()))
+    {
+        Image image = LoadImage(imagePath.c_str());
+        if (image.data != nullptr)
+        {
+            tex = LoadTextureFromImage(image);
+            UnloadImage(image);
         }
     }
 
@@ -60,7 +72,7 @@ void Tileset::Load(std::string rsc_k, std::string tilesetName)
         }
         f.Close();
     }
-    
+
 }
 
 void Tileset::Unload()
@@ -231,7 +243,7 @@ void Tileset::Draw(u8 xIndex, u8 yIndex, s32 tileX, s32 tileY, f32 tileSize, f32
     {
         return;
     }
-    
+
     // Draw the actual texture.
     DrawTexturePro(
         tex,
