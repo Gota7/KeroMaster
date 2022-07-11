@@ -409,3 +409,73 @@ void Map::DrawEntities(std::map<u8, EntityDisplay>& entities, std::map<std::stri
 
     }
 }
+
+void Map::ImportLayer(std::string path, int layerNum)
+{
+    if (layerNum >= NUM_TILESETS)
+    {
+        return;
+    }
+    GFile f(path.c_str());
+    maps[layerNum].Read(&f);
+    f.Close();
+}
+
+void Map::ExportLayer(std::string path, int layerNum)
+{
+    if (layerNum >= NUM_TILESETS)
+    {
+        return;
+    }
+    GFile f(path.c_str());
+    f.Clear();
+    maps[layerNum].Write(&f);
+    f.Close();
+}
+
+void Map::ImportEntities(std::string path)
+{
+    GFile f(path.c_str());
+    if (f.ReadStr() != "kmENT01")
+    {
+        throw std::string("Invalid entity attribute magic.");
+    }
+    else
+    {
+        u16 numEntities = f.ReadU16();
+        entities.clear();
+        for (u16 i = 0; i < numEntities; i++)
+        {
+            Entity e;
+            e.flags = f.ReadU8();
+            e.id = f.ReadU8();
+            e.variant = f.ReadU8();
+            e.xPos = f.ReadU16();
+            e.yPos = f.ReadU16();
+            e.flag = f.ReadU16();
+            e.data.Read(&f);
+            entities.push_back(e);
+        }
+    }
+    f.Close();
+}
+
+void Map::ExportEntities(std::string path)
+{
+    GFile f(path.c_str());
+    f.Clear();
+    f.WriteNullTerminated("kmENT01");
+    f.Write((u16)entities.size());
+    for (u16 i = 0; i < entities.size(); i++)
+    {
+        Entity* e = &entities[i];
+        f.Write(e->flags);
+        f.Write(e->id);
+        f.Write(e->variant);
+        f.Write(e->xPos);
+        f.Write(e->yPos);
+        f.Write(e->flag);
+        e->data.Write(&f);
+    }
+    f.Close();
+}

@@ -191,8 +191,8 @@
     <arg type="str" desc="Which item to check for." />
     <arg type="str" desc="Which label to jump to." />
   </command>
-  <command name="jmpM" desc="Unused. Seems to be a clone of 'jump', but a number needs to be specified.">
-    <arg type="num" desc="Which flag to check." />
+  <command name="jmpM" desc="Jumps depending on the player's money.">
+    <arg type="num" desc="How much money the player needs at least for the jump to occur." />
     <arg type="str" desc="Which label to jump to." />
   </command>
   <command name="jmpP" desc="Unused. Seems to be a clone of 'jump'.">
@@ -283,11 +283,15 @@
   <command name="plPo" desc="Puts the player at the position of a certain entity.">
     <arg type="str" desc="The data label of the entity to teleport the player to." />
   </command>
+  <command name="plSf" desc="Shifts the player by a certain number of tiles." >
+    <arg type="num" desc="Number of X tiles to shift by." />
+    <arg type="num" desc="Number of Y tiles to shift by." />
+  </command>
   <command name="plSt" desc="Stops the player's momentum." />
   <command name="posN" desc="Teleports all NPCs of a certain data label to an NPC of another label">
     <arg type="str" desc="The data label of the NPCs that are desired to be moved." />
     <arg type="str" desc="The data label of the NPC that serves as the teleport location." />
-    <arg type="num" desc="Doesn't seem to matter." />
+    <arg type="num" desc="1 if the NPCs change direction to match the destination." />
   </command>
   <command name="prm2" desc="Changes the Parameter 2/Variant of an NPC.">
     <arg type="str" desc="The data label of the NPCs that are desired to be changed." />

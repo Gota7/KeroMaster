@@ -59,7 +59,7 @@ void ScriptEditor::LoadXML()
         a = c->FirstChildElement();
         while (a != nullptr)
         {
-            commands[currCommand].args[currArg].type = a->Attribute("type") == "str" ? ARG_TYPE_STRING : ARG_TYPE_NUMBER;
+            commands[currCommand].args[currArg].type = (strcmp(a->Attribute("type"), "str") == 0) ? ARG_TYPE_STRING : ARG_TYPE_NUMBER;
             commands[currCommand].args[currArg].description = a->Attribute("desc");
             currArg++;
             a = a->NextSiblingElement();
@@ -119,38 +119,42 @@ void ScriptEditor::DrawUI()
     ImGui::InputTextMultiline("##Script", buf.begin(), buf.size(), ImVec2(-FLT_MIN, ImGui::GetWindowSize().y - ImGui::GetCursorPosY() - ImGui::GetStyle().FramePadding.y * 4), ImGuiInputTextFlags_Multiline | ImGuiInputTextFlags_CallbackResize, ResizeCallback, &buf);
     ImGui::NextColumn();
     ImGui::InputText("Search", search, 5);
-    for (int i = 0; i < numCommands; i++)
+    if (ImGui::BeginChildFrame(1, ImVec2(-FLT_MIN, ImGui::GetWindowSize().y - ImGui::GetCursorPosY() - ImGui::GetStyle().FramePadding.y * 4), ImGuiWindowFlags_HorizontalScrollbar))
     {
-        ScriptHelpData* c = &commands[i];
-        bool skip = false;
-        for (int j = 0; j < strlen(search); j++)
+        for (int i = 0; i < numCommands; i++)
         {
-            if (search[j] != c->name[j])
+            ScriptHelpData* c = &commands[i];
+            bool skip = false;
+            for (int j = 0; j < strlen(search); j++)
             {
-                skip = true;
-            }
-        }
-        if (skip)
-        {
-            continue;
-        }
-        std::string txt = c->name + " - " + c->description;
-        if (c->numArgs == 0)
-        {
-            ImGui::Text("%s", (" * " + txt).c_str());
-        }
-        else
-        {
-            if (ImGui::TreeNodeEx(txt.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
-            {
-                for (int j = 0; j < c->numArgs; j++)
+                if (search[j] != c->name[j])
                 {
-                    ScriptHelpArg* a = &c->args[j];
-                    ImGui::Text("%s", (" " + std::to_string(j) + ": " + (a->type == ARG_TYPE_STRING ? "String: " : "Number: ") + a->description).c_str());
+                    skip = true;
                 }
-                ImGui::TreePop();
+            }
+            if (skip)
+            {
+                continue;
+            }
+            std::string txt = c->name + " - " + c->description;
+            if (c->numArgs == 0)
+            {
+                ImGui::Text("%s", (" * " + txt).c_str());
+            }
+            else
+            {
+                if (ImGui::TreeNodeEx(txt.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+                {
+                    for (int j = 0; j < c->numArgs; j++)
+                    {
+                        ScriptHelpArg* a = &c->args[j];
+                        ImGui::Text("%s", (" " + std::to_string(j) + ": " + ((a->type == ARG_TYPE_STRING) ? "String: " : "Number: ") + a->description).c_str());
+                    }
+                    ImGui::TreePop();
+                }
             }
         }
+        ImGui::EndChildFrame();
     }
     ImGui::End();
 

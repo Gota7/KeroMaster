@@ -121,4 +121,16 @@ struct Map
     // Draw the entities on the map using the loaded tilesets.
     void DrawEntities(std::map<u8, EntityDisplay>& entities, std::map<std::string, Tileset>& tilesets, Vector2 origin, bool debug = false);
 
+    // Import a tile layer from a file.
+    void ImportLayer(std::string path, int layerNum);
+
+    // Export a tile layer to a file.
+    void ExportLayer(std::string path, int layerNum);
+
+    // Import entities from a file.
+    void ImportEntities(std::string path);
+
+    // Export entities to a file.
+    void ExportEntities(std::string path);
+
 };
