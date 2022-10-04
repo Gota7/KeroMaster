@@ -1,5 +1,6 @@
 <script>
-  <command name="atte" desc="Pauses all events until the game's programming overrides it. Replaces the '<frez' command in newer versions. Unlike '<frez', it seems it's possible to pause while running this command." />
+  <command name="achJ" desc="Seems to update the achievements on Steam to match the player's stamps."/>
+  <command name="atte" desc="Pauses all events until the game's programming overrides it. Replaces the '<frez' command in newer versions." />
   <command name="armF" desc="Unused. Forces a weapon into an arms slot.">
     <arg type="num" desc="The slot to overwrite." />
     <arg type="str" desc="The weapon to change the slot into. Valid inputs are 'Bean', 'Wide', 'Bubble', 'Fire', 'Kurob', 'Rocket' (unused), and 'ArmsX' (unused, crashes the game when fired)." />
@@ -51,6 +52,10 @@
   <command name="curN" desc="Select an NPC label, which can be used later in another NPC-related command by using '-' as the label.">
     <arg type="str" desc="The NPC label to select." />
   </command>
+  <command name="dbgQ" desc="Doesn't appear to do anything.">
+    <arg type="num" desc="For whatever reason, a number is required for the input." />
+  </command>
+  <command name="dbgr" desc="Doesn't seem to do anything." />
   <command name="dely" desc="Delay for a given amount of frames.">
     <arg type="num" desc="Time measured in 1/60th of a second." />
   </command>
@@ -58,8 +63,12 @@
     <arg type="str" desc="The data label of the NPCs that are desired to be changed." />
     <arg type="num" desc="The direction to choose. 0 = Left/Normal, 1 = Right/Alternate" />
   </command>
+  <command name="dl10" desc="Delay for 10 frames (1/6rd of a second)." />
   <command name="dl20" desc="Delay for 20 frames (1/3rd of a second)." />
   <command name="dl60" desc="Delay for 60 frames (1 second)." />
+  <command name="dl2s" desc="Delay for 120 frames (2 seconds)." />
+  <command name="dl3s" desc="Delay for 180 frames (3 seconds)." />
+  <command name="dl4s" desc="Delay for 240 frames (4 seconds)." />
   <command name="drug" desc="Enter the health shop.">
     <arg type="str" desc="Which script label to jump to after exiting the shop." />
   </command>
@@ -74,9 +83,15 @@
   <command name="fadF" desc="Create a window that focuses on a certain spot, that goes away after pushing a button. The 'F' stands for focus.">
     <arg type="num" desc="How many tiles away from the left side of the screen it is." />
     <arg type="num" desc="How many tiles away from the top of the screen it is." />
-    <arg type="num" desc="How large the window should be." />
+    <arg type="num" desc="How large the window should be. Negative numbers make it close in on a spot, while positive numbers make it open up." />
   </command>
   <command name="fadI" desc="Empties the screen of black, such as in level transitions." />
+  <command name="fadK" desc="Create a window that zooms from a certain position, either shrinking or growing.">
+    <arg type="num" desc="How many tiles away from the left side of the screen it is." />
+    <arg type="num" desc="How many tiles away from the top of the screen it is." />
+    <arg type="num" desc="How to transform the window. Negative numbers make it close in on the spot, while positive numbers make it open up from there. The larger the number, the larger the window." />
+  </command>
+  <command name="fadk" desc="Opens up a screen that is partially covered by a '<fadK' command." />
   <command name="fadO" desc="Fills the screen with black." />
   <command name="fcsC" desc="Unused. Completely breaks the script system, DO NOT USE.">
     <arg type="num" desc="Unknown" />
@@ -94,6 +109,7 @@
   <command name="fcsO" desc="The camera used in some areas with lots of slopes. Can also be triggered using an event with data label 'fcsO'.">
     <arg type="num" desc="Whether to snap immediately or not(?)" />
   </command>
+  <command name="fcsS" desc="Unused. Stops the screen moving. (newer versions only)" />
   <command name="fcsU" desc="Forces the camera to focus underneath the player. Can also be triggered using an event with data label 'fcsU'.">
     <arg type="num" desc="Whether to snap immediately or not(?)" />
   </command>
@@ -142,6 +158,11 @@
     <arg type="num" desc="The type of boss bar. 0 = No health bar. 1 = Top of the screen. 2 = Bottom of the screen. 3 = Bottom left of the screen. (used in Clock Man fight) Anything else = Top right of the screen, barely visible." />
   </command>
   <command name="govr" desc="Triggers a game over." />
+  <command name="gpfC" desc="I can't figure out what this one is supposed to do. It seems to try to set a global flag, and runs an event if it fails to(?)">
+    <arg type="num" desc="The amount of flags to set(?)" />
+    <arg type="num" desc="The global flag to set(?)" />
+    <arg type="str" desc="The event label to jump to." />
+  </command>
   <command name="gpfM" desc="Clears a game profile flag/global flag. (i.e. which modes you beat, achievements, tutorial)">
     <arg type="num" desc="The global flag to clear." />
   </command>
@@ -236,7 +257,11 @@
   <command name="lump" desc="I'm not sure what this is for. It seems to make the text disappear on it's own? It's only used in the arms shop.">
     <arg type="num" desc="Unknown." />
   </command>
-  <command name="mapc" desc="Loads (tileset)-.png instead of (tileset).png when triggered with a special flag set. This is only used in Stage 7 with Omake mode in the final game.">
+  <command name="manu" desc="Opens a certain page in the manual, then jumps to a label.">
+    <arg type="num" desc="The page to jump to, minus one. (Set to 0 for Page 1)" />
+    <arg type="str" desc="The label to jump to after closing the manual." />
+  </command>
+  <command name="mapc" desc="Loads (tileset)-.png instead of (tileset).png when triggered with a special flag set. (Does not work in the latest version!)">
     <arg type="str" desc="The flag to load. Not a number, but rather a string from a hardcoded list of flags. (do numbered flags work?)" />
   </command>
   <command name="mapR" desc="Replaces the room the player is currently in, but the entities stay the same.">
@@ -258,6 +283,9 @@
   </command>
   <command name="muLp" desc="Play the .ptcop file loaded by a previous muLd command." />
   <command name="muOc" desc="Plays the .ptcop file loaded by a muLd once." />
+  <command name="muVo" desc="Modifies the volume of the music in the background. Resets when another music track plays.">
+    <arg type="num" desc="The volume amount. Default value in-game seems to be 42." />
+  </command>
   <command name="muWS" desc="Similar to 'dely', but only while playing a music track.">
     <arg type="num" desc="Time measured in 1/60th of a second." />
   </command>
@@ -277,6 +305,10 @@
   <command name="nodc" desc="Stops the text, then continues right when you push a button." />
   <command name="nodE" desc="Unused. Stops the text, then stops running the script when you push a button." />
   <command name="nxtl" desc="Moves the text printing location down one line." />
+  <command name="oURL" desc="Opens a URL corresponding to your version in the default web browser in the Pink games. Doesn't do anything in Kero Blaster because there are no URLs." />
+  <command name="pad2" desc="Unused. Doesn't seem to do anything, only used in 00port.pxpack.">
+    <arg type="str" desc="An event label to jump to." />
+  </command>
   <command name="pkup" desc="Gives the player an item or weapon. If the player already has a weapon, it gets upgraded.">
     <arg type="str" desc="The item or weapon you want to obtain." />
     <arg type="num" desc="Doesn't seem to matter." />
@@ -286,6 +318,9 @@
   </command>
   <command name="plDi" desc="Changes the player's direction.">
     <arg type="num" desc="The direction to look. 0 = Left, 1 = Right, Anything else = Player faces right, jetpack faces left" />
+  </command>
+  <command name="plDN" desc="Makes the player face towards a certain NPC. (Later versions only)">
+    <arg type="str" desc="The data label of the NPC." />
   </command>
   <command name="plEq" desc="Toggles whether the player's weapon disappears and become unusable, i.e. in the hospital. Resets after entering another room">
     <arg type="num" desc="0 = No weapon, Anything else = Weapon" />
@@ -313,6 +348,9 @@
   </command>
   <command name="qOK_" desc="Pauses the game and makes a selection box that says 'OK' appear. It only shows up properly in a shop screen." />
   <command name="quie" desc="I'm not sure what this does. It's used in the scene where Mizutani-san/Kajiya activates Omake Mode." />
+  <command name="regN" desc="Unused. Probably meant to display a special string from memory.">
+    <arg type="num" desc="Which number string to display." />
+  </command>
   <command name="regT" desc="Displays a special string from memory. Only used in the arms shop.">
     <arg type="num" desc="Which number string to display." />
   </command>
@@ -330,6 +368,11 @@
   </command>
   <command name="sav2" desc="Saves the player's inventory and flags, but not location. Used when you leave after finding a Kuro Blaster upgrade." />
   <command name="save" desc="Saves the game right then and there." />
+  <command name="SCEs" desc="Not sure what it does. It's only used in the 'Thanks for PLaying!' screen in the Zangyou credits.">
+    <arg type="str" desc="The data label of an NPC. The only one used in-game is 'fcs1'." />
+    <arg type="num" desc="Unknown." />
+    <arg type="num" desc="Unknown." />
+  </command>
   <command name="scrF" desc="Turns off the UI and shifts the view downward to fill the space.">
     <arg type="num" desc="0 = Show UI, Anything else = Hide UI" />
   </command>
@@ -350,7 +393,7 @@
   <command name="skip" desc="When the Skip flag is set (i.e. after beating the game), jumps to an event after pressing the escape key.">
     <arg type="str" desc="Which label to jump to." />
   </command>
-  <command name="skLT" desc="Presumably sets something. Only used on the title screen..">
+  <command name="skLT" desc="Presumably sets something. Only used on the title screen.">
     <arg type="num" desc="Unknown. Probably turns it on and off?" />
   </command>
   <command name="skpE" desc="Jumps to an event set by a 'skip' command, even when the Skip flag isn't set.">
@@ -371,13 +414,14 @@
   <command name="souv" desc="Play a sound once">
     <arg type="str" desc="The .ptnoise file to play." />
   </command>
+  <command name="stmC" desc="Check if the game is connected to Steam." />
   <command name="stgB" desc="Takes the player to an intro screen for a stage, then transports the player to a map.">
     <arg type="num" desc="The stage number." />
     <arg type="str" desc="The data label of the NPCs that are desired to be changed." />
     <arg type="str" desc="Not sure. This seems to be the NPC that the player spawns at, while the game runs the 'Intro' event." />
     <arg type="num" desc="Which direction to face. 0" />
   </command>
-  <command name="stgR" desc="Restarts the stage(?)" />
+  <command name="stgR" desc="Restarts the stage." />
   <command name="stgS" desc="Sets the current stage number.">
     <arg type="num" desc="The stage number to change to." />
   </command>
