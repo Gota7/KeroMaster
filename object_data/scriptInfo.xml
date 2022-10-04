@@ -262,7 +262,7 @@
     <arg type="str" desc="The label to jump to after closing the manual." />
   </command>
   <command name="mapc" desc="Loads (tileset)-.png instead of (tileset).png when triggered with a special flag set. (Does not work in the latest version!)">
-    <arg type="str" desc="The flag to load. Not a number, but rather a string from a hardcoded list of flags. (do numbered flags work?)" />
+    <arg type="str" desc="The flag to check. Numbers and hardcoded strings both work." />
   </command>
   <command name="mapR" desc="Replaces the room the player is currently in, but the entities stay the same.">
     <arg type="str" desc="The filename of the room to enter." />
@@ -342,6 +342,9 @@
     <arg type="str" desc="The data label of the NPC that serves as the teleport location." />
     <arg type="num" desc="If 1 the NPCs change direction to match the destination entity's." />
   </command>
+  <command name="prio" desc="Unknown. Only used in the dialogue with Sasuke in the Kitchen when the player gives up.">
+    <arg type="num" desc="Unknown. Only set to 1 in the used game." />
+  </command>
   <command name="prm2" desc="Changes the Parameter 2/Variant of an NPC.">
     <arg type="str" desc="The data label of the NPCs that are desired to be changed." />
     <arg type="num" desc="What to set Variant/Param2 to." />
@@ -403,8 +406,8 @@
     <arg type="str" desc="The event to run after you choose a file." />
     <arg type="str" desc="The event to run if you select 'Cancel'." />
   </command>
-  <command name="slPo" desc="Enables the player's hitbox. (needs more investigation)" />
-  <command name="slPu" desc="Disables the player's hitbox. (needs more investigation)" />
+  <command name="slPo" desc="Unknown. Used in the script for doors that take you to another room." />
+  <command name="slPu" desc="Makes the player face to the left, but probably does something else. Used in the script run when you exit the convenience store in Stage 7." />
   <command name="soul" desc="Sound loop. Indefinitely loops a sound until the next sous command.">
     <arg type="str" desc="The .ptnoise file to loop." />
   </command>
