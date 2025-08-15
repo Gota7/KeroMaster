@@ -10,7 +10,7 @@ struct Editor;
 struct Settings
 {
     u16 versionMajor = 0; // Major version.
-    u16 versionMinor = 2; // Minor version.
+    u16 versionMinor = 3; // Minor version.
     u16 versionRevision = 0; // Revision version.
     int width = 1240; // Width of the window.
     int height = 720; // Height of the window.
