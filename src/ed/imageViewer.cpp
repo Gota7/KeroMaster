@@ -55,7 +55,7 @@ void ImageViewer::DrawUI()
     imgPos = ImGui::GetCursorScreenPos();
     imgSizeX = w;
     imgSizeY = h;
-    RLImGuiImageSize(&tex, (int)h, (int)w);
+    rlImGuiImageSize(&tex, (int)h, (int)w);
     ImGui::End();
 
 }

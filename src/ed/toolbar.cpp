@@ -73,7 +73,7 @@ void Toolbar::DrawUI()
     // Zoom setting.
     ImGui::SameLine();
     float newZoom = ed->cam.zoom;
-    ImGui::SliderFloat("", &newZoom, ed->MIN_ZOOM, ed->MAX_ZOOM, "Scale: %.2fx", ImGuiSliderFlags_NoRoundToFormat);
+    ImGui::SliderFloat("##Scale", &newZoom, ed->MIN_ZOOM, ed->MAX_ZOOM, "Scale: %.2fx", ImGuiSliderFlags_NoRoundToFormat);
     if (ed->cam.zoom != newZoom)
     {
         ed->Zoom({ GetScreenWidth() / 2.0f, GetScreenHeight() / 2.0f }, newZoom, false);

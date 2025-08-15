@@ -19,30 +19,6 @@
 #        raylib/src/external/glfw/deps/mingw
 #)
 
-find_package(raylib 3.5.0 QUIET)
-
-if (NOT raylib_FOUND)
-  include(FetchContent)
-
-  FetchContent_Declare(
-    raylib
-    URL https://github.com/raysan5/raylib/archive/master.tar.gz
-  )
-
-  FetchContent_GetProperties(raylib)
-  if (NOT raylib_POPULATED)
-    set(FETCHCONTENT_QUIET NO)
-    FetchContent_Populate(raylib)
-
-    set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-    set(SUPPORT_FILEFORMAT_GLTF ON CACHE BOOL "" FORCE)
-
-    add_subdirectory(${raylib_SOURCE_DIR} ${raylib_BINARY_DIR})
-
-  endif()
-
-endif()
-
 #TARGET_COMPILE_DEFINITIONS(raylib PRIVATE PLATFORM_DESKTOP GRAPHICS_API_OPENGL_33)
 
 #TARGET_COMPILE_OPTIONS(raylib PRIVATE -std=c99 -fno-strict-aliasing)
@@ -51,24 +27,24 @@ endif()
 #TARGET_LINK_LIBRARIES(raylib PUBLIC X11 pthread dl)
 
 ### GLAD
-find_package(glad 0.1.34 QUIET)
-if (NOT glad_FOUND)
-  include(FetchContent)
+# find_package(glad 0.1.34 QUIET)
+# if (NOT glad_FOUND)
+#   include(FetchContent)
 
-  FetchContent_Declare(
-    glad
-    URL https://github.com/Dav1dde/glad/archive/master.tar.gz
-  )
+#   FetchContent_Declare(
+#     glad
+#     URL https://github.com/Dav1dde/glad/archive/master.tar.gz
+#   )
 
-  FetchContent_GetProperties(glad)
-  if (NOT glad_POPULATED)
-    set(FETCHCONTENT_QUIET NO)
-    FetchContent_Populate(glad)
-    add_subdirectory(${glad_SOURCE_DIR} ${glad_BINARY_DIR})
+#   FetchContent_GetProperties(glad)
+#   if (NOT glad_POPULATED)
+#     set(FETCHCONTENT_QUIET NO)
+#     FetchContent_Populate(glad)
+#     add_subdirectory(${glad_SOURCE_DIR} ${glad_BINARY_DIR})
 
-  endif()
+#   endif()
 
-endif()
+# endif()
 
 ### IMGUI
 
@@ -86,5 +62,5 @@ TARGET_INCLUDE_DIRECTORIES(imgui
     PUBLIC imgui imgui/examples
     PRIVATE raylib/src/external raylib/src)
 
-TARGET_COMPILE_DEFINITIONS(imgui PUBLIC IMGUI_IMPL_OPENGL_LOADER_GLAD)
-TARGET_LINK_LIBRARIES(imgui glad)
+# TARGET_COMPILE_DEFINITIONS(imgui PUBLIC IMGUI_IMPL_OPENGL_LOADER_GLAD)
+# TARGET_LINK_LIBRARIES(imgui glad)

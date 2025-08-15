@@ -1,7 +1,7 @@
 //- Common Code For All Addons needed just to ease inclusion as separate files in user code ----------------------
-#include <imgui.h>
 #undef IMGUI_DEFINE_MATH_OPERATORS
 #define IMGUI_DEFINE_MATH_OPERATORS
+#include <imgui.h>
 #include <imgui_internal.h>
 //-----------------------------------------------------------------------------------------------------------------
 
@@ -219,7 +219,8 @@ bool DateChooser(const char* label, tm& dateOut,const char* dateFormat,bool clos
     static const ImVec4 transparent(1,1,1,0);
     ImGui::PushStyleColor(ImGuiCol_Button,transparent);
 
-    static char yearString[12]="";sprintf(yearString,"%d",1900+d.tm_year);
+    static char yearString[12]="";
+    snprintf(yearString,sizeof(yearString),"%d",1900+d.tm_year);
     //const float monthPartWidth = arrowLeftWidth + arrowRightWidth + ImGui::CalcTextSize(monthNames[d.tm_mon]).x;
     const float yearPartWidth = arrowLeftWidth + arrowRightWidth + ImGui::CalcTextSize(yearString).x + widthAdder*0.5f;
 
@@ -284,7 +285,7 @@ bool DateChooser(const char* label, tm& dateOut,const char* dateFormat,bool clos
         const bool bis = ((year%4)==0) && ((year%100)!=0 || (year%400)==0);
         if (bis) maxDayOfCurMonth=29;
     }
-    static char curDayStr[3]="";
+    static char curDayStr[4]="";
 
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered,style.Colors[ImGuiCol_HeaderHovered]);
     ImGui::PushStyleColor(ImGuiCol_ButtonActive,style.Colors[ImGuiCol_HeaderActive]);
@@ -309,8 +310,8 @@ bool DateChooser(const char* label, tm& dateOut,const char* dateFormat,bool clos
             int cday=curDay+7*row;
             if (cday>=0 && cday<maxDayOfCurMonth)  {
                 ImGui::PushID(row*10+dw);
-                if (cday<9) sprintf(curDayStr," %d",cday+1);
-                else sprintf(curDayStr,"%d",cday+1);
+                if (cday<9) snprintf(curDayStr,sizeof(curDayStr)," %d",cday+1);
+                else snprintf(curDayStr,sizeof(curDayStr),"%d",cday+1);
                 if (ImGui::SmallButton(curDayStr)) {
                     //-------------------------
                     value_changed = true;

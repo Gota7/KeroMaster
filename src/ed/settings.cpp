@@ -299,7 +299,7 @@ void Settings::DrawUI(Editor* ed)
         }
         if (ImGui::BeginPopupModal("Invalid Resource Path!"))
         {
-            ImGui::Text(("The selected path, \"" + rscPath + "\" is invalid.").c_str());
+            ImGui::Text("The selected path, \"%s\" is invalid.", rscPath.c_str());
             if (ImGui::Button("Ok"))
             {
                 rscPath = "";

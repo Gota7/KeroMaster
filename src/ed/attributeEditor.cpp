@@ -141,7 +141,7 @@ void AttributeEditor::DrawUI()
     imgSizeX = w;
     imgSizeY = h;
     ImVec2 tmp = ImGui::GetCursorPos();
-    RLImGuiImageSize(&finalTarget.texture, (int)h, (int)w);
+    rlImGuiImageSize(&finalTarget.texture, (int)h, (int)w);
     ImGui::SetCursorPos(tmp);
     ImGui::InvisibleButton("NoDrag", ImVec2((int)w, (int)h));
     ImGui::End();

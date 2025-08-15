@@ -5,14 +5,13 @@
 
 std::string BgmPlayer::rsc;
 pxtnService BgmPlayer::pxtn;
-FILE *BgmPlayer::handle = nullptr;
 bool BgmPlayer::playing = false;
 bool BgmPlayer::audioInitialized = false;
 std::mutex BgmPlayer::audioMutex;
-ma_device BgmPlayer::device;
+AudioStream BgmPlayer::stream;
 float BgmPlayer::volume = 1;
 float BgmPlayer::prevVolume = 1;
-char** BgmPlayer::songs = nullptr;
+char **BgmPlayer::songs = nullptr;
 int BgmPlayer::numSongs = 0;
 std::string BgmPlayer::currSong;
 int BgmPlayer::currSongInd = 0;
@@ -31,19 +30,20 @@ void BgmPlayer::Init(std::string rsc_k)
     }
     pxtn.set_destination_quality(NUM_CHANNELS, SAMPLE_RATE);
 
-    // Intialize output audio stream.
-    ma_device_config config = ma_device_config_init(ma_device_type_playback);
-    config.playback.format = ma_format_s16;
-    config.playback.channels = NUM_CHANNELS;
-    config.sampleRate = SAMPLE_RATE;
-    config.dataCallback = AudioCallback;
+    stream = LoadAudioStream(SAMPLE_RATE, 16, NUM_CHANNELS);
+    SetAudioStreamCallback(stream, BgmPlayer::AudioCallback);
+    PlayAudioStream(stream);
+    audioInitialized = true;
+}
 
-    if (ma_device_init(NULL, &config, &device) == MA_SUCCESS)
+void BgmPlayer::Dispose()
+{
+    if (audioInitialized)
     {
-        audioInitialized = true;
-        ma_device_start(&device);
+        StopAudioStream(stream);
+        UnloadAudioStream(stream);
+        audioInitialized = false;
     }
-
 }
 
 // Load the song listing.
@@ -51,7 +51,8 @@ void BgmPlayer::LoadSongList()
 {
 
     // Delete if needed.
-    if (!songs) DelImGuiStringList(songs, numSongs);
+    if (!songs)
+        DelImGuiStringList(songs, numSongs);
 
     // Get a new song listing.
     std::vector<std::string> songList = ReadFilesFromDir(rsc + "/bgm");
@@ -68,23 +69,16 @@ void BgmPlayer::LoadSongList()
             break;
         }
     }
-
 }
 
 void BgmPlayer::Play(std::string bgmName)
 {
-
-    // Close handle if needed.
-    if (handle != nullptr)
-    {
-        fclose(handle);
-        handle = nullptr;
-    }
-
     // Open file and lock data.
     audioMutex.lock();
     currSong = bgmName;
-    handle = fopen((rsc + "/bgm/" + bgmName + ".ptcop").c_str(), "r");
+    auto ptcopPath = rsc + "/bgm/" + bgmName + ".ptcop";
+    auto handle = fopen(ptcopPath.c_str(), "r");
+    GFile gfile(handle); // RAII takes care of closing
     playing = false;
 
     pxtnDescriptor desc;
@@ -115,7 +109,6 @@ void BgmPlayer::Play(std::string bgmName)
     playing = true;
 
     audioMutex.unlock();
-    
 }
 
 void BgmPlayer::Pause()
@@ -125,20 +118,12 @@ void BgmPlayer::Pause()
 
 void BgmPlayer::Resume()
 {
-    if (handle != nullptr)
-    {
-        playing = true;
-    }
+    playing = true;
 }
 
 void BgmPlayer::Stop()
 {
-    if (handle != nullptr)
-    {
-        playing = false;
-        fclose(handle);
-        handle = nullptr;
-    }
+    playing = false;
 }
 
 int32_t BgmPlayer::GetPos()
@@ -151,10 +136,11 @@ int32_t BgmPlayer::GetEnd()
     return pxtn.moo_get_end_clock();
 }
 
-void BgmPlayer::AudioCallback(ma_device *pDevice, void *pOutput, const void *pInput, ma_uint32 frameCount)
+void BgmPlayer::AudioCallback(void *pOutput, unsigned int frameCount)
 {
     bool lock = audioMutex.try_lock();
-    if (!lock) return;
+    if (!lock)
+        return;
 
     if (!playing)
     {

@@ -17,13 +17,14 @@ void Editor::Init()
     settings.Load();
 
     // Then set up the main window.
-    SetConfigFlags(FLAG_WINDOW_RESIZABLE | (settings.maximized ? FLAG_WINDOW_MAXIMIZED : 0));
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_HIGHDPI | (settings.maximized ? FLAG_WINDOW_MAXIMIZED : 0));
     InitWindow(settings.width, settings.height, "Kero Master");
+    InitAudioDevice();
     SetExitKey(0);
     icon = LoadImage("icon.png");
     SetWindowIcon(icon);
     SetTargetFPS(60);
-    SetupRLImGui(true);
+    rlImGuiSetup(true);
     style.Load(settings.currStyle, &settings);
 
     // Initialize editor.
@@ -46,7 +47,7 @@ int Editor::EditorLoop()
         {
             if (!settings.show) settings.show = true;
             ClearBackground(fadeColor);
-            BeginRLImGui();
+            rlImGuiBegin();
             ImGui::OpenPopup("Editor Settings");
             settings.DrawUI(this);
         }
@@ -55,7 +56,7 @@ int Editor::EditorLoop()
         else
         {
             Draw();
-            BeginRLImGui();
+            rlImGuiBegin();
             DrawUI();
             settings.DrawUI(this);
         }
@@ -64,7 +65,7 @@ int Editor::EditorLoop()
         //ImGui::ShowDemoWindow();
 
         // Finish drawing.
-        EndRLImGui();
+        rlImGuiEnd();
         EndDrawing();
         Update();
 
@@ -88,7 +89,7 @@ int Editor::EditorLoop()
 
     // Unload everything.
     UnloadImage(icon);
-    ShutdownRLImGui();
+    rlImGuiShutdown();
     CloseWindow();
 
     // Nothing wrong, return.
@@ -817,12 +818,8 @@ void Editor::DrawAboutPopup()
         focus.isModal |= true;
         ImGui::TextColored(
             ImVec4(.4, 1, 0, 1),
-            (
-                "Kero Master - Version " +
-                std::to_string(settings.versionMajor) +
-                "." + std::to_string(settings.versionMinor) +
-                "." + std::to_string(settings.versionRevision)
-            ).c_str()
+            "Kero Master - Version %d.%d.%d",
+            settings.versionMajor, settings.versionMinor, settings.versionRevision
         );
         ImGui::TextColored(ImVec4(1, .1, .5, 1), "\tAn editor for Kero Blaster, Pink Hour, and Pink Heaven.");
         ImGui::Separator();

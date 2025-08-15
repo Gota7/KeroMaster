@@ -1107,7 +1107,7 @@ bool pxtnService::_x3x_SetVoiceNames()
 	for( int32_t i = 0; i < _woice_num; i++ )
 	{
 		char name[ pxtnMAX_TUNEWOICENAME + 1 ];
-		sprintf( name, "voice_%02d", i );
+		snprintf( name, sizeof(name), "voice_%02d", i );
 		_woices[ i ]->set_name_buf( name, 8 );
 	}
 	return true;

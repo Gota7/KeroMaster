@@ -40,6 +40,18 @@ GFile::GFile(const char *fileName)
     Init();
 }
 
+GFile::GFile(FILE *handle)
+{
+    this->handle = handle;
+    isMem = false;
+    Init();
+}
+
+GFile::~GFile()
+{
+    Close();
+}
+
 void GFile::Init()
 {
     if (systemEndian == 0)
@@ -75,6 +87,7 @@ void GFile::Init()
     {
         fseek(handle, 0, SEEK_END);
         fileSize = ftell(handle);
+        fseek(handle, 0, SEEK_SET);
     }
     position = 0;
 }
@@ -93,9 +106,10 @@ void GFile::SetEndian(bool big)
 
 void GFile::Close()
 {
-    if (!isMem)
+    if (handle != nullptr)
     {
         fclose(handle);
+        handle = nullptr;
     }
 }
 

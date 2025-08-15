@@ -1,7 +1,8 @@
-#include "fileBrowser.h"
 #ifndef IMGUI_DEFINE_MATH_OPERATORS
 #define IMGUI_DEFINE_MATH_OPERATORS
 #endif
+
+#include "fileBrowser.h"
 #include "imgui_internal.h"
 
 #include <iostream>
@@ -21,7 +22,7 @@
 #ifndef NOMINMAX
     #define NOMINMAX
 #endif
-#include "dirent/dirent.h"
+#include <Dirent/dirent.h>
 #include <windows.h>
 #else
 #include <dirent.h>
@@ -29,6 +30,8 @@
 
 namespace imgui_addons
 {
+    static const char *ALL_VALID_FILES_EXT_TXT = "All valid files";
+
     ImGuiFileBrowser::ImGuiFileBrowser()
     {
         filter_mode = FilterMode_Files | FilterMode_Dirs;
@@ -39,8 +42,7 @@ namespace imgui_addons
         is_dir = false;
         filter_dirty = true;
         is_appearing = true;
-        show_files_with_valid_extensions = true;
-        show_all_files = false;
+        show_all_valid_files = false;
 
         col_items_limit = 12;
         selected_idx = -1;
@@ -97,6 +99,7 @@ namespace imgui_addons
         is_dir = false;
         filter_dirty = true;
         is_appearing = true;
+        show_all_valid_files = false;
 
         //Clear pointer references to subdirs and subfiles
         filtered_dirs.clear();
@@ -112,13 +115,14 @@ namespace imgui_addons
 
     bool ImGuiFileBrowser::showFileDialog(const std::string& label, const DialogMode mode, const ImVec2& sz_xy, const std::string& valid_types)
     {
+
         dialog_mode = mode;
         ImGuiIO& io = ImGui::GetIO();
         max_size.x = io.DisplaySize.x;
         max_size.y = io.DisplaySize.y;
         ImGui::SetNextWindowSizeConstraints(min_size, max_size);
         ImGui::SetNextWindowPos(io.DisplaySize * 0.5f, ImGuiCond_Appearing, ImVec2(0.5f,0.5f));
-        ImGui::SetNextWindowSize(ImVec2(std::max(sz_xy.x, min_size.x), std::max(sz_xy.y, min_size.y)), ImGuiCond_Appearing);
+        ImGui::SetNextWindowSize(ImVec2(std::max<float>(sz_xy.x, min_size.x), std::max<float>(sz_xy.y, min_size.y)), ImGuiCond_Appearing);
 
         //Set Proper Filter Mode.
         if(mode == DialogMode::SELECT)
@@ -232,7 +236,7 @@ namespace imgui_addons
         ImGui::BeginChild("##NavigationWindow", nw_size, true, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar);
 
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.882f, 0.745f, 0.078f,1.0f));
-        for(int i = 0; i < current_dirlist.size(); i++)
+        for(std::vector<std::string>::size_type i = 0; i < current_dirlist.size(); i++)
         {
             if( ImGui::Button(current_dirlist[i].c_str()) )
             {
@@ -261,10 +265,10 @@ namespace imgui_addons
                     if(ImGui::BeginPopup("##NavBarDropboxPopup"))
                     {
                         ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.125f, 0.125f, 0.125f, 1.0f));
-                        if(ImGui::ListBoxHeader("##NavBarDropBox", ImVec2(0, list_item_height* 5)))
+                        if(ImGui::BeginListBox("##NavBarDropBox", ImVec2(0, list_item_height* 5)))
                         {
                             ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.882f, 0.745f, 0.078f,1.0f));
-                            for(int j = i+1; j < current_dirlist.size(); j++)
+                            for(std::vector<std::string>::size_type j = i+1; j < current_dirlist.size(); j++)
                             {
                                 if(ImGui::Selectable(current_dirlist[j].c_str(), false) && j != current_dirlist.size() - 1)
                                 {
@@ -273,7 +277,7 @@ namespace imgui_addons
                                 }
                             }
                             ImGui::PopStyleColor();
-                            ImGui::ListBoxFooter();
+                            ImGui::EndListBox();
                         }
                         ImGui::PopStyleColor();
                         ImGui::EndPopup();
@@ -285,7 +289,7 @@ namespace imgui_addons
                 {
                     ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 1.0f, 1.0f, 0.01f));
                     ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f,1.0f));
-                    ImGui::ArrowButtonEx("##Right", ImGuiDir_Right, ImVec2(frame_height, frame_height), ImGuiButtonFlags_Disabled);
+                    ImGui::ArrowButtonEx("##Right", ImGuiDir_Right, ImVec2(frame_height, frame_height), ImGuiItemFlags_Disabled);
                     ImGui::SameLine(0,0);
                     ImGui::PopStyleColor(2);
                 }
@@ -328,15 +332,15 @@ namespace imgui_addons
             return show_error;
 
         //Reinitialize the limit on number of selectables in one column based on height
-        col_items_limit = static_cast<int>(std::max(1.0f, window_content_height/list_item_height));
-        int num_cols = static_cast<int>(std::max(1.0f, std::ceil(static_cast<float>(filtered_dirs.size() + filtered_files.size()) / col_items_limit)));
+        col_items_limit = static_cast<int>(std::max<float>(1.0f, window_content_height/list_item_height));
+        int num_cols = static_cast<int>(std::max<float>(1.0f, std::ceil(static_cast<float>(filtered_dirs.size() + filtered_files.size()) / col_items_limit)));
 
         //Limitation by ImGUI in 1.75. If columns are greater than 64 readjust the limit on items per column and recalculate number of columns
         if(num_cols > 64)
         {
             int exceed_items_amount = (num_cols - 64) * col_items_limit;
             col_items_limit += static_cast<int>(std::ceil(exceed_items_amount/64.0));
-            num_cols = static_cast<int>(std::max(1.0f, std::ceil(static_cast<float>(filtered_dirs.size() + filtered_files.size()) / col_items_limit)));
+            num_cols = static_cast<int>(std::max<float>(1.0f, std::ceil(static_cast<float>(filtered_dirs.size() + filtered_files.size()) / col_items_limit)));
         }
 
         float content_width = num_cols * col_width;
@@ -350,12 +354,12 @@ namespace imgui_addons
         //Output directories in yellow
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.882f, 0.745f, 0.078f,1.0f));
         int items = 0;
-        for (int i = 0; i < filtered_dirs.size(); i++)
+        for (std::vector<const Info*>::size_type i = 0; i < filtered_dirs.size(); i++)
         {
             if(!filtered_dirs[i]->is_hidden || show_hidden)
             {
                 items++;
-                if(ImGui::Selectable(filtered_dirs[i]->name.c_str(), selected_idx == i && is_dir, ImGuiSelectableFlags_AllowDoubleClick))
+                if(ImGui::Selectable(filtered_dirs[i]->name.c_str(),selected_idx == static_cast<int>(i) && is_dir, ImGuiSelectableFlags_AllowDoubleClick))
                 {
                     selected_idx = i;
                     is_dir = true;
@@ -377,12 +381,12 @@ namespace imgui_addons
         ImGui::PopStyleColor(1);
 
         //Output files
-        for (int i = 0; i < filtered_files.size(); i++)
+        for (std::vector<const Info*>::size_type i = 0; i < filtered_files.size(); i++)
         {
             if(!filtered_files[i]->is_hidden || show_hidden)
             {
                 items++;
-                if(ImGui::Selectable(filtered_files[i]->name.c_str(), selected_idx == i && !is_dir, ImGuiSelectableFlags_AllowDoubleClick))
+                if(ImGui::Selectable(filtered_files[i]->name.c_str(), selected_idx == static_cast<int>(i) && !is_dir, ImGuiSelectableFlags_AllowDoubleClick))
                 {
                     //int len = filtered_files[i]->name.length();
                     selected_idx = i;
@@ -411,17 +415,18 @@ namespace imgui_addons
     {
         std::string label = (dialog_mode == DialogMode::SAVE) ? "Save As:" : "Open:";
         ImGuiStyle& style = ImGui::GetStyle();
-        ImGuiIO& io = ImGui::GetIO();
 
         ImVec2 pw_pos = ImGui::GetWindowPos();
         ImVec2 pw_content_sz = ImGui::GetWindowSize() - style.WindowPadding * 2.0;
         ImVec2 cursor_pos = ImGui::GetCursorPos();
 
-        if(ext_box_width < 0.0)
-            ext_box_width = ImGui::CalcTextSize(".abc").x + 100;
         float label_width = ImGui::CalcTextSize(label.c_str()).x + style.ItemSpacing.x;
         float frame_height_spacing = ImGui::GetFrameHeightWithSpacing();
         float input_bar_width = pw_content_sz.x - label_width;
+
+        if(ext_box_width < 0.0)
+            ext_box_width = ImGui::CalcTextSize("All Valid Files").x + style.ItemSpacing.x + ImGui::GetFrameHeightWithSpacing() + 10;
+
         if(dialog_mode != DialogMode::SELECT)
             input_bar_width -= (ext_box_width + style.ItemSpacing.x);
 
@@ -442,9 +447,10 @@ namespace imgui_addons
             {
                 struct stat s;
                 stat( input_fn, &s );
+
+                //If input is a directory...
                 if ( S_ISDIR( s.st_mode ) )
                 {
-                    //If input is a directory...
                     current_path = input_fn;
                     std::replace( current_path.begin(), current_path.end(), '\\', '/' );
 
@@ -467,18 +473,16 @@ namespace imgui_addons
         }
         ImGui::PopItemWidth();
 
-        //If input bar was focused clear selection
-        if(ImGui::IsItemEdited())
-            selected_idx = -1;
-
         // If Input Bar is edited show a list of files or dirs matching the input text.
         if(ImGui::IsItemEdited() || ImGui::IsItemActivated())
         {
+            //If input bar was focused clear selection
+            selected_idx = -1;
             //If dialog_mode is OPEN/SAVE then filter from list of files..
             if(dialog_mode == DialogMode::OPEN || dialog_mode == DialogMode::SAVE)
             {
                 inputcb_filter_files.clear();
-                for(int i = 0; i < subfiles.size(); i++)
+                for(std::vector<Info>::size_type i = 0; i < subfiles.size(); i++)
                 {
                     if(ImStristr(subfiles[i].name.c_str(), nullptr, input_fn, nullptr) != nullptr)
                         inputcb_filter_files.push_back(std::ref(subfiles[i].name));
@@ -489,7 +493,7 @@ namespace imgui_addons
             else if(dialog_mode == DialogMode::SELECT)
             {
                 inputcb_filter_files.clear();
-                for(int i = 0; i < subdirs.size(); i++)
+                for(std::vector<Info>::size_type i = 0; i < subdirs.size(); i++)
                 {
                     if(ImStristr(subdirs[i].name.c_str(), nullptr, input_fn, nullptr) != nullptr)
                         inputcb_filter_files.push_back(std::ref(subdirs[i].name));
@@ -524,14 +528,8 @@ namespace imgui_addons
         bool show_error = false;
         float frame_height = ImGui::GetFrameHeight();
         float frame_height_spacing = ImGui::GetFrameHeightWithSpacing();
-        float opensave_btn_width = getButtonSize("Open").x;     // Since both Open/Save are 4 characters long, width gonna be same.
-        float selcan_btn_width = getButtonSize("Cancel").x;     // Since both Cacnel/Select have same number of characters, so same width.
-        float buttons_xpos;
-
-        if (dialog_mode == DialogMode::SELECT)
-            buttons_xpos = pw_size.x - opensave_btn_width - (2.0f * selcan_btn_width) - ( 2.0f * style.ItemSpacing.x) - style.WindowPadding.x;
-        else
-            buttons_xpos = pw_size.x - opensave_btn_width - selcan_btn_width - style.ItemSpacing.x - style.WindowPadding.x;
+        float button_width = (ext_box_width - style.ItemSpacing.x) / ( (dialog_mode == DialogMode::SELECT) ? 3.0 : 2.0 );
+        float buttons_xpos =  pw_size.x - button_width * ( (dialog_mode == DialogMode::SELECT) ? 3.0 : 2.0 ) - style.ItemSpacing.x * ( ( dialog_mode == DialogMode::SELECT ) ? 2 : 1 ) - style.WindowPadding.x;
 
         ImGui::SetCursorPosY(pw_size.y - frame_height_spacing - style.WindowPadding.y);
 
@@ -553,10 +551,10 @@ namespace imgui_addons
             // If directory selected and Input Text Bar doesn't have focus, render Open Button
             if(selected_idx != -1 && is_dir && ImGui::GetFocusID() != ImGui::GetID("##FileNameInput"))
             {
-                if (ImGui::Button("Open"))
+                if (ImGui::Button("Open", ImVec2(button_width, 0)))
                     show_error |= !(onDirClick(selected_idx));
             }
-            else if (ImGui::Button("Save") && strlen(input_fn) > 0)
+            else if (ImGui::Button("Save", ImVec2(button_width, 0)) && strlen(input_fn) > 0)
             {
                 selected_fn = std::string(input_fn);
                 validate_file = true;
@@ -564,7 +562,7 @@ namespace imgui_addons
         }
         else
         {
-            if (ImGui::Button("Open"))
+            if (ImGui::Button("Open", ImVec2(button_width, 0)))
             {
                 //It's possible for both to be true at once (user selected directory but input bar has some text. In this case we chose to open the directory instead of opening the file.
                 //Also note that we don't need to access the selected file through "selected_idx" since the if a file is selected, input bar will get populated with that name.
@@ -582,7 +580,7 @@ namespace imgui_addons
             {
                 //Render Select Button
                 ImGui::SameLine();
-                if (ImGui::Button("Select"))
+                if (ImGui::Button("Select", ImVec2(button_width, 0)))
                 {
                     if(strlen(input_fn) > 0)
                     {
@@ -595,7 +593,7 @@ namespace imgui_addons
 
         //Render Cancel Button
         ImGui::SameLine();
-        if (ImGui::Button("Cancel"))
+        if (ImGui::Button("Cancel", ImVec2(button_width, 0)))
             closeDialog();
 
         return show_error;
@@ -609,10 +607,10 @@ namespace imgui_addons
         ImGuiID focus_scope_id = ImGui::GetID("##InputBarComboBoxListScope");
         float frame_height = ImGui::GetFrameHeight();
 
-        input_combobox_sz.y = std::min((inputcb_filter_files.size() + 1) * frame_height + style.WindowPadding.y *  2.0f,
+        input_combobox_sz.y = std::min<float>((inputcb_filter_files.size() + 1) * frame_height + style.WindowPadding.y *  2.0f,
                                         8 * ImGui::GetFrameHeight() + style.WindowPadding.y *  2.0f);
 
-        if(show_inputbar_combobox && ( ImGui::GetFocusedFocusScope() == focus_scope_id || ImGui::GetCurrentContext()->ActiveIdIsAlive == input_id  ))
+        if(show_inputbar_combobox && ( ImGui::GetCurrentFocusScope() == focus_scope_id || ImGui::GetCurrentContext()->ActiveIdIsAlive == input_id  ))
         {
             ImGuiWindowFlags popupFlags = ImGuiWindowFlags_NoTitleBar           |
                                           ImGuiWindowFlags_NoResize             |
@@ -631,7 +629,7 @@ namespace imgui_addons
             ImGui::BeginChild("##InputBarComboBox", input_combobox_sz, true, popupFlags);
 
             ImVec2 listbox_size = input_combobox_sz - ImGui::GetStyle().WindowPadding * 2.0f;
-            if(ImGui::ListBoxHeader("##InputBarComboBoxList", listbox_size))
+            if(ImGui::BeginListBox("##InputBarComboBoxList", listbox_size))
             {
                 ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f,1.0f));
                 ImGui::PushFocusScope(focus_scope_id);
@@ -654,7 +652,7 @@ namespace imgui_addons
                 }
                 ImGui::PopFocusScope();
                 ImGui::PopStyleColor(1);
-                ImGui::ListBoxFooter();
+                ImGui::EndListBox();
             }
             ImGui::EndChild();
             ImGui::PopStyleColor(2);
@@ -665,48 +663,33 @@ namespace imgui_addons
 
     void ImGuiFileBrowser::renderExtBox()
     {
-        ImGui::PushItemWidth(ext_box_width);
-
         const char * selected_label = valid_exts[ selected_ext_idx ].c_str();
-        if ( show_files_with_valid_extensions )
-            selected_label = "All valid extensions";
-        if ( show_all_files )
-            selected_label = "All files (*.*)";
-
+        ImGui::PushItemWidth(ext_box_width);
         if(ImGui::BeginCombo("##FileTypes", selected_label ))
         {
-            if ( ImGui::Selectable( "All valid extensions", &show_files_with_valid_extensions ) )
+            for(std::vector<std::string>::size_type i = 0; i < valid_exts.size(); i++)
             {
-                show_all_files = false;
-                filterFiles( FilterMode_Files );
-            }
+                std::string label_text = valid_exts[i];
+                if(label_text == "*.*")
+                    label_text = "All Files (*.*)";
 
-            for(int i = 0; i < valid_exts.size(); i++)
-            {
-                if(ImGui::Selectable(valid_exts[i].c_str(), selected_ext_idx == i && !show_all_files && !show_files_with_valid_extensions))
+                if(ImGui::Selectable(label_text.c_str(), selected_ext_idx == static_cast<int>(i)))
                 {
-                    show_files_with_valid_extensions = false;
-                    show_all_files = false;
-
+                    show_all_valid_files = (label_text == ALL_VALID_FILES_EXT_TXT);
                     selected_ext_idx = i;
+                    //Automatically append extension to input filename when changing extensions from dropdown
                     if(dialog_mode == DialogMode::SAVE)
                     {
                         std::string name(input_fn);
                         size_t idx = name.find_last_of(".");
                         if(idx == std::string::npos)
                             idx = strlen(input_fn);
-                        for(int j = 0; j < valid_exts[selected_ext_idx].size(); j++)
+                        for(std::vector<std::string>::size_type j = 0; j < valid_exts[selected_ext_idx].size(); j++)
                             input_fn[idx++] = valid_exts[selected_ext_idx][j];
                         input_fn[idx++] = '\0';
                     }
                     filterFiles(FilterMode_Files);
                 }
-            }
-
-            if ( ImGui::Selectable( "All files (*.*)", &show_all_files ) )
-            {
-                show_files_with_valid_extensions = false;
-                filterFiles( FilterMode_Files );
             }
 
             ImGui::EndCombo();
@@ -902,7 +885,7 @@ namespace imgui_addons
         if(filter_mode | FilterMode_Dirs)
         {
             filtered_dirs.clear();
-            for (size_t i = 0; i < subdirs.size(); ++i)
+            for (std::vector<Info>::size_type i = 0; i < subdirs.size(); ++i)
             {
                 if(filter.PassFilter(subdirs[i].name.c_str()))
                     filtered_dirs.push_back(&subdirs[i]);
@@ -911,25 +894,28 @@ namespace imgui_addons
         if(filter_mode | FilterMode_Files)
         {
             filtered_files.clear();
-            for (size_t i = 0; i < subfiles.size(); ++i)
+            for (std::vector<Info>::size_type i = 0; i < subfiles.size(); ++i)
             {
-                if ( show_files_with_valid_extensions )
+                // If the option to show all supported formats is selected, filter all files supported
+                if (show_all_valid_files)
                 {
                     if(filter.PassFilter(subfiles[i].name.c_str()))
                     {
                         std::string ext = subfiles[i].name.find_last_of('.') == std::string::npos ? "" : subfiles[i].name.substr(subfiles[i].name.find_last_of('.'));
                         std::transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c){ return std::tolower(c); });
-                        if (ext.length() > 0 && find(valid_exts.begin(), valid_exts.end(),ext) != valid_exts.end())
+                        if (ext.length() > 0 && find(valid_exts.begin(), valid_exts.end(), ext) != valid_exts.end())
                         {
                             filtered_files.push_back(&subfiles[i]);
                         }
                     }
                 }
-                else if(valid_exts[selected_ext_idx] == "*.*" || show_all_files)
+                // If the option to show all files is selected, filter all files
+                else if(valid_exts[selected_ext_idx] == "*.*")
                 {
                     if(filter.PassFilter(subfiles[i].name.c_str()))
                         filtered_files.push_back(&subfiles[i]);
                 }
+                //If any other extension is selected, filter files having only that extension
                 else
                 {
                     if(filter.PassFilter(subfiles[i].name.c_str()) && (ImStristr(subfiles[i].name.c_str(), nullptr, valid_exts[selected_ext_idx].c_str(), nullptr)) != nullptr)
@@ -976,8 +962,6 @@ namespace imgui_addons
         bool ret_val = false;
         if (ImGui::BeginPopupModal(repfile_modal_id.c_str(), nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize))
         {
-            float frame_height = ImGui::GetFrameHeightWithSpacing();
-
             std::string text = "A file with the following filename already exists. Are you sure you want to replace the existing file?";
             ImGui::TextWrapped("%s", text.c_str());
 
@@ -1008,25 +992,36 @@ namespace imgui_addons
 
     void ImGuiFileBrowser::showInvalidFileModal()
     {
-        ImGuiStyle& style = ImGui::GetStyle();
-        std::string text = "Selected file either doesn't exist or is not supported. Please select a file with the following extensions...";
-        ImVec2 text_size = ImGui::CalcTextSize(text.c_str(), nullptr, true, 350 - style.WindowPadding.x * 2.0f);
-        ImVec2 button_size = getButtonSize("OK");
-
-        float frame_height = ImGui::GetFrameHeightWithSpacing();
-        float cw_content_height = valid_exts.size() * frame_height;
-        float cw_height = std::min(4.0f * frame_height, cw_content_height);
         ImVec2 window_size(350, 0);
         ImGui::SetNextWindowSize(window_size);
 
         if (ImGui::BeginPopupModal(invfile_modal_id.c_str(), nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize))
         {
 
+            std::string text = "";
+            if(valid_exts.back() == "*.*")
+                text = "Selected file doesn't exist. Make sure the file you are trying to open exists and the name matches including the extension.";
+            else
+                text = "Selected file either doesn't exist or is not supported. Please select a file with the following extensions...";
+
+            ImVec2 button_size = getButtonSize("OK");
+
             ImGui::TextWrapped("%s", text.c_str());
-            ImGui::BeginChild("##SupportedExts", ImVec2(0, cw_height), true);
-            for(int i = 0; i < valid_exts.size(); i++)
-                ImGui::BulletText("%s", valid_exts[i].c_str());
-            ImGui::EndChild();
+            if(valid_exts.back() != "*.*")
+            {
+                // Number of extension to display in the child window.
+                auto ext_count = (valid_exts.back() == ALL_VALID_FILES_EXT_TXT) ? (valid_exts.size() - 1) : valid_exts.size();
+                // Clamp to item count of 4 for window height.
+                auto items_for_height = std::min<decltype(ext_count)>(4, ext_count);
+                // Get window height by item count.
+                ImGuiStyle &style = ImGui::GetStyle();
+                // ext_count (thus items_for_height) > 0 holds for current implementation.
+                float cw_height = items_for_height * ImGui::GetTextLineHeightWithSpacing() - style.ItemSpacing.y + style.WindowPadding.y * 2;
+                ImGui::BeginChild("##SupportedExts", ImVec2(0, cw_height), true);
+                for(decltype(ext_count) i = 0; i < ext_count; i++)
+                    ImGui::BulletText("%s", valid_exts[i].c_str());
+                ImGui::EndChild();
+            }
 
             ImGui::SetCursorPosX(window_size.x/2.0f - button_size.x/2.0f);
             if (ImGui::Button("OK", button_size))
@@ -1041,8 +1036,11 @@ namespace imgui_addons
          * If the user chooses a file that doesn't match the extensions in the
          * list, we will show an error modal...
          */
-        std::string max_str = "";
+        bool all_files = false;
         valid_exts.clear();
+
+        if(valid_types_string == "")
+            return;
 
         std::string valid_str_lower( valid_types_string );
         std::transform( valid_str_lower.begin(), valid_str_lower.end(), valid_str_lower.begin(), []( unsigned char c ) { return std::tolower( c ); } );
@@ -1051,15 +1049,20 @@ namespace imgui_addons
         std::istringstream iss(valid_str_lower);
         while(std::getline(iss, extension, ','))
         {
-            if(!extension.empty())
-            {
-                if(max_str.size() < extension.size())
-                    max_str = extension;
+            if(!extension.empty() && extension != "*.*")
                 valid_exts.push_back(extension);
-            }
+            else if(extension == "*.*")
+                all_files = true;
         }
-        float min_width = ImGui::CalcTextSize(".abc").x + 100;
-        ext_box_width = std::max(min_width, ImGui::CalcTextSize(max_str.c_str()).x);
+
+        //Add an option to support all valid extensions
+        if(valid_exts.size() > 1 && dialog_mode == DialogMode::OPEN)
+            valid_exts.push_back(ALL_VALID_FILES_EXT_TXT);
+
+        //Add all files option in last
+        if(all_files)
+            valid_exts.push_back("*.*");
+
     }
 
     bool ImGuiFileBrowser::validateFile()
@@ -1080,7 +1083,7 @@ namespace imgui_addons
         {
             if(dialog_mode == DialogMode::SELECT)
             {
-                for(int i = 0; i < subdirs.size(); i++)
+                for(std::vector<Info>::size_type i = 0; i < subdirs.size(); i++)
                 {
                     if(subdirs[i].name == selected_fn)
                     {
@@ -1092,7 +1095,7 @@ namespace imgui_addons
             }
             else
             {
-                for(int i = 0; i < subfiles.size(); i++)
+                for(std::vector<Info>::size_type i = 0; i < subfiles.size(); i++)
                 {
                     if(subfiles[i].name == selected_fn)
                     {
@@ -1110,9 +1113,11 @@ namespace imgui_addons
         // If file matches, return false on SAVE, we need to show a replace file modal
         if(dialog_mode == DialogMode::SAVE)
             return false;
+
         // Return true on SELECT, no need to validate extensions
         else if(dialog_mode == DialogMode::SELECT)
             return true;
+
         else
         {
             // If list of extensions has all types, no need to validate.
@@ -1123,7 +1128,7 @@ namespace imgui_addons
             }
             size_t idx = selected_fn.find_last_of('.');
             std::string file_ext = idx == std::string::npos ? "" : selected_fn.substr(idx, selected_fn.length() - idx);
-            
+
             std::transform( file_ext.begin(), file_ext.end(), file_ext.begin(), []( unsigned char c ) { return std::tolower( c ); } );
 
             return (std::find(valid_exts.begin(), valid_exts.end(), file_ext) != valid_exts.end());

@@ -10,7 +10,7 @@ endif()
 
 set(BUILD_EXAMPLES OFF)
 ADD_SUBDIRECTORY(include)
-find_package(raylib 3.7 QUIET)
+find_package(raylib 5.5 QUIET)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED true)
@@ -20,17 +20,15 @@ if (NOT raylib_FOUND)
 
   FetchContent_Declare(
     raylib
-    URL https://github.com/raysan5/raylib/archive/refs/tags/3.7.0.zip
+    URL https://github.com/raysan5/raylib/archive/refs/tags/5.5.zip
   )
 
   FetchContent_GetProperties(raylib)
   if (NOT raylib_POPULATED)
     set(FETCHCONTENT_QUIET NO)
-    FetchContent_Populate(raylib)
+    FetchContent_MakeAvailable(raylib)
 
     set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-
-    add_subdirectory(${raylib_SOURCE_DIR} ${raylib_BINARY_DIR})
   endif()
 endif()
 

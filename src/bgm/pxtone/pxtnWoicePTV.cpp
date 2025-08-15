@@ -61,7 +61,8 @@ static bool _Write_Wave( pxtnDescriptor *p_doc, const pxtnVOICEUNIT *p_vc, int32
 		*p_total += size;
 		break;
 			
-		case pxtnVOICE_OggVorbis: goto End; // not support.
+	case pxtnVOICE_OggVorbis: goto End; // not support.
+	case pxtnVOICE_Noise: break;
 	}
 
 	b_ret = true;

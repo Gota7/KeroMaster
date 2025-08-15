@@ -116,7 +116,7 @@ void ScriptEditor::DrawUI()
         SaveScript();
     }
     ImGui::Columns(2);
-    ImGui::InputTextMultiline("##Script", buf.begin(), buf.size(), ImVec2(-FLT_MIN, ImGui::GetWindowSize().y - ImGui::GetCursorPosY() - ImGui::GetStyle().FramePadding.y * 4), ImGuiInputTextFlags_Multiline | ImGuiInputTextFlags_CallbackResize, ResizeCallback, &buf);
+    ImGui::InputTextMultiline("##Script", buf.begin(), buf.size(), ImVec2(-FLT_MIN, ImGui::GetWindowSize().y - ImGui::GetCursorPosY() - ImGui::GetStyle().FramePadding.y * 4), ImGuiInputTextFlags_CallbackResize, ResizeCallback, &buf);
     ImGui::NextColumn();
     ImGui::InputText("Search", search, 5);
     if (ImGui::BeginChildFrame(1, ImVec2(-FLT_MIN, ImGui::GetWindowSize().y - ImGui::GetCursorPosY() - ImGui::GetStyle().FramePadding.y * 4), ImGuiWindowFlags_HorizontalScrollbar))

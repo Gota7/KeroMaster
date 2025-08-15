@@ -23,20 +23,22 @@ struct GFile
 {
 private:
     static u32 systemEndian;
-    FILE* handle;
+    FILE* handle = nullptr;
     std::string fileName;
-    bool isMem;
+    bool isMem = false;
     std::vector<u8> buff;
-    bool swapEndian;
-    void Init(); // TODO!!!
-    size_t fileSize;
+    bool swapEndian = false;
+    void Init();
+    size_t fileSize = 0;
 
 public:
     u64 position;
 
     // Constructors.
-    GFile();
-    GFile(const char* fileName);
+    explicit GFile();
+    explicit GFile(const char* fileName);
+    explicit GFile(FILE* handle);
+    ~GFile();
 
     // Other functions.
     void SetEndian(bool big);
