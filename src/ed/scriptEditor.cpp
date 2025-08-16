@@ -84,7 +84,7 @@ void ScriptEditor::LoadScript()
     isShiftJIS = !raw.starts_with("//ＵＴＦ８");
     if (isShiftJIS) raw = fromShiftJIS(raw);
     buf.resize(raw.size() + 1);
-    strcpy(buf.begin(), &raw[0]);
+    memcpy(buf.begin(), raw.data(), raw.size());
     f.Close();
 }
 

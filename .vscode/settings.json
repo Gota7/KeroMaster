@@ -1,0 +1,10 @@
+{
+    "cmake.launchBehavior": "newTerminal",
+    "cmake.debugConfig": {
+        "cwd": "${workspaceFolder}"
+    },
+    "files.associations": {
+        "*.m": "cpp",
+        "__verbose_abort": "cpp"
+    },
+}

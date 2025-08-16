@@ -1,1 +1,0 @@
-cmake --build . --target clean

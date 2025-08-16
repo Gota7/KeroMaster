@@ -31,8 +31,15 @@
 *.out
 *.app
 
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+
 # Game Files
-.vscode
 assist
 build
 /Kero Blaster

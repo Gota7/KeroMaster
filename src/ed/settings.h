@@ -40,7 +40,7 @@ struct Settings
     std::string tileAttributePath = "object_data/attribute.png"; // Path for tile attributes.
     std::string unitTypePath = "object_data/unittype.png"; // Path for the unit type image.
     std::string unitTypeListPath = "object_data/unittype.txt"; // Path for the unit type listing.
-    std::string themesPath = "object_data/themes"; // Path for the theme folder.
+    std::string themesPath = "themes"; // Path for the theme folder.
 
     // Load the settings.
     void Load();

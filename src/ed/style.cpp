@@ -2,6 +2,19 @@
 #include "inicpp.h"
 #include "settings.h"
 #include "../rlImGui/rlImGui.h"
+#include "themes/CatAndFrog.h"
+#include "themes/PurplePower.h"
+
+using ApplyStyleFunc = void (*)(ImGuiStyle *);
+using BuiltinStyleMap = std::map<std::string, ApplyStyleFunc>;
+
+static BuiltinStyleMap builtin_styles = {
+    {"Cat & Frog", ApplyStyle_CatAndFrog},
+    {"ImGui Dark", ImGui::StyleColorsDark},
+    {"ImGui Light", ImGui::StyleColorsLight},
+    {"ImGui Classic", ImGui::StyleColorsClassic},
+    {"Purple Power", ApplyStyle_PurplePower},
+};
 
 template <typename T>
 static void DeserializeImguiStyleProp(T &value, ini::IniSection &section, const std::string &name)
@@ -137,12 +150,25 @@ static std::array<ImGuiCol, 53> LEGACY_COLOR_INDEX_MAPPING{
 
 void EditorStyle::Load(std::string name, Settings *settings)
 {
-    this->name = name;
+    auto it = builtin_styles.end();
     if (name == "default")
     {
-        ImGui::StyleColorsClassic(&style);
-        return;
+        it = builtin_styles.begin();
+        printf("Default theme applied.\n");
     }
+    else
+    {
+        printf("Using built-in theme: %s\n", name.c_str());
+        it = builtin_styles.find(name);
+    }
+
+    if (it != builtin_styles.end())
+    {
+        auto &[name, func] = *it;
+        this->name = name;
+        func(&style);
+    }
+
     ini::IniFile t = ini::IniFile(settings->themesPath + "/" + name + ".ini");
     auto &theme = t["Theme"];
 

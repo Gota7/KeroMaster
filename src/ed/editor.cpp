@@ -497,12 +497,23 @@ void Editor::DrawGrid()
 bool Editor::KeyboardShortcut(bool control, bool alt, bool shift, int key)
 {
     bool ret = true;
+#ifdef __APPLE__
+    ret &= !(control ^ (IsKeyDown(KEY_LEFT_CONTROL) | IsKeyDown(KEY_RIGHT_CONTROL) 
+        | IsKeyDown(KEY_LEFT_SUPER) | IsKeyDown(KEY_RIGHT_SUPER)));
+#else
     ret &= !(control ^ (IsKeyDown(KEY_LEFT_CONTROL) | IsKeyDown(KEY_RIGHT_CONTROL)));
+#endif
     ret &= !(alt ^ (IsKeyDown(KEY_LEFT_ALT) | IsKeyDown(KEY_RIGHT_ALT)));
     ret &= !(shift ^ (IsKeyDown(KEY_LEFT_SHIFT) | IsKeyDown(KEY_RIGHT_SHIFT)));
     ret &= IsKeyPressed(key);
     return ret;
 }
+
+#ifdef __APPLE__
+#define CTRL_PFX "Cmd+"
+#else
+#define CTRL_PFX "Ctrl+"
+#endif
 
 void Editor::DrawMainMenu()
 {
@@ -528,27 +539,27 @@ void Editor::DrawMainMenu()
     {
         if (ImGui::BeginMenu("File"))
         {
-            if (ImGui::MenuItem("New", "Ctrl+N"))
+            if (ImGui::MenuItem("New", CTRL_PFX "N"))
             {
                 doNew = true;
             }
-            if (ImGui::MenuItem("Open", "Ctrl+O"))
+            if (ImGui::MenuItem("Open", CTRL_PFX "O"))
             {
                 doOpen = true;
             }
-            if (ImGui::MenuItem("Save", "Ctrl+S"))
+            if (ImGui::MenuItem("Save", CTRL_PFX "S"))
             {
                 doSave = true;
             }
-            if (ImGui::MenuItem("Save As", "Ctrl+Shift+S"))
+            if (ImGui::MenuItem("Save As", CTRL_PFX "Shift+S"))
             {
                 doSaveAs = true;
             }
-            if (ImGui::MenuItem("Close", "Ctrl+Shift+C"))
+            if (ImGui::MenuItem("Close", CTRL_PFX "Shift+C"))
             {
                 doClose = true;
             }
-            if (ImGui::MenuItem("Quit", "Ctrl+Shift+Q"))
+            if (ImGui::MenuItem("Quit", CTRL_PFX "Shift+Q"))
             {
                 doQuit = true;
             }
@@ -556,17 +567,17 @@ void Editor::DrawMainMenu()
         }
         if (ImGui::BeginMenu("Edit"))
         {
-            if (undoStack.CanUndo() && ImGui::MenuItem("Undo", "Ctrl+Z"))
+            if (undoStack.CanUndo() && ImGui::MenuItem("Undo", CTRL_PFX "Z"))
             {
                 doUndo = true;
             }
 
-            if (undoStack.CanRedo() && ImGui::MenuItem("Redo", "Ctrl+Y"))
+            if (undoStack.CanRedo() && ImGui::MenuItem("Redo", CTRL_PFX "Y"))
             {
                 doRedo = true;
             }
 
-            if (ImGui::MenuItem("Screenshot", "Ctrl+P"))
+            if (ImGui::MenuItem("Screenshot", CTRL_PFX "P"))
             {
                 doScreenshot = true;
             }
@@ -605,13 +616,13 @@ void Editor::DrawMainMenu()
         /* TODO: TOOL SELECT!!!
         if (!startup && ImGui::BeginMenu("Tool"))
         {
-            ImGui::RadioButton("Hand (Ctrl+Q)", (int*)&currentTool, (int)EditorTool::Hand);
+            ImGui::RadioButton("Hand (" CTRL_PFX "Q)", (int*)&currentTool, (int)EditorTool::Hand);
             ImGuiTooltip("Pan the camera.");
-            ImGui::RadioButton("Tile Brush (Ctrl+W)", (int*)&currentTool, (int)EditorTool::TileBrush);
+            ImGui::RadioButton("Tile Brush (" CTRL_PFX "W)", (int*)&currentTool, (int)EditorTool::TileBrush);
             ImGuiTooltip("Paint tiles.");
-            ImGui::RadioButton("Eraser (Ctrl+E)", (int*)&currentTool, (int)EditorTool::Eraser);
+            ImGui::RadioButton("Eraser (" CTRL_PFX "E)", (int*)&currentTool, (int)EditorTool::Eraser);
             ImGuiTooltip("Erase tiles.");
-            ImGui::RadioButton("Entity Hand (Ctrl+R)", (int*)&currentTool, (int)EditorTool::EntityHand);
+            ImGui::RadioButton("Entity Hand (" CTRL_PFX "R)", (int*)&currentTool, (int)EditorTool::EntityHand);
             ImGuiTooltip("Move, edit, place, and delete entities.");
             ImGui::EndMenu();
         }*/
