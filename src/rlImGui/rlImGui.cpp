@@ -289,6 +289,7 @@ void SetupFontAwesome(void)
 #endif
 
     ImGuiIO& io = ImGui::GetIO();
+    io.Fonts->Clear();
     io.Fonts->AddFontDefault();
 
     const ImWchar* jpRange = &io.Fonts->GetGlyphRangesJapanese()[0];
@@ -296,7 +297,6 @@ void SetupFontAwesome(void)
     ImFontConfig config;
     config.MergeMode = true;
     io.Fonts->AddFontFromMemoryCompressedTTF(shinonomeMinchoData, shinonomeMinchoSize, 14, &config, jpRange);
-    // io.Fonts->Build();
 }
 
 void SetupBackend(void)
