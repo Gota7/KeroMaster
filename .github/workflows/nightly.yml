@@ -1,4 +1,4 @@
-name: CI Builds and Nightly Releases
+name: CI Builds
 
 on:
   push:
@@ -56,13 +56,7 @@ jobs:
           cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 
       - name: Build
-        run: |
-          if [ "${{ runner.os }}" = "Windows" ]; then
-            cmake --build build --config Release --parallel
-          else
-            cmake --build build --parallel
-          fi
-        shell: bash
+        run: cmake --build build --config Release --parallel
 
       - name: Package artifact (Linux)
         if: runner.os == 'Linux'
@@ -78,7 +72,6 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p dist package
-          # Bundle produced by Xcode at build/Release/KeroMaster.app
           cp -R build/Release/KeroMaster.app package/KeroMaster.app
           cp -a object_data package/object_data
           cd package && 7z a -tzip ../dist/KeroMaster-macOS.zip .
@@ -94,56 +87,9 @@ jobs:
           cd package && 7z.exe a -tzip ../dist/KeroMaster-Windows.zip .
 
       - name: Upload artifact
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: KeroMaster-${{ runner.os }}
           path: dist/*.zip
-          if-no-files-found: error
-
-  release:
-    if: github.event_name == 'push' && github.ref_name == 'main'
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: release
-
-      - name: List downloaded files
-        run: |
-          find release -type f -maxdepth 3 -print
-
-      - name: Write release notes
-        run: |
-          mkdir -p release
-          echo "Nightly build for commit $GITHUB_SHA" > release/notes.md
-          echo >> release/notes.md
-          echo "Built on $(date -u +\"%Y-%m-%d %H:%M UTC\")" >> release/notes.md
-
-      - name: Create/Update Nightly (rolling tag)
-        uses: softprops/action-gh-release@v2
-        with:
-          prerelease: true
-          tag_name: nightly
-          name: Nightly Build
-          body_path: release/notes.md
-          files: |
-            release/**/KeroMaster-*.zip
-
-      - name: Delete old assets on nightly-latest
-        uses: mknejp/delete-release-assets@v1
-        with:
-          token: ${{ github.token }}
-          tag: nightly-latest
-          assets: '*'
-
-      - name: Update Nightly Latest (static tag)
-        uses: softprops/action-gh-release@v2
-        with:
-          prerelease: true
-          tag_name: nightly-latest
-          name: Nightly Latest
-          body_path: release/notes.md
-          files: |
-            release/**/KeroMaster-*.zip
+          if-no-files-found: warn

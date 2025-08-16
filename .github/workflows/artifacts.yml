@@ -1,0 +1,60 @@
+name: Release Artifacts
+
+on:
+  workflow_run:
+    workflows: ["CI Builds"]
+    types:
+      - completed
+
+jobs:
+  release:
+    # Only publish releases when the originating workflow was a push to main
+    if: github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+          path: release
+
+      - name: List downloaded files
+        run: |
+          find release -type f -maxdepth 3 -print || echo "No artifacts found"
+
+      - name: Write release notes
+        run: |
+          mkdir -p release
+          echo "Nightly build for commit ${{ github.event.workflow_run.head_sha }}" > release/notes.md
+          echo >> release/notes.md
+          echo "Built on $(date -u +\"%Y-%m-%d %H:%M UTC\")" >> release/notes.md
+          echo >> release/notes.md
+          echo "Workflow run: ${{ github.event.workflow_run.html_url }}" >> release/notes.md
+
+      - name: Create/Update Nightly (rolling tag)
+        uses: softprops/action-gh-release@v2
+        with:
+          prerelease: true
+          tag_name: nightly
+          name: Nightly Build
+          body_path: release/notes.md
+          files: |
+            release/**/KeroMaster-*.zip
+
+      - name: Delete old assets on nightly-latest
+        uses: mknejp/delete-release-assets@v1
+        with:
+          token: ${{ github.token }}
+          tag: nightly-latest
+          assets: '*'
+
+      - name: Update Nightly Latest (static tag)
+        uses: softprops/action-gh-release@v2
+        with:
+          prerelease: true
+          tag_name: nightly-latest
+          name: Nightly Latest
+          body_path: release/notes.md
+          files: |
+            release/**/KeroMaster-*.zip
