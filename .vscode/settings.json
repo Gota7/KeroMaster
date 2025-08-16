@@ -3,8 +3,10 @@
     "cmake.debugConfig": {
         "cwd": "${workspaceFolder}"
     },
-    "files.associations": {
-        "*.m": "cpp",
-        "__verbose_abort": "cpp"
-    },
+    "cmake.preferredGenerators": [
+        "Xcode",
+        "Visual Studio 17 2022",
+        "Ninja",
+        "Unix Makefiles"
+    ]
 }

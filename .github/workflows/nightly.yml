@@ -1,0 +1,149 @@
+name: CI Builds and Nightly Releases
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch: {}
+
+concurrency:
+  group: nightly-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - "ubuntu-22.04"
+          - "windows-2025"
+          - "macos-15"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install build deps (Ubuntu)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          # raylib dependencies
+          sudo apt-get install -y \
+            build-essential ninja-build \
+            libgl1-mesa-dev libglu1-mesa-dev \
+            libx11-dev libxrandr-dev libxi-dev libxinerama-dev libxcursor-dev libxxf86vm-dev \
+            libasound2-dev libpulse-dev libudev-dev \
+            libwayland-dev libxkbcommon-dev
+
+      - name: Configure (Linux, Ninja)
+        if: runner.os == 'Linux'
+        run: |
+          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+
+      - name: Configure (macOS, Xcode)
+        if: runner.os == 'macOS'
+        # https://github.com/actions/runner-images/blob/main/images/macos/macos-15-arm64-Readme.md
+        run: |
+          sudo xcode-select -s /Applications/Xcode_26.0.app
+          cmake -S . -B build -G Xcode -DCMAKE_BUILD_TYPE=Release
+
+      - name: Configure (Windows, default generator)
+        if: runner.os == 'Windows'
+        run: |
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: |
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            cmake --build build --config Release --parallel
+          else
+            cmake --build build --parallel
+          fi
+        shell: bash
+
+      - name: Package artifact (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          set -euo pipefail
+          mkdir -p dist package
+          cp build/KeroMaster package/KeroMaster
+          cp -a object_data package/object_data
+          cd package && 7z a -tzip ../dist/KeroMaster-Linux.zip .
+
+      - name: Package artifact (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          set -euo pipefail
+          mkdir -p dist package
+          # Bundle produced by Xcode at build/Release/KeroMaster.app
+          cp -R build/Release/KeroMaster.app package/KeroMaster.app
+          cp -a object_data package/object_data
+          cd package && 7z a -tzip ../dist/KeroMaster-macOS.zip .
+
+      - name: Package artifact (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path dist | Out-Null
+          New-Item -ItemType Directory -Force -Path package | Out-Null
+          Copy-Item -Recurse -Force object_data package\object_data
+          Copy-Item -Force build\Release\KeroMaster.exe package\KeroMaster.exe
+          cd package && 7z.exe a -tzip ../dist/KeroMaster-Windows.zip .
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: KeroMaster-${{ runner.os }}
+          path: dist/*.zip
+          if-no-files-found: error
+
+  release:
+    if: github.event_name == 'push' && github.ref_name == 'main'
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release
+
+      - name: List downloaded files
+        run: |
+          find release -type f -maxdepth 3 -print
+
+      - name: Write release notes
+        run: |
+          mkdir -p release
+          echo "Nightly build for commit $GITHUB_SHA" > release/notes.md
+          echo >> release/notes.md
+          echo "Built on $(date -u +\"%Y-%m-%d %H:%M UTC\")" >> release/notes.md
+
+      - name: Create/Update Nightly (rolling tag)
+        uses: softprops/action-gh-release@v2
+        with:
+          prerelease: true
+          tag_name: nightly
+          name: Nightly Build
+          body_path: release/notes.md
+          files: |
+            release/**/KeroMaster-*.zip
+
+      - name: Delete old assets on nightly-latest
+        uses: mknejp/delete-release-assets@v1
+        with:
+          token: ${{ github.token }}
+          tag: nightly-latest
+          assets: '*'
+
+      - name: Update Nightly Latest (static tag)
+        uses: softprops/action-gh-release@v2
+        with:
+          prerelease: true
+          tag_name: nightly-latest
+          name: Nightly Latest
+          body_path: release/notes.md
+          files: |
+            release/**/KeroMaster-*.zip

@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.20)
-project(KeroMaster)
+
+set(PROJECT_VERSION 0.3.0)
+
+project(KeroMaster VERSION ${PROJECT_VERSION} LANGUAGES CXX)
 
 if (MINGW)
   message(STATUS "MinGW detected")
@@ -15,6 +18,7 @@ find_package(raylib 5.5 QUIET)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED true)
+set(CMAKE_OSX_DEPLOYMENT_TARGET 13.5)
 
 if (NOT raylib_FOUND)
   include(FetchContent)
@@ -33,10 +37,8 @@ if (NOT raylib_FOUND)
   endif()
 endif()
 
-include_directories("src")
-
 set(SOURCES
-src/bgm/bgm.cpp
+  src/bgm/bgm.cpp
   src/bgm/pxtone/pxtnDelay.cpp
   src/bgm/pxtone/pxtnDescriptor.cpp
   src/bgm/pxtone/pxtnError.cpp
@@ -108,16 +110,73 @@ else()
   )
 endif()
 
-add_executable(${PROJECT_NAME} WIN32 MACOSX_BUNDLE
+add_executable(${PROJECT_NAME} WIN32
   ${SOURCES}
 )
+target_include_directories(${PROJECT_NAME} PRIVATE
+  src
+)
 target_link_libraries(${PROJECT_NAME} raylib imgui)
+target_compile_definitions(${PROJECT_NAME} PRIVATE
+  -DKM_VERSION="${PROJECT_VERSION}"
+  -DKM_VERSION_MAJOR=${PROJECT_VERSION_MAJOR}
+  -DKM_VERSION_MINOR=${PROJECT_VERSION_MINOR}
+  -DKM_VERSION_PATCH=${PROJECT_VERSION_PATCH}
+)
 
 if(CMAKE_VERSION VERSION_GREATER 4.0)
   set_property(TARGET ${PROJECT_NAME} PROPERTY DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}") # CMake 4.0+
 else()
   set_property(TARGET ${PROJECT_NAME} PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
   set_property(TARGET ${PROJECT_NAME} PROPERTY XCODE_SCHEME_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
+endif()
+
+if(APPLE)
+  set(RESOURCE_ASSETS
+    "${CMAKE_CURRENT_SOURCE_DIR}/res/macos/Assets.xcassets"
+    # "${CMAKE_CURRENT_SOURCE_DIR}/res/macos/mac-icon.icns"
+    "${CMAKE_CURRENT_SOURCE_DIR}/art/mac-icon.icon"
+  )
+
+  if(CMAKE_GENERATOR STREQUAL "Xcode")
+    set(RESOURCE_ASSETS_OUTPUT ${RESOURCE_ASSETS})
+  else()
+    message(WARNING "Using non-Xcode generator is not recommended, expect problems with asset catalog generation...")
+    set(RESOURCE_ASSETS_OUTPUT
+      ${CMAKE_CURRENT_BINARY_DIR}/assets-thinned/Assets.car
+      # ${CMAKE_CURRENT_BINARY_DIR}/assets-thinned/mac-icon.icns
+    )
+    add_custom_target(${PROJECT_NAME}_AssetCatalog ALL
+      COMMAND actool ${RESOURCE_ASSETS} 
+        --compile ${CMAKE_CURRENT_BINARY_DIR}/assets-thinned 
+        --export-dependency-info ${CMAKE_CURRENT_BINARY_DIR}/assetcatalog_dependencies_thinned
+        --output-partial-info-plist ${CMAKE_CURRENT_BINARY_DIR}/assetcatalog_generated_info.plist_thinned
+        --output-format human-readable-text 
+        --notices 
+        --warnings 
+        --app-icon mac-icon 
+        --enable-on-demand-resources NO 
+        --development-region en 
+        --target-device mac 
+        --minimum-deployment-target ${CMAKE_OSX_DEPLOYMENT_TARGET} 
+        --platform macosx
+      BYPRODUCTS ${RESOURCE_ASSETS_OUTPUT}
+    )
+    add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_AssetCatalog)
+  endif()
+  target_sources(${PROJECT_NAME} PRIVATE ${RESOURCE_ASSETS_OUTPUT})
+  set_source_files_properties(${RESOURCE_ASSETS_OUTPUT}
+    TARGET_DIRECTORY ${PROJECT_NAME}
+    PROPERTIES MACOSX_PACKAGE_LOCATION Resources
+  )
+  set_target_properties(${PROJECT_NAME} PROPERTIES
+    MACOSX_BUNDLE TRUE
+    MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/res/macos/Info.plist"
+    XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER   "io.github.gota7.keromaster"
+    XCODE_ATTRIBUTE_PRODUCT_NAME                "KeroMaster"
+    XCODE_ATTRIBUTE_CURRENT_PROJECT_VERSION     ${PROJECT_VERSION}
+    XCODE_ATTRIBUTE_MARKETING_VERSION           ${PROJECT_VERSION}
+  )
 endif()
 
 if(MINGW)

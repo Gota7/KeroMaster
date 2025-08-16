@@ -9,9 +9,9 @@ struct Editor;
 // Editor settings.
 struct Settings
 {
-    u16 versionMajor = 0; // Major version.
-    u16 versionMinor = 3; // Minor version.
-    u16 versionRevision = 0; // Revision version.
+    u16 versionMajor = KM_VERSION_MAJOR; // Major version.
+    u16 versionMinor = KM_VERSION_MINOR; // Minor version.
+    u16 versionRevision = KM_VERSION_PATCH; // Revision version.
     int width = 1240; // Width of the window.
     int height = 720; // Height of the window.
     bool maximized = false; // If the window should be maximized.
